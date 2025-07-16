@@ -16,7 +16,6 @@ app.use(express.static(path.join(__dirname, 'public')));
  */
 function getCurrentEstDateString() {
     const now = new Date();
-    // Use Intl.DateTimeFormat to reliably get the date parts in the target timezone.
     const options = { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'America/New_York' };
     const formatter = new Intl.DateTimeFormat('en-US', options);
     const parts = formatter.formatToParts(now);
@@ -38,14 +37,18 @@ app.get('/api/puzzle', (req, res) => {
 
         const puzzles = JSON.parse(data);
         const todayStr = getCurrentEstDateString();
-        const requestedDate = req.query.date || todayStr;
-
-        // Prevent peeking at future puzzles.
-        if (requestedDate > todayStr) {
-            return res.status(403).json({ error: 'This puzzle is not yet available.' });
+        
+        let puzzle;
+        if (req.query.date) {
+            // Fetch by specific date for archives
+            puzzle = puzzles.find(p => p.date === req.query.date);
+            if (puzzle && puzzle.date > todayStr) {
+                 return res.status(403).json({ error: 'This puzzle is not yet available.' });
+            }
+        } else {
+            // Fetch today's puzzle
+            puzzle = puzzles.find(p => p.date === todayStr);
         }
-
-        const puzzle = puzzles.find(p => p.date === requestedDate);
 
         if (puzzle) {
             res.json(puzzle);
@@ -67,11 +70,11 @@ app.get('/api/archives', (req, res) => {
         const todayStr = getCurrentEstDateString();
 
         // Filter out any puzzles from the future.
-        const availableDates = puzzles
+        const availablePuzzles = puzzles
             .filter(p => p.date < todayStr)
-            .map(p => p.date);
+            .map(p => ({ date: p.date, puzzleNumber: p.puzzleNumber }));
             
-        res.json(availableDates.reverse()); // Show most recent first
+        res.json(availablePuzzles.reverse()); // Show most recent first
     });
 });
 
