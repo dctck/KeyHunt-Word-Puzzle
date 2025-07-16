@@ -163,7 +163,7 @@
             <div id="result-buttons" class="flex gap-2 mt-4">
                 <button id="share-btn" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-md transition">Share</button>
                 <button id="archives-cta-btn" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-md transition">Archives</button>
-                <button id="play-next-btn" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-md transition">Play Next</button>
+                <button id="play-next-btn" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-md transition">Next</button>
             </div>
         </div>
     </main>
@@ -244,6 +244,7 @@
                 countdownInterval: null,
                 finalTime: "0:00",
                 shareGrid: "",
+                isToday: false,
             };
         }
 
@@ -414,24 +415,29 @@
             const finalWordRow = DOM.boardContent.lastElementChild;
             if(finalWordRow) finalWordRow.classList.add('word-dance');
             
-            DOM.keyboard.style.opacity = '0';
+            DOM.keyboardContainer.style.opacity = '0';
             DOM.victoryFooter.classList.remove('hidden');
             
             setTimeout(() => {
-                DOM.keyboard.style.display = 'none';
+                DOM.keyboardContainer.style.display = 'none';
                 DOM.victoryFooter.style.opacity = '1';
             }, 500);
 
             confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, angle: 90, startVelocity: 40 });
 
-            const todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'});
-            if (state.puzzle.date === todayStr) {
+            if (state.isToday) {
                 DOM.countdownContainer.classList.remove('hidden');
                 DOM.playNextBtn.style.display = 'none';
+                DOM.archivesCtaBtn.style.display = 'block';
                 startNextPuzzleCountdown();
             } else {
                 DOM.countdownContainer.classList.add('hidden');
-                DOM.playNextBtn.style.display = 'block';
+                DOM.archivesCtaBtn.style.display = 'none';
+                if (state.puzzle.puzzleNumber < 4) { // Assuming 4 is the last puzzle
+                    DOM.playNextBtn.style.display = 'block';
+                } else {
+                    DOM.playNextBtn.style.display = 'none';
+                }
             }
         }
 
@@ -477,7 +483,6 @@
             if (state.moves === 0) {
                 state.startTime = new Date();
                 state.timerInterval = setInterval(updateTimer, 1000);
-                showSnackbar("Timer started!");
             }
             state.moves++;
             
@@ -562,11 +567,15 @@
                 const puzzle = await response.json();
                 if (state.timerInterval) clearInterval(state.timerInterval);
                 setupGame(puzzle);
+                
+                const todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'});
+                state.isToday = puzzle.date === todayStr;
+
                 render();
                 DOM.timerDisplay.textContent = "0:00";
                 DOM.victoryFooter.classList.add('hidden');
-                DOM.keyboard.style.opacity = '1';
-                DOM.keyboard.style.display = 'block';
+                DOM.keyboardContainer.style.opacity = '1';
+                DOM.keyboardContainer.style.display = 'block';
                 DOM.gameContainer.classList.remove('all-keys-glow');
             } catch (error) {
                 showSnackbar(error.message);
@@ -574,7 +583,7 @@
         }
 
         function handleShare() {
-            const shareText = `KeyHunt #${state.puzzle.puzzleNumber}\n${state.puzzle.startWord} -> ${state.puzzle.endWord}\nSolved in ${state.moves} moves (${state.finalTime})\n\n${state.shareGrid}`;
+            const shareText = `KeyHunt #${state.puzzle.puzzleNumber}\nSolved in ${state.moves} moves (${state.finalTime})\n\n${state.shareGrid}`;
             const textarea = document.createElement('textarea');
             textarea.value = shareText;
             document.body.appendChild(textarea);
@@ -628,6 +637,13 @@
              showArchives();
         });
         DOM.shareBtn.addEventListener('click', handleShare);
+        DOM.playNextBtn.addEventListener('click', () => {
+            // This logic assumes puzzles are sequential in the archive list
+            // A more robust solution would fetch the archives and find the next date
+            const nextPuzzleDate = new Date(state.puzzle.date);
+            nextPuzzleDate.setDate(nextPuzzleDate.getDate() + 2); // +1 for next day, +1 for timezone
+            initGame(nextPuzzleDate.toISOString().split('T')[0]);
+        });
         
         // Close dropdown if clicking outside
         document.addEventListener('click', (e) => {
