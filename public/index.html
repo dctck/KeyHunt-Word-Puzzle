@@ -154,14 +154,7 @@
         <div id="board-content" class="w-full space-y-2">
             <!-- JS will populate this -->
         </div>
-    </main>
-
-    <!-- On-screen Keyboard & Victory Footer -->
-    <footer id="footer-container" class="flex-shrink-0 w-full max-w-2xl mx-auto pt-4">
-        <div id="keyboard">
-            <!-- Keyboard rows will be generated here -->
-        </div>
-        <div id="victory-footer" class="hidden text-center">
+        <div id="victory-footer" class="hidden text-center mt-4">
             <h2 class="text-3xl font-bold gold-text">Congratulations!</h2>
             <div id="countdown-container" class="hidden mt-2 text-center">
                 <p class="text-sm text-gray-400">Next puzzle in:</p>
@@ -172,6 +165,13 @@
                 <button id="archives-cta-btn" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-md transition">Archives</button>
                 <button id="play-next-btn" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-md transition">Play Next</button>
             </div>
+        </div>
+    </main>
+
+    <!-- On-screen Keyboard -->
+    <footer id="keyboard-container" class="flex-shrink-0 w-full max-w-2xl mx-auto pt-4">
+        <div id="keyboard">
+            <!-- Keyboard rows will be generated here -->
         </div>
     </footer>
     
@@ -201,6 +201,7 @@
             gameContainer: document.getElementById('game-container'),
             boardContent: document.getElementById('board-content'),
             keyboard: document.getElementById('keyboard'),
+            keyboardContainer: document.getElementById('keyboard-container'),
             victoryFooter: document.getElementById('victory-footer'),
             menuBtn: document.getElementById('menu-btn'),
             menuDropdown: document.getElementById('menu-dropdown'),
@@ -257,7 +258,7 @@
         function renderBoard() {
             const historyHtml = state.history.map(word => createTileRow(word, false)).join('');
             const currentHtml = createTileRow(state.currentWord, false);
-            const inputHtml = createTileRow(state.inputWord, true);
+            const inputHtml = state.gameOver ? '' : createTileRow(state.inputWord, true);
             
             DOM.boardContent.innerHTML = historyHtml + currentHtml + inputHtml;
             
@@ -410,13 +411,16 @@
             state.gameOver = true;
             clearInterval(state.timerInterval);
             
-            const finalWordRow = DOM.boardContent.lastElementChild.previousElementSibling;
+            const finalWordRow = DOM.boardContent.lastElementChild;
             if(finalWordRow) finalWordRow.classList.add('word-dance');
             
-            DOM.boardContent.lastElementChild.classList.add('hidden'); // Hide input row
             DOM.keyboard.style.opacity = '0';
             DOM.victoryFooter.classList.remove('hidden');
-            DOM.victoryFooter.style.opacity = '1';
+            
+            setTimeout(() => {
+                DOM.keyboard.style.display = 'none';
+                DOM.victoryFooter.style.opacity = '1';
+            }, 500);
 
             confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, angle: 90, startVelocity: 40 });
 
@@ -481,10 +485,11 @@
             
             const isWinningAnagram = nextWord.split('').sort().join('') === state.puzzle.endWord.split('').sort().join('');
             
+            state.history.push(state.currentWord);
+            state.currentWord = nextWord;
+            state.inputWord = "";
+            
             if (isWinningAnagram) {
-                state.history.push(state.currentWord);
-                state.currentWord = nextWord;
-                state.inputWord = "";
                 state.puzzle.endWord.split('').forEach(k => state.discoveredKeys.add(k));
                 updateTimer();
                 render();
@@ -493,10 +498,6 @@
             }
             
             const newKeys = nextWord.split('').filter(letter => state.puzzle.endWord.includes(letter) && !state.discoveredKeys.has(letter));
-            
-            state.history.push(state.currentWord);
-            state.currentWord = nextWord;
-            state.inputWord = "";
             
             if (newKeys.length > 0) {
                 newKeys.forEach(key => state.discoveredKeys.add(key));
@@ -565,6 +566,7 @@
                 DOM.timerDisplay.textContent = "0:00";
                 DOM.victoryFooter.classList.add('hidden');
                 DOM.keyboard.style.opacity = '1';
+                DOM.keyboard.style.display = 'block';
                 DOM.gameContainer.classList.remove('all-keys-glow');
             } catch (error) {
                 showSnackbar(error.message);
@@ -623,7 +625,6 @@
             }
         });
         DOM.archivesCtaBtn.addEventListener('click', () => {
-             DOM.resultModal.classList.add('hidden');
              showArchives();
         });
         DOM.shareBtn.addEventListener('click', handleShare);
