@@ -303,16 +303,10 @@
         
         function renderInstructions() {
             DOM.instructionsContent.innerHTML = `
-                <p> <strong>Goal:</strong> Change one letter at a time to discover and reach the target word.</p>
-                <p>1. <strong>Change one letter</strong> from the previous word</p>
-                <p>2. <strong>Rearrange letters</strong> any way you want</p>
-                <p>3. Submit word to <strong>discover key letters</strong></p>
-                <p>4. <strong>Keep changing one letter at a time</strong> until you make a word using all key letters to win!</p>
-                <p><strong>Example:</strong><br>
-                    FATE → LATE: one letter changed, acceptable <br>
-                    FATE → BEAT: one letter changed, acceptable <br>
-                    BITE → SHOT: three letters changed, not acceptable
-                </p>
+                <p>1. Change the <strong>START</strong> word to the <strong>FINAL</strong> word.</p>
+                <p>2. Submit a new word by changing just <strong>one letter</strong>. The other letters can be rearranged.</p>
+                <p>3. Discover the hidden <strong>Keys</strong> (the letters of the final word) by using them in your words.</p>
+                <p>4. Once all keys are found, make the final word to win!</p>
             `;
         }
 
@@ -446,15 +440,12 @@
             if (state.puzzle.date === todayStr) {
                 DOM.countdownContainer.classList.remove('hidden');
                 DOM.resultButtons.style.display = 'flex';
-                DOM.playNextBtn.style.display = 'none'; // Hide play next for today's puzzle
                 DOM.archivesCtaBtn.style.display = 'block';
                 DOM.shareBtn.classList.remove('w-full');
             } else {
                 DOM.countdownContainer.classList.add('hidden');
                 DOM.resultButtons.style.display = 'flex';
-                DOM.playNextBtn.style.display = 'block';
-                DOM.archivesCtaBtn.style.display = 'none';
-                DOM.shareBtn.classList.remove('w-full');
+                DOM.archivesCtaBtn.style.display = 'block';
             }
 
             confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, angle: 90, startVelocity: 40 });
