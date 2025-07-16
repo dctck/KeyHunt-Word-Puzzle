@@ -129,10 +129,6 @@
                 <div class="text-xs text-gray-400">PUZZLE</div>
             </div>
             <div class="text-center">
-                <div id="timer-display" class="text-xl font-bold">0:00</div>
-                <div class="text-xs text-gray-400">TIME</div>
-            </div>
-            <div class="text-center">
                 <div id="moves-display" class="text-xl font-bold">0</div>
                 <div class="text-xs text-gray-400">MOVES</div>
             </div>
@@ -222,7 +218,6 @@
             movesDisplay: document.getElementById('moves-display'),
             puzzleNumberDisplay: document.getElementById('puzzle-number-display'),
             todayBtn: document.getElementById('today-btn'),
-            timerDisplay: document.getElementById('timer-display'),
         };
 
         let state = {};
@@ -239,10 +234,7 @@
                 gameOver: false,
                 allKeysFound: false,
                 moves: 0,
-                startTime: null,
-                timerInterval: null,
                 countdownInterval: null,
-                finalTime: "0:00",
                 shareGrid: "",
                 isToday: false,
             };
@@ -425,30 +417,21 @@
 
             confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, angle: 90, startVelocity: 40 });
 
+            state.shareGrid = generateShareGrid();
+            
             if (state.isToday) {
                 DOM.countdownContainer.classList.remove('hidden');
                 DOM.playNextBtn.style.display = 'none';
                 DOM.archivesCtaBtn.style.display = 'block';
-                startNextPuzzleCountdown();
             } else {
                 DOM.countdownContainer.classList.add('hidden');
                 DOM.archivesCtaBtn.style.display = 'none';
-                if (state.puzzle.puzzleNumber < 4) { // Assuming 4 is the last puzzle
+                if (state.puzzle.puzzleNumber < 4) { // Assuming 4 puzzles total
                     DOM.playNextBtn.style.display = 'block';
                 } else {
                     DOM.playNextBtn.style.display = 'none';
                 }
             }
-        }
-
-        function updateTimer() {
-            if (!state.startTime || state.gameOver) return;
-            const now = new Date();
-            const diff = Math.floor((now - state.startTime) / 1000);
-            const minutes = Math.floor(diff / 60);
-            const seconds = diff % 60;
-            state.finalTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            DOM.timerDisplay.textContent = state.finalTime;
         }
 
         async function handleSubmit() {
@@ -567,10 +550,10 @@
                 const puzzle = await response.json();
                 if (state.timerInterval) clearInterval(state.timerInterval);
                 setupGame(puzzle);
-                
+
                 const todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'});
                 state.isToday = puzzle.date === todayStr;
-
+                
                 render();
                 DOM.timerDisplay.textContent = "0:00";
                 DOM.victoryFooter.classList.add('hidden');
@@ -583,7 +566,7 @@
         }
 
         function handleShare() {
-            const shareText = `KeyHunt #${state.puzzle.puzzleNumber}\nSolved in ${state.moves} moves (${state.finalTime})\n\n${state.shareGrid}`;
+            const shareText = `KeyHunt #${state.puzzle.puzzleNumber}\nSolved in ${state.moves} moves\n\n${state.shareGrid}`;
             const textarea = document.createElement('textarea');
             textarea.value = shareText;
             document.body.appendChild(textarea);
@@ -637,12 +620,13 @@
              showArchives();
         });
         DOM.shareBtn.addEventListener('click', handleShare);
-        DOM.playNextBtn.addEventListener('click', () => {
-            // This logic assumes puzzles are sequential in the archive list
-            // A more robust solution would fetch the archives and find the next date
-            const nextPuzzleDate = new Date(state.puzzle.date);
-            nextPuzzleDate.setDate(nextPuzzleDate.getDate() + 2); // +1 for next day, +1 for timezone
-            initGame(nextPuzzleDate.toISOString().split('T')[0]);
+        DOM.playNextBtn.addEventListener('click', async () => {
+            const response = await fetch('/api/archives');
+            const puzzles = await response.json();
+            const currentIndex = puzzles.findIndex(p => p.date === state.puzzle.date);
+            if (currentIndex > 0) {
+                initGame(puzzles[currentIndex - 1].date);
+            }
         });
         
         // Close dropdown if clicking outside
