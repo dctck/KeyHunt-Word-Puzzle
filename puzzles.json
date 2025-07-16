@@ -1,32 +1,32 @@
 [
     {
         "puzzleNumber": 1,
-        "date": "2025-07-16",
-        "startWord": "COLD",
-        "endWord": "WARM"
+        "date": "2025-07-12",
+        "startWord": "BLUE",
+        "endWord": "PINK"
     },
     {
         "puzzleNumber": 2,
-        "date": "2025-07-17",
+        "date": "2025-07-13",
         "startWord": "LIKE",
         "endWord": "HATE"
     },
     {
         "puzzleNumber": 3,
-        "date": "2025-07-18",
+        "date": "2025-07-14",
         "startWord": "SEND",
         "endWord": "MORE"
     },
     {
         "puzzleNumber": 4,
-        "date": "2025-07-19",
+        "date": "2025-07-15",
         "startWord": "FOUR",
         "endWord": "FIVE"
     },
     {
         "puzzleNumber": 5,
-        "date": "2025-07-20",
-        "startWord": "BLUE",
-        "endWord": "PINK"
+        "date": "2025-07-16",
+        "startWord": "COLD",
+        "endWord": "WARM"
     }
 ]
