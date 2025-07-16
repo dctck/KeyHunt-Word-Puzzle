@@ -439,14 +439,12 @@
             const todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'});
             if (state.puzzle.date === todayStr) {
                 DOM.countdownContainer.classList.remove('hidden');
-                DOM.resultButtons.style.display = 'flex';
-                DOM.archivesCtaBtn.style.display = 'block';
-                DOM.shareBtn.classList.remove('w-full');
+                startNextPuzzleCountdown();
             } else {
                 DOM.countdownContainer.classList.add('hidden');
-                DOM.resultButtons.style.display = 'flex';
-                DOM.archivesCtaBtn.style.display = 'block';
             }
+            
+            DOM.resultButtons.style.display = 'flex';
 
             confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, angle: 90, startVelocity: 40 });
             DOM.resultModal.classList.remove('hidden');
