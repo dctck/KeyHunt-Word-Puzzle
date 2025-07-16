@@ -410,7 +410,6 @@
             state.gameOver = true;
             clearInterval(state.timerInterval);
             
-            // Animate the final word
             const finalWordRow = DOM.boardContent.lastElementChild.previousElementSibling;
             if(finalWordRow) finalWordRow.classList.add('word-dance');
             
