@@ -108,6 +108,9 @@
         }
         #game-container::-webkit-scrollbar { display: none; }
         #game-container { -ms-overflow-style: none; scrollbar-width: none; }
+        #keyboard, #victory-footer {
+            transition: opacity 0.5s ease-out;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-200 flex flex-col h-screen p-2 sm:p-4">
@@ -153,8 +156,24 @@
         </div>
     </main>
 
-    <!-- On-screen Keyboard -->
-    <footer id="keyboard" class="flex-shrink-0 w-full max-w-2xl mx-auto pt-4"></footer>
+    <!-- On-screen Keyboard & Victory Footer -->
+    <footer id="footer-container" class="flex-shrink-0 w-full max-w-2xl mx-auto pt-4">
+        <div id="keyboard">
+            <!-- Keyboard rows will be generated here -->
+        </div>
+        <div id="victory-footer" class="hidden text-center">
+            <h2 class="text-3xl font-bold gold-text">Congratulations!</h2>
+            <div id="countdown-container" class="hidden mt-2 text-center">
+                <p class="text-sm text-gray-400">Next puzzle in:</p>
+                <div id="countdown-timer" class="text-2xl font-bold text-cyan-400"></div>
+            </div>
+            <div id="result-buttons" class="flex gap-2 mt-4">
+                <button id="share-btn" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-md transition">Share</button>
+                <button id="archives-cta-btn" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-md transition">Archives</button>
+                <button id="play-next-btn" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-md transition">Play Next</button>
+            </div>
+        </div>
+    </footer>
     
     <!-- Snackbar for messages -->
     <div id="snackbar" class="snackbar bg-gray-700 text-white px-4 py-2 rounded-md shadow-lg"></div>
@@ -176,38 +195,13 @@
             <button id="close-help-btn" class="mt-6 w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-md transition">Got it!</button>
         </div>
     </div>
-    <div id="result-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
-        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md border border-gray-700 text-center">
-            <h2 id="result-title" class="text-3xl font-bold mb-2 gold-text">Congratulations!</h2>
-            <p id="result-message" class="text-lg mb-4">You've solved it!</p>
-            <div class="flex justify-center gap-8 my-4 text-gray-300">
-                <div class="text-center">
-                    <div id="result-moves" class="text-2xl font-bold"></div>
-                    <div class="text-xs">MOVES</div>
-                </div>
-                <div class="text-center">
-                    <div id="result-time" class="text-2xl font-bold"></div>
-                    <div class="text-xs">TIME</div>
-                </div>
-            </div>
-            <div id="result-word-container" class="grid grid-cols-4 gap-2 w-max mx-auto"></div>
-            <div id="countdown-container" class="hidden mt-4 text-center">
-                <p class="text-sm text-gray-400">Next puzzle in:</p>
-                <div id="countdown-timer" class="text-2xl font-bold text-cyan-400"></div>
-            </div>
-            <div id="result-buttons" class="flex gap-2 mt-6">
-                <button id="share-btn" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-md transition">Share</button>
-                <button id="archives-cta-btn" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-md transition">Archives</button>
-            </div>
-        </div>
-    </div>
-
 
     <script type="module">
         const DOM = {
             gameContainer: document.getElementById('game-container'),
             boardContent: document.getElementById('board-content'),
             keyboard: document.getElementById('keyboard'),
+            victoryFooter: document.getElementById('victory-footer'),
             menuBtn: document.getElementById('menu-btn'),
             menuDropdown: document.getElementById('menu-dropdown'),
             archivesBtn: document.getElementById('archives-btn'),
@@ -218,17 +212,11 @@
             helpModal: document.getElementById('help-modal'),
             instructionsContent: document.getElementById('instructions-content'),
             closeHelpBtn: document.getElementById('close-help-btn'),
-            resultModal: document.getElementById('result-modal'),
-            resultTitle: document.getElementById('result-title'),
-            resultMessage: document.getElementById('result-message'),
-            resultWordContainer: document.getElementById('result-word-container'),
-            resultMoves: document.getElementById('result-moves'),
-            resultTime: document.getElementById('result-time'),
-            resultButtons: document.getElementById('result-buttons'),
             countdownContainer: document.getElementById('countdown-container'),
             countdownTimer: document.getElementById('countdown-timer'),
             archivesCtaBtn: document.getElementById('archives-cta-btn'),
             shareBtn: document.getElementById('share-btn'),
+            playNextBtn: document.getElementById('play-next-btn'),
             snackbar: document.getElementById('snackbar'),
             movesDisplay: document.getElementById('moves-display'),
             puzzleNumberDisplay: document.getElementById('puzzle-number-display'),
@@ -422,32 +410,26 @@
             state.gameOver = true;
             clearInterval(state.timerInterval);
             
-            DOM.resultMoves.textContent = state.moves;
-            DOM.resultTime.textContent = state.finalTime;
+            // Animate the final word
+            const finalWordRow = DOM.boardContent.lastElementChild.previousElementSibling;
+            if(finalWordRow) finalWordRow.classList.add('word-dance');
             
-            const finalTilesHtml = winningWord.split('').map(letter => {
-                 return `<div class="w-full aspect-square gold-text border-yellow-400 border-2 rounded-lg flex items-center justify-center text-4xl font-bold uppercase">${letter}</div>`;
-            }).join('');
-            DOM.resultWordContainer.innerHTML = finalTilesHtml;
-            
-            if (isShortcut) {
-                 DOM.resultWordContainer.classList.add('word-dance');
-            }
+            DOM.boardContent.lastElementChild.classList.add('hidden'); // Hide input row
+            DOM.keyboard.style.opacity = '0';
+            DOM.victoryFooter.classList.remove('hidden');
+            DOM.victoryFooter.style.opacity = '1';
 
-            state.shareGrid = generateShareGrid();
-            
+            confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, angle: 90, startVelocity: 40 });
+
             const todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'});
             if (state.puzzle.date === todayStr) {
                 DOM.countdownContainer.classList.remove('hidden');
+                DOM.playNextBtn.style.display = 'none';
                 startNextPuzzleCountdown();
             } else {
                 DOM.countdownContainer.classList.add('hidden');
+                DOM.playNextBtn.style.display = 'block';
             }
-            
-            DOM.resultButtons.style.display = 'flex';
-
-            confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, angle: 90, startVelocity: 40 });
-            DOM.resultModal.classList.remove('hidden');
         }
 
         function updateTimer() {
@@ -582,7 +564,8 @@
                 setupGame(puzzle);
                 render();
                 DOM.timerDisplay.textContent = "0:00";
-                DOM.resultModal.classList.add('hidden');
+                DOM.victoryFooter.classList.add('hidden');
+                DOM.keyboard.style.opacity = '1';
                 DOM.gameContainer.classList.remove('all-keys-glow');
             } catch (error) {
                 showSnackbar(error.message);
