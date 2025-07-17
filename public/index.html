@@ -140,7 +140,7 @@
                     <div class="text-xs text-gray-400">TURNS LEFT</div>
                 </div>
             </div>
-             <div id="speed-mode-header" class="hidden items-center gap-2 sm:gap-4">
+             <div id="speed-mode-header" class="hidden flex items-center gap-2 sm:gap-4">
                 <div class="text-center">
                     <div id="timer-display" class="text-xl font-bold">0:00</div>
                     <div class="text-xs text-gray-400">TIME</div>
@@ -567,6 +567,11 @@
                 return;
             }
 
+            if (state.moves === 0 && state.gameMode === 'speed') {
+                state.startTime = new Date();
+                state.timerInterval = setInterval(updateTimer, 1000);
+                showSnackbar("Timer started!");
+            }
             state.moves++;
             
             nextWord.split('').forEach(letter => state.triedLetters.add(letter));
@@ -579,6 +584,7 @@
             
             if (isWinningAnagram) {
                 state.puzzle.endWord.split('').forEach(k => state.discoveredKeys.add(k));
+                if(state.timerInterval) clearInterval(state.timerInterval);
                 render();
                 showEndState(true, `You solved puzzle #${state.puzzle.puzzleNumber} in ${state.moves} moves!`);
                 return;
@@ -657,6 +663,8 @@
                 const todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'});
                 state.isToday = puzzle.date === todayStr;
                 
+                DOM.speedModeToggle.checked = state.gameMode === 'speed';
+
                 render();
                 DOM.victoryFooter.classList.add('hidden');
                 DOM.keyboardContainer.style.opacity = '1';
