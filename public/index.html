@@ -126,12 +126,8 @@
         <div class="flex items-center gap-2 sm:gap-4 mt-2 sm:mt-0">
             <div id="turns-mode-header" class="flex items-center gap-2 sm:gap-4">
                 <div class="text-center">
-                    <div id="target-moves-display" class="text-xl font-bold">0</div>
-                    <div class="text-xs text-gray-400">TARGET</div>
-                </div>
-                <div class="text-center">
-                    <div id="moves-display" class="text-xl font-bold">0</div>
-                    <div class="text-xs text-gray-400">TURNS</div>
+                    <div id="turns-left-display" class="text-xl font-bold">0</div>
+                    <div class="text-xs text-gray-400">TURNS LEFT</div>
                 </div>
             </div>
              <div id="speed-mode-header" class="hidden items-center gap-2 sm:gap-4">
@@ -167,13 +163,8 @@
             <!-- JS will populate this -->
         </div>
         <div id="victory-footer" class="hidden text-center mt-4">
-            <h2 id="victory-message" class="text-3xl font-bold gold-text"></h2>
-            <div class="flex justify-center gap-8 my-4 text-gray-300">
-                <div class="text-center">
-                    <div id="result-score" class="text-3xl font-bold"></div>
-                    <div id="result-score-label" class="text-xs">SCORE</div>
-                </div>
-            </div>
+            <h2 id="victory-title" class="text-3xl font-bold gold-text"></h2>
+            <p id="victory-message" class="text-lg mt-2"></p>
             <div id="countdown-container" class="hidden mt-2 text-center">
                 <p class="text-sm text-gray-400">Next puzzle in:</p>
                 <div id="countdown-timer" class="text-2xl font-bold text-cyan-400"></div>
@@ -213,7 +204,7 @@
             <button id="close-help-btn" class="mt-6 w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-md transition">Got it!</button>
         </div>
     </div>
-     <div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
+    <div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
         <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md border border-gray-700">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold text-cyan-400">Settings</h2>
@@ -240,6 +231,7 @@
             keyboard: document.getElementById('keyboard'),
             keyboardContainer: document.getElementById('keyboard-container'),
             victoryFooter: document.getElementById('victory-footer'),
+            victoryTitle: document.getElementById('victory-title'),
             victoryMessage: document.getElementById('victory-message'),
             menuBtn: document.getElementById('menu-btn'),
             menuDropdown: document.getElementById('menu-dropdown'),
@@ -265,6 +257,7 @@
             speedMovesDisplay: document.getElementById('speed-moves-display'),
             puzzleTitle: document.getElementById('puzzle-title'),
             targetMovesDisplay: document.getElementById('target-moves-display'),
+            turnsLeftDisplay: document.getElementById('turns-left-display'),
             turnsModeHeader: document.getElementById('turns-mode-header'),
             speedModeHeader: document.getElementById('speed-mode-header'),
             resultScore: document.getElementById('result-score'),
@@ -273,6 +266,8 @@
             todayBtn: document.getElementById('today-btn'),
             timerDisplay: document.getElementById('timer-display'),
         };
+
+        const VICTORY_SYNONYMS = ["Excellent!", "Superb!", "Brilliant!", "Outstanding!", "Magnificent!", "Fantastic!"];
 
         let state = {};
 
@@ -316,8 +311,7 @@
             } else {
                 DOM.turnsModeHeader.classList.remove('hidden');
                 DOM.speedModeHeader.classList.add('hidden');
-                DOM.movesDisplay.textContent = state.moves;
-                DOM.targetMovesDisplay.textContent = state.puzzle.targetMoves;
+                DOM.turnsLeftDisplay.textContent = state.totalTurns - state.moves;
             }
         }
 
@@ -476,7 +470,7 @@
         function showEndState(isWin, message) {
             state.gameOver = true;
             
-            const finalWordRow = DOM.boardContent.lastElementChild.previousElementSibling;
+            const finalWordRow = DOM.boardContent.lastElementChild;
             if(finalWordRow) finalWordRow.classList.add('word-dance');
             
             DOM.keyboardContainer.style.opacity = '0';
@@ -489,13 +483,12 @@
 
             if(isWin) {
                 confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, angle: 90, startVelocity: 40 });
+                DOM.victoryTitle.textContent = VICTORY_SYNONYMS[Math.floor(Math.random() * VICTORY_SYNONYMS.length)];
                 DOM.victoryMessage.textContent = message;
-                DOM.victoryMessage.classList.remove('text-red-400');
-                DOM.victoryMessage.classList.add('gold-text');
             } else {
-                 DOM.victoryMessage.textContent = "Game Over";
+                 DOM.victoryTitle.textContent = "Game Over";
+                 DOM.victoryMessage.textContent = `You ran out of turns.`;
                  DOM.victoryMessage.classList.add('text-red-400');
-                 DOM.victoryMessage.classList.remove('gold-text');
             }
 
             if (state.isToday) {
@@ -683,6 +676,17 @@
             e.preventDefault();
             showArchives();
             DOM.menuDropdown.classList.add('hidden');
+        });
+        DOM.settingsBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            DOM.settingsModal.classList.remove('hidden');
+            DOM.menuDropdown.classList.add('hidden');
+        });
+        DOM.closeSettingsBtn.addEventListener('click', () => DOM.settingsModal.classList.add('hidden'));
+        DOM.speedModeToggle.addEventListener('change', (e) => {
+            const mode = e.target.checked ? 'speed' : 'turns';
+            localStorage.setItem('keyhunt-mode', mode);
+            initGame(state.puzzle.date); // Re-initialize current puzzle with new mode
         });
         DOM.closeArchivesBtn.addEventListener('click', () => DOM.archivesModal.classList.add('hidden'));
         DOM.archivesList.addEventListener('click', (e) => {
