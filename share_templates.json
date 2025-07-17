@@ -1,0 +1,4 @@
+{
+  "turns": "KeyHunt #{puzzleNumber}\nSolved in {moves} moves\n{score}\n\n{grid}",
+  "speed": "KeyHunt #{puzzleNumber}\nSolved in {time} ({moves} moves)\n\n{grid}"
+}
