@@ -89,17 +89,6 @@ app.get('/api/instructions', (req, res) => {
     });
 });
 
-// NEW: API endpoint to get share templates.
-app.get('/api/share-templates', (req, res) => {
-    fs.readFile(path.join(__dirname, 'share_templates.json'), 'utf8', (err, data) => {
-        if (err) {
-            console.error("Error reading share_templates.json:", err);
-            return res.status(500).json({ error: 'Could not load share templates.' });
-        }
-        res.json(JSON.parse(data));
-    });
-});
-
 
 // All other requests will serve the main game file.
 app.get('*', (req, res) => {
