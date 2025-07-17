@@ -113,11 +113,13 @@
         }
         /* Toggle Switch Styles */
         #speed-mode-toggle:checked ~ .dot {
-            transform: translateX(100%);
-            background-color: #06b6d4;
+            transform: translateX(1.5rem); /* w-6 */
         }
         #speed-mode-toggle:checked ~ .block {
             background-color: #0e7490;
+        }
+        .dot {
+            transition: transform 0.2s ease-in-out;
         }
     </style>
 </head>
@@ -212,10 +214,10 @@
         </div>
     </div>
     <div id="help-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
-        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md border border-gray-700">
-            <h2 class="text-2xl font-bold text-cyan-400 mb-4">How to Play</h2>
-            <div id="instructions-content" class="space-y-3 text-gray-300"></div>
-            <button id="close-help-btn" class="mt-6 w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-md transition">Got it!</button>
+        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md border border-gray-700 max-h-[80vh] flex flex-col">
+            <h2 class="text-2xl font-bold text-cyan-400 mb-4 flex-shrink-0">How to Play</h2>
+            <div id="instructions-content" class="space-y-3 text-gray-300 overflow-y-auto pr-2"></div>
+            <button id="close-help-btn" class="mt-6 w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-md transition flex-shrink-0">Got it!</button>
         </div>
     </div>
     <div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
