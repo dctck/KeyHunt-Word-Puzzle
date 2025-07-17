@@ -538,6 +538,16 @@
             }
         }
 
+        function updateTimer() {
+            if (!state.startTime || state.gameOver) return;
+            const now = new Date();
+            const diff = Math.floor((now - state.startTime) / 1000);
+            const minutes = Math.floor(diff / 60);
+            const seconds = diff % 60;
+            state.finalTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            DOM.timerDisplay.textContent = state.finalTime;
+        }
+
         async function handleSubmit() {
             if (state.isChecking || state.gameOver) return;
             if (state.inputWord.length !== state.puzzle.startWord.length) {
