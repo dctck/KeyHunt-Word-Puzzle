@@ -78,6 +78,17 @@ app.get('/api/archives', (req, res) => {
     });
 });
 
+// NEW: API endpoint to get instructions data.
+app.get('/api/instructions', (req, res) => {
+    fs.readFile(path.join(__dirname, 'instructions.json'), 'utf8', (err, data) => {
+        if (err) {
+            console.error("Error reading instructions.json:", err);
+            return res.status(500).json({ error: 'Could not load instructions.' });
+        }
+        res.json(JSON.parse(data));
+    });
+});
+
 
 // All other requests will serve the main game file.
 app.get('*', (req, res) => {
