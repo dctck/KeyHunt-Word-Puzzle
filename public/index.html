@@ -111,16 +111,6 @@
         #keyboard, #victory-footer {
             transition: opacity 0.5s ease-out;
         }
-        /* Toggle Switch Styles */
-        #speed-mode-toggle:checked ~ .dot {
-            transform: translateX(1.5rem); /* w-6 */
-        }
-        #speed-mode-toggle:checked ~ .block {
-            background-color: #0e7490;
-        }
-        .dot {
-            transition: transform 0.2s ease-in-out;
-        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-200 flex flex-col h-screen p-2 sm:p-4">
@@ -140,7 +130,7 @@
                     <div class="text-xs text-gray-400">TURNS LEFT</div>
                 </div>
             </div>
-             <div id="speed-mode-header" class="hidden flex items-center gap-2 sm:gap-4">
+             <div id="speed-mode-header" class="hidden items-center gap-2 sm:gap-4">
                 <div class="text-center">
                     <div id="timer-display" class="text-xl font-bold">0:00</div>
                     <div class="text-xs text-gray-400">TIME</div>
