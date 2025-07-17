@@ -567,6 +567,11 @@
                 return;
             }
 
+            if (state.moves === 0 && state.gameMode === 'speed') {
+                state.startTime = new Date();
+                state.timerInterval = setInterval(updateTimer, 1000);
+                showSnackbar("Timer started!");
+            }
             state.moves++;
             
             nextWord.split('').forEach(letter => state.triedLetters.add(letter));
@@ -579,6 +584,7 @@
             
             if (isWinningAnagram) {
                 state.puzzle.endWord.split('').forEach(k => state.discoveredKeys.add(k));
+                if(state.timerInterval) clearInterval(state.timerInterval);
                 render();
                 showEndState(true, `You solved puzzle #${state.puzzle.puzzleNumber} in ${state.moves} moves!`);
                 return;
