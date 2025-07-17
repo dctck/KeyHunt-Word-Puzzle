@@ -124,26 +124,42 @@
             <h1 class="text-3xl sm:text-4xl font-bold font-title text-white">Key<span class="text-cyan-400">Hunt</span></h1>
         </div>
         <div class="flex items-center gap-2 sm:gap-4 mt-2 sm:mt-0">
-            <div class="text-center">
-                <div id="puzzle-number-display" class="text-xl font-bold">#?</div>
-                <div class="text-xs text-gray-400">PUZZLE</div>
+            <div id="turns-mode-header" class="flex items-center gap-2 sm:gap-4">
+                <div class="text-center">
+                    <div id="target-moves-display" class="text-xl font-bold">0</div>
+                    <div class="text-xs text-gray-400">TARGET</div>
+                </div>
+                <div class="text-center">
+                    <div id="moves-display" class="text-xl font-bold">0</div>
+                    <div class="text-xs text-gray-400">TURNS</div>
+                </div>
             </div>
-            <div class="text-center">
-                <div id="moves-display" class="text-xl font-bold">0</div>
-                <div class="text-xs text-gray-400">MOVES</div>
+             <div id="speed-mode-header" class="hidden items-center gap-2 sm:gap-4">
+                <div class="text-center">
+                    <div id="timer-display" class="text-xl font-bold">0:00</div>
+                    <div class="text-xs text-gray-400">TIME</div>
+                </div>
+                <div class="text-center">
+                    <div id="speed-moves-display" class="text-xl font-bold">0</div>
+                    <div class="text-xs text-gray-400">MOVES</div>
+                </div>
             </div>
             <div class="relative">
                  <button id="menu-btn" class="p-2 rounded-full hover:bg-gray-700 transition">
                     <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                 </button>
                 <div id="menu-dropdown" class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-20 hidden">
+                    <button id="player-id-btn" class="w-full text-left block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"></button>
                     <a href="#" id="today-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Today's Puzzle</a>
                     <a href="#" id="archives-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Archives</a>
+                    <a href="#" id="settings-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Settings</a>
                     <a href="#" id="help-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">How to Play</a>
                 </div>
             </div>
         </div>
     </header>
+    
+    <h2 id="puzzle-title" class="text-center text-lg text-gray-400 font-semibold mb-4"></h2>
 
     <!-- Game Board -->
     <main id="game-container" class="flex-grow flex flex-col items-center w-full max-w-sm mx-auto overflow-y-auto pt-4 rounded-lg">
@@ -151,7 +167,13 @@
             <!-- JS will populate this -->
         </div>
         <div id="victory-footer" class="hidden text-center mt-4">
-            <h2 class="text-3xl font-bold gold-text">Congratulations!</h2>
+            <h2 id="victory-message" class="text-3xl font-bold gold-text"></h2>
+            <div class="flex justify-center gap-8 my-4 text-gray-300">
+                <div class="text-center">
+                    <div id="result-score" class="text-3xl font-bold"></div>
+                    <div id="result-score-label" class="text-xs">SCORE</div>
+                </div>
+            </div>
             <div id="countdown-container" class="hidden mt-2 text-center">
                 <p class="text-sm text-gray-400">Next puzzle in:</p>
                 <div id="countdown-timer" class="text-2xl font-bold text-cyan-400"></div>
@@ -191,6 +213,25 @@
             <button id="close-help-btn" class="mt-6 w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-md transition">Got it!</button>
         </div>
     </div>
+     <div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
+        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md border border-gray-700">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-cyan-400">Settings</h2>
+                <button id="close-settings-btn" class="p-1 rounded-full hover:bg-gray-700 text-2xl leading-none">&times;</button>
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="text-gray-300">Speed Mode</span>
+                <label for="speed-mode-toggle" class="flex items-center cursor-pointer">
+                    <div class="relative">
+                        <input type="checkbox" id="speed-mode-toggle" class="sr-only">
+                        <div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
+                        <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+                    </div>
+                </label>
+            </div>
+        </div>
+    </div>
+
 
     <script type="module">
         const DOM = {
@@ -199,6 +240,7 @@
             keyboard: document.getElementById('keyboard'),
             keyboardContainer: document.getElementById('keyboard-container'),
             victoryFooter: document.getElementById('victory-footer'),
+            victoryMessage: document.getElementById('victory-message'),
             menuBtn: document.getElementById('menu-btn'),
             menuDropdown: document.getElementById('menu-dropdown'),
             archivesBtn: document.getElementById('archives-btn'),
@@ -209,6 +251,10 @@
             helpModal: document.getElementById('help-modal'),
             instructionsContent: document.getElementById('instructions-content'),
             closeHelpBtn: document.getElementById('close-help-btn'),
+            settingsBtn: document.getElementById('settings-btn'),
+            settingsModal: document.getElementById('settings-modal'),
+            closeSettingsBtn: document.getElementById('close-settings-btn'),
+            speedModeToggle: document.getElementById('speed-mode-toggle'),
             countdownContainer: document.getElementById('countdown-container'),
             countdownTimer: document.getElementById('countdown-timer'),
             archivesCtaBtn: document.getElementById('archives-cta-btn'),
@@ -216,8 +262,16 @@
             playNextBtn: document.getElementById('play-next-btn'),
             snackbar: document.getElementById('snackbar'),
             movesDisplay: document.getElementById('moves-display'),
-            puzzleNumberDisplay: document.getElementById('puzzle-number-display'),
+            speedMovesDisplay: document.getElementById('speed-moves-display'),
+            puzzleTitle: document.getElementById('puzzle-title'),
+            targetMovesDisplay: document.getElementById('target-moves-display'),
+            turnsModeHeader: document.getElementById('turns-mode-header'),
+            speedModeHeader: document.getElementById('speed-mode-header'),
+            resultScore: document.getElementById('result-score'),
+            resultScoreLabel: document.getElementById('result-score-label'),
+            playerIdBtn: document.getElementById('player-id-btn'),
             todayBtn: document.getElementById('today-btn'),
+            timerDisplay: document.getElementById('timer-display'),
         };
 
         let state = {};
@@ -237,15 +291,34 @@
                 countdownInterval: null,
                 shareGrid: "",
                 isToday: false,
+                gameMode: localStorage.getItem('keyhunt-mode') || 'turns',
             };
+            if(state.gameMode === 'turns'){
+                state.totalTurns = puzzle.targetMoves + 4;
+            }
         }
 
         function render() {
             renderBoard();
             renderKeyboard();
             renderInstructions();
-            DOM.movesDisplay.textContent = state.moves;
-            DOM.puzzleNumberDisplay.textContent = `#${state.puzzle.puzzleNumber}`;
+            renderHeader();
+            DOM.puzzleTitle.textContent = state.isToday 
+                ? `Daily Puzzle #${state.puzzle.puzzleNumber}` 
+                : `Archive #${state.puzzle.puzzleNumber}`;
+        }
+        
+        function renderHeader() {
+            if (state.gameMode === 'speed') {
+                DOM.turnsModeHeader.classList.add('hidden');
+                DOM.speedModeHeader.classList.remove('hidden');
+                DOM.speedMovesDisplay.textContent = state.moves;
+            } else {
+                DOM.turnsModeHeader.classList.remove('hidden');
+                DOM.speedModeHeader.classList.add('hidden');
+                DOM.movesDisplay.textContent = state.moves;
+                DOM.targetMovesDisplay.textContent = state.puzzle.targetMoves;
+            }
         }
 
         function renderBoard() {
@@ -311,7 +384,7 @@
                     }
 
                     if (key === 'SUBMIT') return `<button data-key="SUBMIT" class="${baseClass} bg-green-600 hover:bg-green-700 text-white px-2 text-xs" style="width: 64px;">SUBMIT</button>`;
-                    if (key === 'DELETE') return `<button data-key="DELETE" class="${baseClass} bg-gray-600 hover:bg-gray-700 px-2 flex items-center justify-center" style="width: 64px;"><svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m22 6c0-.552-.448-1-1-1h-12.628c-.437 0-.853.191-1.138.523-1.078 1.256-3.811 4.439-4.993 5.815-.16.187-.241.419-.241.651 0 .231.08.463.24.651 1.181 1.38 3.915 4.575 4.994 5.835.285.333.701.525 1.14.525h12.626c.552 0 1-.448 1-1 0-2.577 0-9.423 0-12zm-13.628.5h12.128v11h-12.126l-4.715-5.51zm5.637 4.427 1.71-1.71c.146-.146.339-.219.531-.219.404 0 .75.324.75.749 0 .193-.073.384-.219.531l-1.711 1.711 1.728 1.728c.147.147.22.339.22.53 0 .427-.349.751-.75.751-.192 0-.384-.073-.531-.219l-1.728-1.729-1.728 1.729c-.146.146-.339.219-.531-.219-.401 0-.75-.324-.75-.751 0-.191.073-.383.22-.53l1.728-1.728-1.788-1.787c-.146-.148-.219-.339-.219-.532 0-.425.346-.749.751-.749.192 0 .384.073.53.219z" fill-rule="nonzero"/></svg></button>`;
+                    if (key === 'DELETE') return `<button data-key="DELETE" class="${baseClass} bg-gray-600 hover:bg-gray-700 px-2 flex items-center justify-center" style="width: 64px;"><svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m22 6c0-.552-.448-1-1-1h-12.628c-.437 0-.853.191-1.138.523-1.078 1.256-3.811 4.439-4.993 5.815-.16.187-.241.419-.241.651 0 .231.08.463.24.651 1.181 1.38 3.915 4.575 4.994 5.835.285.333.701.525 1.14.525h12.626c.552 0 1-.448 1-1 0-2.577 0-9.423 0-12zm-13.628.5h12.128v11h-12.126l-4.715-5.51zm5.637 4.427 1.71-1.71c.146-.146.339-.219.531-.219.404 0 .75.324.75.749 0 .193-.073.384-.219.531l-1.711 1.711 1.728 1.728c.147.147.22.339.22.53 0 .427-.349.751-.75.751-.192 0-.384-.073-.531-.219l-1.728-1.729-1.728 1.729c-.146.146-.339-.219-.531-.219-.401 0-.75-.324-.75-.751 0-.191.073-.383.22-.53l1.728-1.728-1.788-1.787c-.146-.148-.219-.339-.219-.532 0-.425.346-.749.751-.749.192 0 .384.073.53.219z" fill-rule="nonzero"/></svg></button>`;
                     return `<button data-key="${key}" class="${baseClass} flex-1 ${stateClass}">${key}</button>`;
                 }).join('');
                 
@@ -400,11 +473,10 @@
             state.countdownInterval = setInterval(updateCountdown, 1000);
         }
 
-        function showWin(winningWord, isShortcut = false) {
+        function showEndState(isWin, message) {
             state.gameOver = true;
-            clearInterval(state.timerInterval);
             
-            const finalWordRow = DOM.boardContent.lastElementChild;
+            const finalWordRow = DOM.boardContent.lastElementChild.previousElementSibling;
             if(finalWordRow) finalWordRow.classList.add('word-dance');
             
             DOM.keyboardContainer.style.opacity = '0';
@@ -415,17 +487,23 @@
                 DOM.victoryFooter.style.opacity = '1';
             }, 500);
 
-            confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, angle: 90, startVelocity: 40 });
+            if(isWin) {
+                confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, angle: 90, startVelocity: 40 });
+                DOM.victoryMessage.textContent = message;
+                DOM.victoryMessage.classList.remove('text-red-400');
+                DOM.victoryMessage.classList.add('gold-text');
+            } else {
+                 DOM.victoryMessage.textContent = "Game Over";
+                 DOM.victoryMessage.classList.add('text-red-400');
+                 DOM.victoryMessage.classList.remove('gold-text');
+            }
 
-            state.shareGrid = generateShareGrid();
-            
             if (state.isToday) {
                 DOM.countdownContainer.classList.remove('hidden');
                 DOM.playNextBtn.style.display = 'none';
-                DOM.archivesCtaBtn.style.display = 'block';
+                startNextPuzzleCountdown();
             } else {
                 DOM.countdownContainer.classList.add('hidden');
-                DOM.archivesCtaBtn.style.display = 'none';
                 if (state.puzzle.puzzleNumber < 4) { // Assuming 4 puzzles total
                     DOM.playNextBtn.style.display = 'block';
                 } else {
@@ -463,10 +541,6 @@
                 return;
             }
 
-            if (state.moves === 0) {
-                state.startTime = new Date();
-                state.timerInterval = setInterval(updateTimer, 1000);
-            }
             state.moves++;
             
             nextWord.split('').forEach(letter => state.triedLetters.add(letter));
@@ -479,9 +553,8 @@
             
             if (isWinningAnagram) {
                 state.puzzle.endWord.split('').forEach(k => state.discoveredKeys.add(k));
-                updateTimer();
                 render();
-                showWin(nextWord, nextWord !== state.puzzle.endWord);
+                showEndState(true, `You solved puzzle #${state.puzzle.puzzleNumber} in ${state.moves} moves!`);
                 return;
             }
             
@@ -512,6 +585,10 @@
                 showSnackbar("All keys found! Now form the final word.");
                 confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#06b6d4', '#22d3ee', '#67e8f9'] });
                 DOM.gameContainer.classList.add('all-keys-glow');
+            }
+            
+            if (state.gameMode === 'turns' && state.moves >= state.totalTurns) {
+                showEndState(false);
             }
         }
 
@@ -555,7 +632,6 @@
                 state.isToday = puzzle.date === todayStr;
                 
                 render();
-                DOM.timerDisplay.textContent = "0:00";
                 DOM.victoryFooter.classList.add('hidden');
                 DOM.keyboardContainer.style.opacity = '1';
                 DOM.keyboardContainer.style.display = 'block';
