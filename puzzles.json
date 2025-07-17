@@ -3,35 +3,35 @@
         "puzzleNumber": 1,
         "date": "2025-07-12",
         "startWord": "BLUE",
-        "endWord": "PINK"
+        "endWord": "PINK",
         "targetMoves": 7
     },
     {
         "puzzleNumber": 2,
         "date": "2025-07-13",
         "startWord": "LIKE",
-        "endWord": "HATE"
+        "endWord": "HATE",
         "targetMoves": 6
     },
     {
         "puzzleNumber": 3,
         "date": "2025-07-14",
         "startWord": "SEND",
-        "endWord": "MORE"
+        "endWord": "MORE",
         "targetMoves": 5
     },
     {
         "puzzleNumber": 4,
         "date": "2025-07-15",
         "startWord": "FOUR",
-        "endWord": "FIVE"
+        "endWord": "FIVE",
         "targetMoves": 4
     },
     {
         "puzzleNumber": 5,
         "date": "2025-07-16",
         "startWord": "COLD",
-        "endWord": "WARM"
+        "endWord": "WARM",
         "targetMoves": 5
     }
 ]
