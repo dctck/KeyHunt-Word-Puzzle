@@ -670,6 +670,7 @@
         }
 
         function handleShare() {
+            state.shareGrid = generateShareGrid();
             const shareText = `KeyHunt #${state.puzzle.puzzleNumber}\nSolved in ${state.moves} moves\n\n${state.shareGrid}`;
             const textarea = document.createElement('textarea');
             textarea.value = shareText;
