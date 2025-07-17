@@ -136,8 +136,12 @@
         <div class="flex items-center gap-2 sm:gap-4 mt-2 sm:mt-0">
             <div id="turns-mode-header" class="flex items-center gap-2 sm:gap-4">
                 <div class="text-center">
-                    <div id="turns-left-display" class="text-xl font-bold">0</div>
-                    <div class="text-xs text-gray-400">TURNS LEFT</div>
+                    <div id="target-moves-display" class="text-xl font-bold">0</div>
+                    <div class="text-xs text-gray-400">TARGET</div>
+                </div>
+                <div class="text-center">
+                    <div id="moves-display" class="text-xl font-bold">0</div>
+                    <div class="text-xs text-gray-400">MOVES</div>
                 </div>
             </div>
              <div id="speed-mode-header" class="hidden flex items-center gap-2 sm:gap-4">
@@ -538,16 +542,6 @@
             }
         }
 
-        function updateTimer() {
-            if (!state.startTime || state.gameOver) return;
-            const now = new Date();
-            const diff = Math.floor((now - state.startTime) / 1000);
-            const minutes = Math.floor(diff / 60);
-            const seconds = diff % 60;
-            state.finalTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            DOM.timerDisplay.textContent = state.finalTime;
-        }
-
         async function handleSubmit() {
             if (state.isChecking || state.gameOver) return;
             if (state.inputWord.length !== state.puzzle.startWord.length) {
@@ -577,11 +571,6 @@
                 return;
             }
 
-            if (state.moves === 0 && state.gameMode === 'speed') {
-                state.startTime = new Date();
-                state.timerInterval = setInterval(updateTimer, 1000);
-                showSnackbar("Timer started!");
-            }
             state.moves++;
             
             nextWord.split('').forEach(letter => state.triedLetters.add(letter));
@@ -594,7 +583,6 @@
             
             if (isWinningAnagram) {
                 state.puzzle.endWord.split('').forEach(k => state.discoveredKeys.add(k));
-                if(state.timerInterval) clearInterval(state.timerInterval);
                 render();
                 showEndState(true, `You solved puzzle #${state.puzzle.puzzleNumber} in ${state.moves} moves!`);
                 return;
