@@ -10,24 +10,92 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <style>
+        /* Base styles first */
         body {
             font-family: 'Inter', sans-serif;
             touch-action: manipulation;
+            min-width: 300px;
+            overflow-x: auto;
         }
+
+        /* Global icon styles */
+        .icon {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .icon-sm { width: 16px; height: 16px; }
+        .icon-md { width: 20px; height: 20px; }
+        .icon-lg { width: 24px; height: 24px; }
+        .icon-xl { width: 32px; height: 32px; }
+
+        /* Base element styles */
+        #game-container,
+        #keyboard-container,
+        header {
+            min-width: 300px;
+        }
+
+        #game-container::-webkit-scrollbar { display: none; }
+        #game-container { 
+            -ms-overflow-style: none; 
+            scrollbar-width: none;
+            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform;
+        }
+
+        #game-container.transitioning {
+            transform: translateY(-20px);
+            opacity: 0.6;
+        }
+
+        #keyboard, #victory-footer {
+            transition: opacity 0.5s ease-out;
+        }
+
+        /* Typography */
         .font-title { font-family: 'Space+Grotesk', sans-serif; }
-        .key { transition: all 0.1s ease-out; }
-        .key:active { transform: scale(0.95); }
+
+        /* Button and key base styles */
+        button, .key {
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        button:hover, .key:hover {
+            transform: translateY(-1px);
+        }
+
+        button:active, .key:active {
+            transform: translateY(0);
+            transition-duration: 0.05s;
+        }
+
+        .key { 
+            transition: all 0.1s ease-out; 
+        }
+
+        .key:active { 
+            transform: scale(0.95); 
+        }
+
         .key.discovered {
-            background-color: #06b6d4; /* cyan-500 */
+            background-color: #06b6d4;
             color: white;
             transform: scale(1.05);
         }
+
         .key.tried {
-            background-color: #374151; /* gray-700 */
+            background-color: #374151;
         }
+
+        /* Game tiles */
         .tile-container {
             perspective: 1000px;
         }
+
         .tile-inner {
             position: relative;
             width: 100%;
@@ -35,9 +103,11 @@
             transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
             transform-style: preserve-3d;
         }
+
         .tile-inner.flip {
             transform: rotateX(180deg);
         }
+
         .tile-face {
             position: absolute;
             width: 100%;
@@ -47,91 +117,311 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.25rem; /* text-4xl */
-            font-weight: 700; /* bold */
+            font-size: 2.25rem;
+            font-weight: 700;
             text-transform: uppercase;
-            border-radius: 0.5rem; /* rounded-lg */
+            border-radius: 0.5rem;
         }
+
         .tile-front {
-            background-color: #374151; /* gray-700 */
-            border: 2px solid #4b5563; /* gray-600 */
+            background-color: #374151;
+            border: 2px solid #4b5563;
         }
+
         .tile-back {
-            background-color: #06b6d4; /* cyan-500 */
-            border: 2px solid #22d3ee; /* cyan-400 */
+            background-color: #06b6d4;
+            border: 2px solid #22d3ee;
             transform: rotateX(180deg);
         }
+
         .input-tile {
-             background-color: #1f2937; /* gray-800 */
-             border: 2px solid #4b5563; /* gray-600 */
+            background-color: #1f2937;
+            border: 2px solid #4b5563;
         }
+
         .input-tile.discovered {
             background-color: #06b6d4;
             border-color: #22d3ee;
         }
-        .tile-inner.shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); }
+
+        /* Animations */
+        .tile-inner.shake { 
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; 
         }
-        .all-keys-glow { animation: glowing 2s ease-in-out infinite alternate; }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); } 
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        .all-keys-glow { 
+            animation: glowing 2s ease-in-out infinite alternate; 
+        }
+
         @keyframes glowing {
             from { box-shadow: 0 0 3px #06b6d4, 0 0 6px #06b6d4, 0 0 9px #0891b2; }
             to { box-shadow: 0 0 6px #0891b2, 0 0 12px #0e7490, 0 0 18px #0e7490; }
         }
-        .word-dance { animation: dance 0.8s ease-in-out; }
+
+        .word-dance { 
+            animation: dance 0.8s ease-in-out; 
+        }
+
         @keyframes dance {
-            0%, 100% { transform: translateY(0) rotate(0); } 20% { transform: translateY(-5px) rotate(-2deg); }
-            40% { transform: translateY(0) rotate(2deg); } 60% { transform: translateY(-5px) rotate(-1deg); }
+            0%, 100% { transform: translateY(0) rotate(0); } 
+            20% { transform: translateY(-5px) rotate(-2deg); }
+            40% { transform: translateY(0) rotate(2deg); } 
+            60% { transform: translateY(-5px) rotate(-1deg); }
             80% { transform: translateY(0) rotate(1deg); }
         }
+
+        /* UI Components */
         .gold-text {
             background: -webkit-linear-gradient(45deg, #fde047, #facc15, #eab308);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
         .snackbar {
             visibility: hidden;
             opacity: 0;
             transition: visibility 0s 2.5s, opacity 0.3s ease-out, transform 0.3s ease-out;
             transform: translate(-50%, -50%) scale(0.9);
             position: fixed;
-            top: 50%;
+            top: 30%;
             left: 50%;
             z-index: 60;
+            background: #374151;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            font-size: 14px;
+            font-weight: 500;
+            max-width: 280px;
+            text-align: center;
+            word-wrap: break-word;
         }
+
         .snackbar.show {
             visibility: visible;
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
             transition: opacity 0.3s ease-in, transform 0.3s ease-in;
         }
-        #game-container::-webkit-scrollbar { display: none; }
-        #game-container { -ms-overflow-style: none; scrollbar-width: none; }
-        #keyboard, #victory-footer {
-            transition: opacity 0.5s ease-out;
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #06b6d4;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
         }
-        /* Toggle Switch Styles */
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.40);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            color: white;
+        }
+
+        /* Menu dropdown */
+        #menu-dropdown {
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: top right;
+            will-change: transform, opacity;
+        }
+
+        #menu-dropdown.hidden {
+            opacity: 0;
+            transform: scale(0.96) translateY(-8px);
+            pointer-events: none;
+        }
+
+        #menu-dropdown:not(.hidden) {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        /* Toggle switch */
         #speed-mode-toggle:checked ~ .dot {
-            transform: translateX(1.5rem); /* w-6 */
+            transform: translateX(1.5rem);
         }
+
         #speed-mode-toggle:checked ~ .block {
             background-color: #0e7490;
         }
+
         .dot {
             transition: transform 0.2s ease-in-out;
+        }
+
+        /* Base keyboard styles (no breakpoints) */
+        #keyboard {
+            padding: 0 12px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        #keyboard .flex {
+            gap: 4px;
+            margin: 4px 0;
+            justify-content: center;
+            display: flex;
+        }
+
+        .key {
+            border-radius: 4px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+        }
+
+
+        /* Mobile viewport fixes */
+
+        @media (max-width: 450px) {
+    #game-container {
+        height: 100vh;
+        max-height: none;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    #board-content {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end; /* Align content to bottom */
+        padding-bottom: 10px; /* Small gap before keyboard */
+    }
+    
+    #keyboard-container {
+        flex-shrink: 0;
+    }
+}
+
+        /* RESPONSIVE STYLES - Smallest to largest */
+
+        /* Mobile screens */
+        @media (max-width: 768px) {
+            .keyboard-icon { width: 20px; height: 20px; }
+            
+            .key {
+                height: 48px;
+                font-size: 16px;
+            }
+            
+            .key:not([data-key="SUBMIT"]):not([data-key="DELETE"]) {
+                width: 32px;
+            }
+            
+            .key[data-key="SUBMIT"], 
+            .key[data-key="DELETE"] {
+                width: 50px;
+            }
+        }
+
+        /* Desktop screens */
+        @media (min-width: 769px) {
+            .keyboard-icon { width: 24px; height: 24px; }
+            
+            .key {
+                height: 54px;
+                font-size: 18px;
+            }
+            
+            .key:not([data-key="SUBMIT"]):not([data-key="DELETE"]) {
+                width: 42px;
+            }
+            
+            .key[data-key="SUBMIT"], 
+            .key[data-key="DELETE"] {
+                width: 70px;
+            }
+            
+            #keyboard .flex {
+                gap: 6px;
+                margin: 6px 0;
+            }
+        }
+
+        /* Modal styles */
+        @media (max-width: 480px) {
+            #settings-modal .bg-gray-800 {
+                max-height: 90vh;
+                overflow-y: auto;
+                margin: 1rem;
+                width: calc(100% - 2rem);
+            }
+            
+            #settings-modal .p-6 {
+                padding: 1rem;
+            }
+            
+            #settings-modal .flex.gap-2 {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            #import-code-btn {
+                font-size: 0.875rem;
+                padding: 0.5rem 1rem;
+            }
+            
+            #settings-modal h3 {
+                font-size: 1rem;
+            }
+            
+            #settings-modal p {
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 320px) {
+            #settings-modal .bg-gray-800 {
+                margin: 0.5rem;
+                width: calc(100% - 1rem);
+            }
+            
+            #settings-modal .p-6 {
+                padding: 0.75rem;
+            }
         }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-200 flex flex-col h-screen p-2 sm:p-4">
+        <div class="main-wrapper flex flex-col h-full">
 
+
+    
     <!-- Header -->
     <header class="flex-shrink-0 flex items-center justify-between flex-wrap w-full max-w-2xl mx-auto p-2">
         <div class="flex items-center gap-2">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-white">
-                <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <h1 class="text-3xl sm:text-4xl font-bold font-title text-white">Key<span class="text-cyan-400">Hunt</span></h1>
+            
+            <h1 class="text-3xl sm:text-4xl font-bold font-title text-cyan-400">Key<span class="text-3xl sm:text-4xl font-bold font-title text-white">Hunt</span></h1>
         </div>
         <div class="flex items-center gap-2 sm:gap-4 mt-2 sm:mt-0">
             <div id="turns-mode-header" class="flex items-center gap-2 sm:gap-4">
@@ -142,24 +432,24 @@
             </div>
              <div id="speed-mode-header" class="hidden flex items-center gap-2 sm:gap-4">
                 <div class="text-center">
-                    <div id="timer-display" class="text-xl font-bold">0:00</div>
+                    <div id="resultTime" class="text-xl font-bold">0:00</div>
                     <div class="text-xs text-gray-400">TIME</div>
                 </div>
                 <div class="text-center">
                     <div id="speed-moves-display" class="text-xl font-bold">0</div>
-                    <div class="text-xs text-gray-400">MOVES</div>
+                    <div class="text-xs text-gray-400">TURNS</div>
                 </div>
             </div>
             <div class="relative">
                  <button id="menu-btn" class="p-2 rounded-full hover:bg-gray-700 transition">
-                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    <svg class="icon icon-lg text-gray-400" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                 </button>
                 <div id="menu-dropdown" class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-20 hidden">
-                    <button id="player-id-btn" class="w-full text-left block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"></button>
-                    <a href="#" id="today-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Today's Puzzle</a>
-                    <a href="#" id="archives-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Archives</a>
-                    <a href="#" id="settings-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Settings</a>
-                    <a href="#" id="help-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">How to Play</a>
+                    <a href="#" id="help-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition">How to Play</a>
+                    <a href="#" id="today-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition">Today's Puzzle</a>
+                    <a href="#" id="archives-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition">Archives</a>
+                    <a href="#" id="settings-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition">Settings</a>
+                    <button id="player-id-btn" class="w-full text-left block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition"></button>
                 </div>
             </div>
         </div>
@@ -172,6 +462,7 @@
         <div id="board-content" class="w-full space-y-2">
             <!-- JS will populate this -->
         </div>
+
         <div id="victory-footer" class="hidden text-center mt-4">
             <h2 id="victory-title" class="text-3xl font-bold gold-text"></h2>
             <p id="victory-message" class="text-lg mt-2"></p>
@@ -185,69 +476,49 @@
                 <p class="text-sm text-gray-400">Next puzzle in:</p>
                 <div id="countdown-timer" class="text-2xl font-bold text-cyan-400"></div>
             </div>
-            <div id="result-buttons" class="flex gap-2 mt-4">
-                <button id="share-btn" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-md transition">Share</button>
+            <div id="result-buttons" class="flex gap-2 mt-4 mb-6">
+                <button id="share-btn" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-md transition">Share</button> 
+                <button id="try-again-btn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md transition">Try Again</button>
                 <button id="archives-cta-btn" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-md transition">Archives</button>
                 <button id="play-next-btn" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-md transition">Next</button>
             </div>
         </div>
+
+        <!-- On-screen Keyboard -->
+        <footer id="keyboard-container" class="flex-shrink-0 w-full max-w-2xl mx-auto pt-4">
+            <div id="keyboard">
+                <!-- Keyboard rows will be generated here -->
+            </div>
+        </footer>
+
     </main>
 
-    <!-- On-screen Keyboard -->
-    <footer id="keyboard-container" class="flex-shrink-0 w-full max-w-2xl mx-auto pt-4">
-        <div id="keyboard">
-            <!-- Keyboard rows will be generated here -->
-        </div>
-    </footer>
-    
+    </div>
+
+
     <!-- Snackbar for messages -->
-    <div id="snackbar" class="snackbar bg-gray-700 text-white px-4 py-2 rounded-md shadow-lg"></div>
+    <div id="snackbar" class="snackbar bg-gray-900 text-white px-4 py-2 rounded-md shadow-lg"></div>
 
     <!-- Modals -->
-    <div id="archives-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
-        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md border border-gray-700">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-cyan-400">Archives</h2>
-                <button id="close-archives-btn" class="p-1 rounded-full hover:bg-gray-700 text-2xl leading-none">&times;</button>
+    <div id="modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
+        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md border border-gray-700 max-h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4 flex-shrink-0">
+                <h2 id="modal-title" class="text-2xl font-bold text-cyan-400"></h2>
+                <button id="modal-close" class="p-1 rounded-full hover:bg-gray-700 text-2xl leading-none">&times;</button>
             </div>
-            <div id="archives-list" class="space-y-2 max-h-64 overflow-y-auto"></div>
+            <div id="modal-content" class="flex-grow overflow-y-auto"></div>
+            <div id="modal-footer" class="mt-4 flex-shrink-0 hidden"></div>
         </div>
     </div>
-    <div id="help-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
-        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-11/12 max-w-md border border-gray-700 max-h-[80vh] flex flex-col">
-            <h2 class="text-2xl font-bold text-cyan-400 mb-4 flex-shrink-0">How to Play</h2>
-            <div id="instructions-content" class="space-y-3 text-gray-300 overflow-y-auto pr-2"></div>
-            <button id="close-help-btn" class="mt-6 w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-md transition flex-shrink-0">Got it!</button>
-        </div>
-    </div>
-    <div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
-        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md border border-gray-700">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-cyan-400">Settings</h2>
-                <button id="close-settings-btn" class="p-1 rounded-full hover:bg-gray-700 text-2xl leading-none">&times;</button>
-            </div>
-            <div class="flex items-center justify-between">
-                <div>
-                    <span class="text-gray-300">Speed Mode</span>
-                    <p class="text-xs text-gray-500">Finish as fast as possible. No turn limit.</p>
-                </div>
-                <label for="speed-mode-toggle" class="flex items-center cursor-pointer">
-                    <div class="relative">
-                        <input type="checkbox" id="speed-mode-toggle" class="sr-only">
-                        <div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
-                        <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
-                    </div>
-                </label>
-            </div>
-        </div>
-    </div>
-    <div id="mode-switch-confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
+
+    <!-- Generic Confirmation Modal Template -->
+    <div id="confirmation-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
         <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md border border-gray-700 text-center">
-            <h2 class="text-2xl font-bold text-yellow-400 mb-4">Switch Mode?</h2>
-            <p class="text-gray-300 mb-6">Your progress on this puzzle will be lost.</p>
+            <h2 id="confirmation-title" class="text-2xl font-bold text-yellow-400 mb-4"></h2>
+            <p id="confirmation-message" class="text-gray-300 mb-6"></p>
             <div class="flex gap-4">
-                <button id="cancel-switch-btn" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition">Cancel</button>
-                <button id="confirm-switch-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition">Switch</button>
+                <button id="cancel-confirmation-btn" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition">Cancel</button>
+                <button id="confirm-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition">Confirm</button>
             </div>
         </div>
     </div>
@@ -265,20 +536,13 @@
             menuBtn: document.getElementById('menu-btn'),
             menuDropdown: document.getElementById('menu-dropdown'),
             archivesBtn: document.getElementById('archives-btn'),
-            archivesModal: document.getElementById('archives-modal'),
-            archivesList: document.getElementById('archives-list'),
-            closeArchivesBtn: document.getElementById('close-archives-btn'),
             helpBtn: document.getElementById('help-btn'),
-            helpModal: document.getElementById('help-modal'),
-            instructionsContent: document.getElementById('instructions-content'),
-            closeHelpBtn: document.getElementById('close-help-btn'),
             settingsBtn: document.getElementById('settings-btn'),
-            settingsModal: document.getElementById('settings-modal'),
-            closeSettingsBtn: document.getElementById('close-settings-btn'),
-            speedModeToggle: document.getElementById('speed-mode-toggle'),
-            modeSwitchConfirmModal: document.getElementById('mode-switch-confirm-modal'),
-            confirmSwitchBtn: document.getElementById('confirm-switch-btn'),
-            cancelSwitchBtn: document.getElementById('cancel-switch-btn'),
+            confirmationModal: document.getElementById('confirmation-modal'),
+            confirmationTitle: document.getElementById('confirmation-title'),
+            confirmationMessage: document.getElementById('confirmation-message'),
+            confirmBtn: document.getElementById('confirm-btn'),
+            cancelConfirmationBtn: document.getElementById('cancel-confirmation-btn'),
             countdownContainer: document.getElementById('countdown-container'),
             countdownTimer: document.getElementById('countdown-timer'),
             archivesCtaBtn: document.getElementById('archives-cta-btn'),
@@ -293,9 +557,20 @@
             speedModeHeader: document.getElementById('speed-mode-header'),
             resultScore: document.getElementById('result-score'),
             resultScoreLabel: document.getElementById('result-score-label'),
+            resultTime: document.getElementById('resultTime'),
             playerIdBtn: document.getElementById('player-id-btn'),
             todayBtn: document.getElementById('today-btn'),
-            timerDisplay: document.getElementById('timer-display'),
+            tryAgainBtn: document.getElementById('try-again-btn'),
+            importCodeInput: document.getElementById('import-code-input'),
+            
+            // New generic modal elements
+            modal: document.getElementById('modal'),
+            modalTitle: document.getElementById('modal-title'),
+            modalContent: document.getElementById('modal-content'),
+            modalFooter: document.getElementById('modal-footer'),
+            modalClose: document.getElementById('modal-close'),
+
+            puzzleTitle: document.getElementById('puzzle-title')
         };
 
         const VICTORY_SYNONYMS = ["Excellent!", "Superb!", "Brilliant!", "Outstanding!", "Magnificent!", "Fantastic!"];
@@ -303,6 +578,11 @@
         let state = {};
 
         function setupGame(puzzle) {
+            const savedScores = getSavedScores();
+            const gameMode = localStorage.getItem('keyhunt-mode') || 'turns';
+            const todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'});
+            const isToday = puzzle.date === todayStr;
+            
             state = {
                 puzzle,
                 currentWord: puzzle.startWord,
@@ -311,30 +591,69 @@
                 triedLetters: new Set(),
                 discoveredKeys: new Set(),
                 isChecking: false,
-                gameOver: false,
+                gameOver: false, // Always start fresh for any game
                 allKeysFound: false,
                 moves: 0,
-                startTime: null,
-                timerInterval: null,
                 countdownInterval: null,
                 shareGrid: "",
-                isToday: false,
-                gameMode: localStorage.getItem('keyhunt-mode') || 'turns',
+                isToday: isToday,
+                gameMode: gameMode,
             };
             if(state.gameMode === 'turns'){
                 state.totalTurns = puzzle.targetMoves + 4;
             }
         }
 
-        function render() {
+        async function renderPuzzleTitle() {
+            if (!state.isToday) {
+                const maxArchive = await getCurrentMaxArchivePuzzle();
+                
+                DOM.puzzleTitle.innerHTML = `
+                    <div class="flex items-center justify-center gap-4">
+                        <button id="prev-puzzle" class="p-2 rounded-full hover:bg-gray-700 transition ${state.puzzle.puzzleNumber <= 1 ? 'opacity-30 cursor-not-allowed' : ''}" data-disabled="${state.puzzle.puzzleNumber <= 1}">
+                            <svg class="icon icon-md" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                        </button>
+                        <span>Archive #${state.puzzle.puzzleNumber}</span>
+                        <button id="next-puzzle" class="p-2 rounded-full hover:bg-gray-700 transition ${state.puzzle.puzzleNumber >= maxArchive ? 'opacity-30 cursor-not-allowed' : ''}" data-disabled="${state.puzzle.puzzleNumber >= maxArchive}">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+            } else {
+                DOM.puzzleTitle.textContent = `Daily Puzzle #${state.puzzle.puzzleNumber}`;
+            }
+        }
+
+        async function render() {
             renderBoard();
             renderKeyboard();
             renderHeader();
-            DOM.puzzleTitle.textContent = state.isToday 
-                ? `Daily Puzzle #${state.puzzle.puzzleNumber}` 
-                : `Archive #${state.puzzle.puzzleNumber}`;
+            await renderPuzzleTitle(); // Now async
         }
         
+        async function getCurrentMaxArchivePuzzle() {
+            try {
+                const response = await fetch('/api/archives');
+                const puzzles = await response.json();
+                
+                // Get today's puzzle number
+                const todayResponse = await fetch('/api/puzzle');
+                const todayPuzzle = await todayResponse.json();
+                
+                // Filter archives (puzzles < today) and get the highest number
+                const archivePuzzles = puzzles.filter(p => p.puzzleNumber < todayPuzzle.puzzleNumber);
+                const maxArchivePuzzle = Math.max(...archivePuzzles.map(p => p.puzzleNumber));
+                
+                return maxArchivePuzzle;
+            } catch {
+                return 6; // Fallback
+            }
+        }
+
         function renderHeader() {
             if (state.gameMode === 'speed') {
                 DOM.turnsModeHeader.classList.add('hidden');
@@ -350,11 +669,12 @@
         function renderBoard() {
             const historyHtml = state.history.map(word => createTileRow(word, false)).join('');
             const currentHtml = createTileRow(state.currentWord, false);
+
             const inputHtml = state.gameOver ? '' : createTileRow(state.inputWord, true);
             
             DOM.boardContent.innerHTML = historyHtml + currentHtml + inputHtml;
             
-            DOM.gameContainer.scrollTop = DOM.gameContainer.scrollHeight;
+            //DOM.gameContainer.scrollTop = DOM.gameContainer.scrollHeight;
         }
 
         function createTileRow(word, isInput) {
@@ -381,16 +701,6 @@
             }).join('');
             return `<div class="grid grid-cols-${state.puzzle.startWord.length} gap-2">${tilesHtml}</div>`;
         }
-        
-        async function loadAndRenderInstructions() {
-            try {
-                const response = await fetch('/api/instructions');
-                const data = await response.json();
-                DOM.instructionsContent.innerHTML = data.steps.map(step => `<p>${step}</p>`).join('');
-            } catch(e) {
-                DOM.instructionsContent.innerHTML = `<p>Could not load instructions.</p>`;
-            }
-        }
 
         function renderKeyboard() {
             const keysLayout = [
@@ -402,7 +712,7 @@
                 const rowHtml = row.map(key => {
                     const isDiscovered = state.discoveredKeys.has(key);
                     const isTried = state.triedLetters.has(key);
-                    const baseClass = 'key h-12 rounded-md font-bold ';
+                    const baseClass = 'key rounded-md font-bold ';
                     let stateClass = 'bg-gray-500 hover:bg-gray-600';
                     if (isDiscovered) {
                         stateClass = 'discovered';
@@ -410,9 +720,11 @@
                         stateClass = 'tried';
                     }
 
-                    if (key === 'SUBMIT') return `<button data-key="SUBMIT" class="${baseClass} bg-green-600 hover:bg-green-700 text-white px-2 text-xs" style="width: 64px;">SUBMIT</button>`;
-                    if (key === 'DELETE') return `<button data-key="DELETE" class="${baseClass} bg-gray-600 hover:bg-gray-700 px-2 flex items-center justify-center" style="width: 64px;"><svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m22 6c0-.552-.448-1-1-1h-12.628c-.437 0-.853.191-1.138.523-1.078 1.256-3.811 4.439-4.993 5.815-.16.187-.241.419-.241.651 0 .231.08.463.24.651 1.181 1.38 3.915 4.575 4.994 5.835.285.333.701.525 1.14.525h12.626c.552 0 1-.448 1-1 0-2.577 0-9.423 0-12zm-13.628.5h12.128v11h-12.126l-4.715-5.51zm5.637 4.427 1.71-1.71c.146-.146.339-.219.531-.219.404 0 .75.324.75.749 0 .193-.073.384-.219.531l-1.711 1.711 1.728 1.728c.147.147.22.339.22.53 0 .427-.349.751-.75.751-.192 0-.384-.073-.531-.219l-1.728-1.729-1.728 1.729c-.146.146-.339-.219-.531-.219-.401 0-.75-.324-.75-.751 0-.191.073-.383.22-.53l1.728-1.728-1.788-1.787c-.146-.148-.219-.339-.219-.532 0-.425.346-.749.751-.749.192 0 .384.073.53.219z" fill-rule="nonzero"/></svg></button>`;
-                    return `<button data-key="${key}" class="${baseClass} flex-1 ${stateClass}">${key}</button>`;
+                    if (key === 'SUBMIT') return `<button data-key="SUBMIT" class="${baseClass} bg-green-600 hover:bg-green-700 text-white"><svg class="icon keyboard-icon" style="stroke-width:2.5; transform: translateX(1px);" viewBox="0 0 24 24"><path d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18"/></svg></button>`;
+
+                    if (key === 'DELETE') return `<button data-key="DELETE" class="${baseClass} bg-gray-600 hover:bg-gray-700"><svg class="icon keyboard-icon" style="stroke-width: 2; width: 24px; height: 24px;" viewBox="0 0 24 24"><path d="M12 9.75 14.25 12m0 0 2.25 2.25M14.25 12l2.25-2.25M14.25 12 12 14.25m-2.58 4.92-6.374-6.375a1.125 1.125 0 0 1 0-1.59L9.42 4.83c.21-.211.497-.33.795-.33H19.5a2.25 2.25 0 0 1 2.25 2.25v10.5a2.25 2.25 0 0 1-2.25 2.25h-9.284c-.298 0-.585-.119-.795-.33Z"/></svg></button>`;
+
+                    return `<button data-key="${key}" class="${baseClass} ${stateClass}">${key}</button>`;
                 }).join('');
                 
                 return `<div class="flex justify-center w-full gap-1 sm:gap-2 my-1">${rowHtml}</div>`;
@@ -451,8 +763,179 @@
             }, 2500);
         }
 
+        function showLoader() {
+            console.log('Showing loader...'); // Debug log
+            
+            const loader = document.createElement('div');
+            loader.id = 'puzzle-loader';
+            loader.className = 'loading-overlay';
+            loader.innerHTML = `
+                <div class="spinner"></div>
+                <p style="margin-top: 10px; font-size: 16px;">Loading puzzle...</p>
+            `;
+            document.body.appendChild(loader);
+            
+            console.log('Loader added to DOM'); // Debug log
+        }
+
+        function hideLoader() {
+            console.log('Hiding loader...'); // Debug log
+            
+            const loader = document.getElementById('puzzle-loader');
+            if (loader) {
+                loader.remove();
+                console.log('Loader removed'); // Debug log
+            }
+        }
+
+        async function transitionToPuzzle(dateString) {
+            console.log('Transition started'); // Debug log
+            
+            showLoader();
+            
+            // Force a minimum 2 second delay
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            try {
+                await initGame(dateString);
+            } finally {
+                hideLoader();
+            }
+            
+            console.log('Transition completed'); // Debug log
+        }
+
+        function getSavedScores() {
+            const gameMode = localStorage.getItem('keyhunt-mode') || 'turns';
+            const scores = localStorage.getItem(`keyhunt-scores-${gameMode}`);
+            return scores ? JSON.parse(scores) : {};
+        }
+
+        function saveGameState(puzzleNumber, score) {
+            const gameMode = state.gameMode;
+            const scores = JSON.parse(localStorage.getItem(`keyhunt-scores-${gameMode}`) || '{}');
+            
+            // Check if we should save this score
+            const existingScore = scores[puzzleNumber];
+            if (existingScore) {
+                if (gameMode === 'speed') {
+                    // For speed: only save if time is faster (lower)
+                    if (score.includes(':') && existingScore.includes(':')) {
+                        const newTime = timeToSeconds(score);
+                        const oldTime = timeToSeconds(existingScore);
+                        if (newTime >= oldTime) return; // Don't save if slower
+                    }
+                } else {
+                    // For turns: only save if star rating is higher
+                    const starValues = {'💤': 0, '⛳️': 1, '★☆☆': 2, '★★☆': 3, '★★★': 4};
+                    if (starValues[score] <= starValues[existingScore]) return; // Don't save if worse
+                }
+            }
+            
+            // If we get here, save the score
+            scores[puzzleNumber] = score;
+            
+            // Only save history for daily puzzles
+            if (state.isToday) {
+                const gameHistory = JSON.parse(localStorage.getItem(`keyhunt-history-${gameMode}`) || '{}');
+                gameHistory[puzzleNumber] = {
+                    history: [...state.history],
+                    currentWord: state.currentWord,
+                    discoveredKeys: Array.from(state.discoveredKeys),
+                    moves: state.moves,
+                    finalTime: state.finalTime,
+                    gameMode: state.gameMode
+                };
+                localStorage.setItem(`keyhunt-history-${gameMode}`, JSON.stringify(gameHistory));
+            }
+            
+            localStorage.setItem(`keyhunt-scores-${gameMode}`, JSON.stringify(scores));
+        }
+
+        function timeToSeconds(timeString) {
+            const [minutes, seconds] = timeString.split(':').map(Number);
+            return minutes * 60 + seconds;
+        } 
+        function loadGameHistory(puzzleNumber) {
+            const gameMode = localStorage.getItem('keyhunt-mode') || 'turns';
+            const gameHistory = JSON.parse(localStorage.getItem(`keyhunt-history-${gameMode}`) || '{}');
+            return gameHistory[puzzleNumber] || null;
+        }
+
+        function showConfirmationModal(title, message, onConfirm) {
+            DOM.confirmationTitle.textContent = title;
+            DOM.confirmationMessage.textContent = message;
+            
+            // This makes the confirm button flexible. It will do whatever we tell it to.
+            DOM.confirmBtn.onclick = () => {
+                onConfirm();
+                closeModal(DOM.confirmationModal);
+            };
+
+            openModal(DOM.confirmationModal);
+        }
+
+        // Generic modal functions
+        function openModal(title, content, footerButtons = null) {
+            DOM.modalTitle.textContent = title;
+            DOM.modalContent.innerHTML = content;
+            
+            if (footerButtons) {
+                DOM.modalFooter.innerHTML = footerButtons;
+                DOM.modalFooter.classList.remove('hidden');
+            } else {
+                DOM.modalFooter.classList.add('hidden');
+            }
+            
+            DOM.modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            DOM.modal.classList.add('hidden');
+            DOM.modalContent.innerHTML = '';
+            DOM.modalFooter.innerHTML = '';
+        }
+
+        function handleSkip(direction) {
+            if (state.moves > 0 && !state.gameOver) {
+                showConfirmationModal(
+                    'Skip Puzzle?', 
+                    'Your progress on this puzzle will be lost.', 
+                    () => initGame(state.puzzleIndex + direction)
+                );
+            } else {
+                initGame(state.puzzleIndex + direction);
+            }
+        }
+
+        function handlePlayerId() {
+            let playerId = localStorage.getItem('keyhunt-playerId');
+            if (!playerId) {
+                playerId = Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('keyhunt-playerId', playerId);
+            }
+            // Display a shortened version of the ID
+            DOM.playerIdBtn.textContent = `ID: ${playerId.substring(0, 10)}...`;
+            
+            // Add click event to copy the full ID
+            DOM.playerIdBtn.onclick = () => {
+                const textarea = document.createElement('textarea');
+                textarea.value = playerId;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showSnackbar('ID copied to clipboard!');
+                } catch (err) {
+                    showSnackbar('Failed to copy!');
+                }
+                document.body.removeChild(textarea);
+                DOM.menuDropdown.classList.add('hidden');
+            };
+        }
+
         function generateShareGrid() {
-            const fullPath = [...state.history, state.currentWord];
+            const fullPath = [...state.history]; // Remove starting word
             const keysInEndWord = new Set(state.puzzle.endWord.split(''));
             const discoveredForGrid = new Set();
             const grid = [];
@@ -500,43 +983,117 @@
             state.countdownInterval = setInterval(updateCountdown, 1000);
         }
 
-        function showEndState(isWin, message) {
+        function showEndState(isWin, message, isReplay = false) {
+
             state.gameOver = true;
+            state.isWin = isWin;
             
+            DOM.gameContainer.classList.remove('all-keys-glow');
+
             const finalWordRow = DOM.boardContent.lastElementChild;
-            if(finalWordRow) finalWordRow.classList.add('word-dance');
+            if(finalWordRow && !isReplay) finalWordRow.classList.add('word-dance');
             
+            // First, fade out keyboard
             DOM.keyboardContainer.style.opacity = '0';
+            DOM.keyboardContainer.style.transition = 'opacity 0.8s ease-out';
+            
+            // Simultaneously animate the victory footer sliding up
             DOM.victoryFooter.classList.remove('hidden');
+            DOM.victoryFooter.style.transform = 'translateY(100px)'; // Start below
+            DOM.victoryFooter.style.opacity = '0';
             
             setTimeout(() => {
+                // Hide keyboard and animate victory content into place
                 DOM.keyboardContainer.style.display = 'none';
+                
+                // Animate victory footer sliding into position
+                DOM.victoryFooter.style.transition = 'all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                DOM.victoryFooter.style.transform = 'translateY(0)';
                 DOM.victoryFooter.style.opacity = '1';
-            }, 500);
+            }, 400); // Start before keyboard fade completes
+
+            let score = 'null';
+            let scoreLabel = 'SCORE';
 
             if(isWin) {
-                confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, angle: 90, startVelocity: 40 });
+                if (!isReplay) {
+                    confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, angle: 90, startVelocity: 40 });
+                }
                 DOM.victoryTitle.textContent = VICTORY_SYNONYMS[Math.floor(Math.random() * VICTORY_SYNONYMS.length)];
                 DOM.victoryMessage.textContent = message;
+
+                // Reset text color for win messages
+                DOM.victoryMessage.classList.remove('text-red-400');
+
+                if (state.gameMode === 'speed') {
+                    score = state.finalTime;
+                    scoreLabel = 'TIME';
+                } else {
+                    const diff = state.moves - state.puzzle.targetMoves;
+                    if (diff <= 0) score = '★★★';
+                    else if (diff === 1) score = '★★☆';
+                    else if (diff === 2) score = '★☆☆';
+                    else score = '⛳️';
+                    DOM.resultScoreLabel.textContent = score.includes('★') ? 'STARS' : 'FINISH';
+                }
+
+                if (!isReplay) {
+                    saveGameState(state.puzzle.puzzleNumber, score);
+                } else {
+                }
+
             } else {
                  DOM.victoryTitle.textContent = "Game Over";
                  DOM.victoryMessage.textContent = `You ran out of turns.`;
                  DOM.victoryMessage.classList.add('text-red-400');
+                 score = '💤';
+                 
+                 if (!isReplay) {
+                     saveGameState(state.puzzle.puzzleNumber, score);
+                 }
+            }
+
+            DOM.resultScore.textContent = score;
+            DOM.resultScoreLabel.textContent = scoreLabel;
+
+            // Button logic
+            DOM.archivesCtaBtn.style.display = 'block';
+            /*DOM.shareBtn.style.display = 'block';*/
+
+            if (!isReplay || state.isToday) {
+                DOM.shareBtn.style.display = 'block';
+            } else {
+                DOM.shareBtn.style.display = 'none'; // Hide for archive revisits
             }
 
             if (state.isToday) {
                 DOM.countdownContainer.classList.remove('hidden');
                 DOM.playNextBtn.style.display = 'none';
+                DOM.tryAgainBtn.style.display = 'none'; // Hide for daily
                 startNextPuzzleCountdown();
             } else {
                 DOM.countdownContainer.classList.add('hidden');
+                DOM.tryAgainBtn.style.display = 'block'; // Show for archives
                 if (state.puzzle.puzzleNumber < 4) { 
                     DOM.playNextBtn.style.display = 'block';
                 } else {
                     DOM.playNextBtn.style.display = 'none';
                 }
             }
+
         }
+
+
+        function updateTimer() {
+            if (!state.startTime || state.gameOver) return;
+            const now = new Date();
+            const diff = Math.floor((now - state.startTime) / 1000);
+            const minutes = Math.floor(diff / 60);
+            const seconds = diff % 60;
+            state.finalTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            DOM.resultTime.textContent = state.finalTime;
+        }
+
 
         async function handleSubmit() {
             if (state.isChecking || state.gameOver) return;
@@ -567,6 +1124,14 @@
                 return;
             }
 
+            if (state.moves === 0) {
+                state.startTime = new Date();
+                state.timerInterval = setInterval(updateTimer, 1000);
+                if (state.gameMode === 'speed') {
+                    showSnackbar("Timer started!");
+                }
+            }
+
             state.moves++;
             
             nextWord.split('').forEach(letter => state.triedLetters.add(letter));
@@ -579,8 +1144,17 @@
             
             if (isWinningAnagram) {
                 state.puzzle.endWord.split('').forEach(k => state.discoveredKeys.add(k));
+                state.gameOver = true;
                 render();
-                showEndState(true, `You solved puzzle #${state.puzzle.puzzleNumber} in ${state.moves} moves!`);
+                
+                const finalWordRow = DOM.boardContent.lastElementChild;
+                if (finalWordRow) {
+                    finalWordRow.classList.add('word-dance');
+                }
+
+                showEndState(true, `You solved puzzle #${state.puzzle.puzzleNumber} in ${state.moves} turns!`);
+                
+
                 return;
             }
             
@@ -619,6 +1193,9 @@
         }
 
         function handleVirtualKeyboard(key) {
+            renderBoard();
+            DOM.gameContainer.scrollTop = DOM.gameContainer.scrollHeight;
+
              if (state.gameOver) return;
             if (!key) return;
             if (key === 'SUBMIT') {
@@ -632,7 +1209,10 @@
         }
 
         function handlePhysicalKeyboard(e) {
-            if (state.gameOver || DOM.helpModal.classList.contains('hidden') === false) return;
+            renderBoard();
+            DOM.gameContainer.scrollTop = DOM.gameContainer.scrollHeight;
+
+            if (state.gameOver || !DOM.modal.classList.contains('hidden')) return;
             if (e.key.match(/^[a-zA-Z]$/)) {
                 handleVirtualKeyboard(e.key.toUpperCase());
             } else if (e.key === 'Enter') {
@@ -642,7 +1222,12 @@
             }
         }
         
-        async function initGame(dateString) {
+        async function initGame(dateString, forceRestart = false, puzzleNumber = null) {
+            const url = puzzleNumber 
+                ? `/api/puzzle?number=${puzzleNumber}`
+                : dateString 
+                    ? `/api/puzzle?date=${dateString}` 
+                    : '/api/puzzle';
             try {
                 const url = dateString ? `/api/puzzle?date=${dateString}` : '/api/puzzle';
                 const response = await fetch(url);
@@ -651,27 +1236,140 @@
                     throw new Error(err.error || 'Could not load puzzle.');
                 }
                 const puzzle = await response.json();
-                if (state.timerInterval) clearInterval(state.timerInterval);
-                setupGame(puzzle);
-
-                const todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'});
-                state.isToday = puzzle.date === todayStr;
                 
-                DOM.speedModeToggle.checked = state.gameMode === 'speed';
+                const todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'});
+                const isToday = puzzle.date === todayStr;
+                const savedScores = getSavedScores();
+                
+                // For daily: show completed state with history
+                if (isToday && savedScores[puzzle.puzzleNumber] !== undefined) {
+                    showCompletedPuzzle(puzzle, isToday);
+                    return;
+                }
 
-                render();
-                DOM.victoryFooter.classList.add('hidden');
-                DOM.keyboardContainer.style.opacity = '1';
-                DOM.keyboardContainer.style.display = 'block';
-                DOM.gameContainer.classList.remove('all-keys-glow');
+                // For archives: just show end screen, no history restoration
+                if (!isToday && savedScores[puzzle.puzzleNumber] !== undefined) {
+                    setupGame(puzzle);
+                    state.isToday = isToday;
+                    render(); // Fresh game board
+                    
+                    const savedScore = savedScores[puzzle.puzzleNumber];
+                    const isWin = savedScore !== '💤' && savedScore !== 'null';
+                    showEndState(isWin, `You already completed puzzle #${puzzle.puzzleNumber}!`, true);
+                    return;
+                }
+                
+                // Setup fresh game
+                setupFreshGame(puzzle, isToday);
+                
             } catch (error) {
                 showSnackbar(error.message);
             }
         }
 
+        // Helper function for completed puzzles
+        function showCompletedPuzzle(puzzle, isToday) {
+            if (state.timerInterval) clearInterval(state.timerInterval);
+            setupGame(puzzle);
+            state.isToday = isToday;
+            
+            // Only restore history for daily puzzles, not archives
+            if (isToday) {
+                const savedHistory = loadGameHistory(puzzle.puzzleNumber);
+                if (savedHistory) {
+                    Object.assign(state, {
+                        history: [...savedHistory.history],
+                        currentWord: savedHistory.currentWord,
+                        discoveredKeys: new Set(savedHistory.discoveredKeys),
+                        moves: savedHistory.moves,
+                        finalTime: savedHistory.finalTime,
+                        gameMode: savedHistory.gameMode,
+                        gameOver: true
+                    });
+                }
+            } else {
+                state.gameOver = true;
+            }
+            
+            render();
+            setTimeout(() => {
+                DOM.gameContainer.scrollTop = DOM.gameContainer.scrollHeight;
+            }, 100);
+            
+            // Hide keyboard and show victory content
+            DOM.keyboardContainer.style.display = 'none';
+            DOM.keyboardContainer.style.opacity = '0';
+            DOM.victoryFooter.classList.remove('hidden');
+            DOM.victoryFooter.style.opacity = '1';
+            DOM.victoryFooter.style.transform = 'translateY(0)';
+            
+            const savedScores = getSavedScores();
+            const savedScore = savedScores[puzzle.puzzleNumber];
+            const isWin = savedScore !== '💤' && savedScore !== 'null';
+            
+            // Set up all victory content
+            if (isWin) {
+                DOM.victoryTitle.textContent = 'Completed!';
+                DOM.victoryMessage.textContent = `You already completed puzzle #${puzzle.puzzleNumber}!`;
+                DOM.victoryMessage.classList.remove('text-red-400'); // Remove red text
+            } else {
+                DOM.victoryTitle.textContent = "Attempted";
+                DOM.victoryMessage.textContent = `You already attempted puzzle #${puzzle.puzzleNumber}.`;
+                DOM.victoryMessage.classList.add('text-red-400');
+            }
+            
+            DOM.resultScore.textContent = savedScore;
+            DOM.resultScoreLabel.textContent = 'SCORE';
+            
+            // Show buttons
+            DOM.archivesCtaBtn.style.display = 'block';
+            DOM.shareBtn.style.display = isToday ? 'block' : 'none';
+            DOM.tryAgainBtn.style.display = isToday ? 'none' : 'block';
+            
+            // Handle countdown for daily puzzles
+            if (isToday) {
+                DOM.countdownContainer.classList.remove('hidden');
+                DOM.playNextBtn.style.display = 'none';
+                startNextPuzzleCountdown();
+            } else {
+                DOM.countdownContainer.classList.add('hidden');
+                DOM.playNextBtn.style.display = puzzle.puzzleNumber < 4 ? 'block' : 'none';
+            }
+        }
+
+        // Helper function for fresh games
+        function setupFreshGame(puzzle, isToday) {
+            if (state.timerInterval) clearInterval(state.timerInterval);
+            state.finalTime = null;
+            if (DOM.resultTime) DOM.resultTime.textContent = "0:00";
+            
+            setupGame(puzzle);
+            state.isToday = isToday;
+            
+            render();
+            DOM.victoryFooter.classList.add('hidden');
+            Object.assign(DOM.keyboardContainer.style, {
+                opacity: '1',
+                display: 'block',
+                transform: 'translateY(0)'
+            });
+            DOM.gameContainer.classList.remove('all-keys-glow');
+        }
+
         function handleShare() {
             state.shareGrid = generateShareGrid();
-            const shareText = `KeyHunt #${state.puzzle.puzzleNumber}\nSolved in ${state.moves} moves\n\n${state.shareGrid}`;
+    
+            let statusText;
+            if (!state.isWin) {
+                statusText = 'Game Over...';
+            } else {
+                statusText = `Solved in ${state.moves} turns!`;
+                if (state.gameMode === 'speed') {
+                    statusText += ` (${state.finalTime})`;
+                }
+            }
+            
+            const shareText = `KeyHunt #${state.puzzle.puzzleNumber}\n${statusText}\n\n${state.shareGrid}`;
             const textarea = document.createElement('textarea');
             textarea.value = shareText;
             document.body.appendChild(textarea);
@@ -684,70 +1382,383 @@
             }
             document.body.removeChild(textarea);
         }
-        
-        async function showArchives() {
-            try {
-                const response = await fetch('/api/archives');
-                const puzzles = await response.json();
-                DOM.archivesList.innerHTML = puzzles.map(p => 
-                    `<button data-date="${p.date}" class="archive-date-btn block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">#${p.puzzleNumber} - ${p.date}</button>`
-                ).join('');
-                DOM.archivesModal.classList.remove('hidden');
-            } catch (error) {
-                showSnackbar("Could not load archives.");
+
+        function encodeScore(score) {
+            if (!score || score === 'null') return '0';
+            if (score === '💤') return '1';
+            if (score === '⛳️') return '2';
+            if (score === '★☆☆') return '3';
+            if (score === '★★☆') return '4';
+            if (score === '★★★') return '5';
+            if (score && score.includes(':')) return '6'; // Speed times
+            return '0';
+        }
+
+        function decodeScore(char, isSpeed = false) {
+            switch(char) {
+                case '0': return null;
+                case '1': return '💤';
+                case '2': return '⛳️';
+                case '3': return '★☆☆';
+                case '4': return '★★☆';
+                case '5': return '★★★';
+                case '6': return isSpeed ? '1:00' : '⛳️'; // Placeholder time
+                default: return null;
             }
         }
 
+        function generateProgressCode() {
+            const turnsScores = JSON.parse(localStorage.getItem('keyhunt-scores-turns') || '{}');
+            const speedScores = JSON.parse(localStorage.getItem('keyhunt-scores-speed') || '{}');
+            
+            let code = '';
+            for (let i = 1; i <= 50; i++) { // Assuming max 50 puzzles
+                code += encodeScore(turnsScores[i]) + encodeScore(speedScores[i]);
+            }
+            
+            return 'KEYHUNT_v1_' + btoa(code);
+        }
+
+        function importProgressCode(codeString) {
+            if (!codeString.startsWith('KEYHUNT_v1_')) {
+                throw new Error('Invalid progress code format');
+            }
+            
+            const encoded = codeString.replace('KEYHUNT_v1_', '');
+            const decoded = atob(encoded);
+            
+            const turnsScores = {};
+            const speedScores = {};
+            
+            for (let i = 0; i < decoded.length; i += 2) {
+                const puzzleNum = (i / 2) + 1;
+                const turnChar = decoded[i];
+                const speedChar = decoded[i + 1];
+                
+                const turnScore = decodeScore(turnChar);
+                const speedScore = decodeScore(speedChar, true);
+                
+                if (turnScore) turnsScores[puzzleNum] = turnScore;
+                if (speedScore) speedScores[puzzleNum] = speedScore;
+            }
+            
+            localStorage.setItem('keyhunt-scores-turns', JSON.stringify(turnsScores));
+            localStorage.setItem('keyhunt-scores-speed', JSON.stringify(speedScores));
+        }
+
+        function smoothScrollToBottom(duration = 800) {
+            const container = DOM.gameContainer;
+            const start = container.scrollTop;
+            const target = container.scrollHeight - container.clientHeight;
+            const distance = target - start;
+            let startTime = null;
+
+            function scrollAnimation(currentTime) {
+                if (startTime === null) startTime = currentTime;
+                const timeElapsed = currentTime - startTime;
+                const progress = Math.min(timeElapsed / duration, 1);
+                
+                // Smooth easing function
+                const ease = progress * (2 - progress);
+                container.scrollTop = start + (distance * ease);
+                
+                if (timeElapsed < duration) {
+                    requestAnimationFrame(scrollAnimation);
+                }
+            }
+            
+            requestAnimationFrame(scrollAnimation);
+        }
+
+        function calculateDateForPuzzle(puzzleNumber) {
+            // This depends on your puzzle numbering system
+            // Example: if puzzle #1 was on 2025-01-01
+            const startDate = new Date('2025-01-01');
+            const targetDate = new Date(startDate);
+            targetDate.setDate(startDate.getDate() + (puzzleNumber - 1));
+            return targetDate.toLocaleDateString('en-CA');
+        }
+
+        // Handle archive navigation chevrons
+        DOM.puzzleTitle.addEventListener('click', async (e) => {
+            if (state.isToday) return;
+            
+            const currentPuzzleNum = state.puzzle.puzzleNumber;
+            let targetPuzzleNum = null;
+            
+            if (e.target.closest('#prev-puzzle')) {
+                if (e.target.closest('#prev-puzzle').dataset.disabled === 'true') {
+                    showSnackbar('This is the first puzzle!');
+                    return;
+                }
+                targetPuzzleNum = currentPuzzleNum - 1;
+            } else if (e.target.closest('#next-puzzle')) {
+                if (e.target.closest('#next-puzzle').dataset.disabled === 'true') {
+                    showSnackbar('This is the last archive puzzle!');
+                    return;
+                }
+                targetPuzzleNum = currentPuzzleNum + 1;
+            }
+            
+            if (targetPuzzleNum) {
+                
+                try {
+                    const response = await fetch('/api/archives');
+                    const puzzles = await response.json();
+                    const targetPuzzle = puzzles.find(p => p.puzzleNumber === targetPuzzleNum);
+                    
+                    if (targetPuzzle) {
+                        transitionToPuzzle(targetPuzzle.date);
+                    } else {
+                        showSnackbar('Puzzle not found');
+                    }
+                } catch (error) {
+                    showSnackbar('Error loading puzzle');
+                }
+            }
+        });
+
+        DOM.tryAgainBtn.addEventListener('click', () => {
+            if (!state.isToday) {
+                // Complete reset
+                setupFreshGame(state.puzzle, false);
+            }
+        });
+
         DOM.keyboard.addEventListener('click', (e) => handleVirtualKeyboard(e.target.closest('.key')?.dataset.key));
         document.addEventListener('keydown', handlePhysicalKeyboard);
-        DOM.helpBtn.addEventListener('click', () => DOM.helpModal.classList.remove('hidden'));
-        DOM.closeHelpBtn.addEventListener('click', () => DOM.helpModal.classList.add('hidden'));
-        DOM.menuBtn.addEventListener('click', () => DOM.menuDropdown.classList.toggle('hidden'));
+
+        // Generic modal close
+        DOM.modalClose.addEventListener('click', closeModal);
+
+        DOM.helpBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/instructions');
+                const data = await response.json();
+                const content = data.steps.map(step => `<p class="text-gray-300 mb-3">${step}</p>`).join('');
+                openModal('How to Play', content);
+            } catch(e) {
+                openModal('How to Play', '<p class="text-gray-300">Could not load instructions.</p>');
+            }
+        });
+
+        DOM.menuBtn.addEventListener('click', () => {
+            // If game is in progress, show confirmation
+            if (state.moves > 0 && !state.gameOver) {
+                showConfirmationModal(
+                    'Forfeit Current Puzzle?',
+                    'Your progress will be lost and the puzzle will reset.',
+                    () => {
+                        // Reset the puzzle
+                        initGame(state.puzzle.date);
+                        // Open menu after reset
+                        DOM.menuDropdown.classList.remove('hidden');
+                    }
+                );
+            } else {
+                // Normal menu toggle if no progress
+                DOM.menuDropdown.classList.toggle('hidden');
+            }
+        });
+
         DOM.todayBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            initGame();
+            transitionToPuzzle();
             DOM.menuDropdown.classList.add('hidden');
         });
-        DOM.archivesBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            showArchives();
-            DOM.menuDropdown.classList.add('hidden');
-        });
-        DOM.settingsBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            DOM.settingsModal.classList.remove('hidden');
-            DOM.menuDropdown.classList.add('hidden');
-        });
-        DOM.closeSettingsBtn.addEventListener('click', () => DOM.settingsModal.classList.add('hidden'));
-        DOM.speedModeToggle.addEventListener('change', (e) => {
-            if (state.moves > 0 && !state.gameOver) {
-                DOM.modeSwitchConfirmModal.classList.remove('hidden');
-                e.target.checked = !e.target.checked; // Revert visual state
-                return;
+
+        DOM.archivesCtaBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/archives');
+                const puzzles = await response.json();
+                const savedScores = getSavedScores();
+                
+                // Get today's puzzle number
+                const todayResponse = await fetch('/api/puzzle');
+                const todayPuzzle = await todayResponse.json();
+                const todayPuzzleNumber = todayPuzzle.puzzleNumber;
+                
+                // Filter archives
+                const archivePuzzles = puzzles.filter(p => p.puzzleNumber < todayPuzzleNumber);
+
+                const content = `<div class="space-y-2 max-h-64 overflow-y-auto">
+                    ${archivePuzzles.map(p => {
+                        const score = savedScores[p.puzzleNumber] || 'New';
+                        return `
+                            <button data-date="${p.date}" class="archive-date-btn block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md flex justify-between items-center">
+                                <span>#${p.puzzleNumber} - ${p.date}</span>
+                                <span class="font-bold">${score}</span>
+                            </button>
+                        `;
+                    }).join('')}
+                </div>`;
+
+                openModal('Archives', content);
+            } catch (error) {
+                openModal('Archives', '<p class="text-gray-300">Could not load archives.</p>');
             }
-            const mode = e.target.checked ? 'speed' : 'turns';
-            localStorage.setItem('keyhunt-mode', mode);
-            initGame(state.puzzle.date);
         });
-        DOM.cancelSwitchBtn.addEventListener('click', () => DOM.modeSwitchConfirmModal.classList.add('hidden'));
-        DOM.confirmSwitchBtn.addEventListener('click', () => {
-            DOM.speedModeToggle.checked = !DOM.speedModeToggle.checked;
-            const mode = DOM.speedModeToggle.checked ? 'speed' : 'turns';
-            localStorage.setItem('keyhunt-mode', mode);
-            initGame(state.puzzle.date);
-            DOM.modeSwitchConfirmModal.classList.add('hidden');
+
+        DOM.settingsBtn.addEventListener('click', () => {
+            const settingsContent = `
+                <div class="flex items-center justify-between py-2 mb-4">
+                    <div>
+                        <span class="text-gray-300">Speed Mode</span>
+                        <p class="text-xs text-gray-500 mr-2">Finish as fast as possible. No turn limit.</p>
+                    </div>
+                    <label for="speed-mode-toggle" class="flex items-center cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" id="speed-mode-toggle" class="sr-only" ${localStorage.getItem('keyhunt-mode') === 'speed' ? 'checked' : ''}>
+                            <div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
+                            <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+                        </div>
+                    </label>
+                </div>
+                
+                <div class="border-t border-gray-700 mt-4 pt-4">
+                    <span class="text-gray-300">Progress Backup</span>
+                    <p class="text-xs text-gray-500 mb-3">Export your progress or import from another device</p>
+                    <div class="space-y-2">
+                        <button id="export-code-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition text-sm">
+                            Export Progress Code
+                        </button>
+                        <div class="flex flex-col gap-2">
+                            <input id="import-code-input" type="text" placeholder="Enter progress code" 
+                                   class="w-full bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:border-blue-500 focus:outline-none text-xs">
+                            <button id="import-code-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition text-sm">
+                                Import Progress
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-700 mt-4 pt-4">
+                    <button id="clear-data-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition text-sm">Clear All Game Data</button>
+                </div>
+            `;
+            
+            openModal('Settings', settingsContent);
+            DOM.menuDropdown.classList.add('hidden');
         });
-        DOM.closeArchivesBtn.addEventListener('click', () => DOM.archivesModal.classList.add('hidden'));
-        DOM.archivesList.addEventListener('click', (e) => {
+        
+        DOM.cancelConfirmationBtn.addEventListener('click', () => closeModal(DOM.confirmationModal));
+
+        DOM.archivesBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/archives');
+                const puzzles = await response.json();
+                const savedScores = getSavedScores();
+                
+                // Get today's puzzle number to filter archives
+                const todayResponse = await fetch('/api/puzzle');
+                const todayPuzzle = await todayResponse.json();
+                const todayPuzzleNumber = todayPuzzle.puzzleNumber;
+                
+                // Filter to show only puzzles with numbers smaller than today's
+                const archivePuzzles = puzzles.filter(p => p.puzzleNumber < todayPuzzleNumber);
+
+                const content = `<div class="space-y-2 max-h-64 overflow-y-auto">
+                    ${archivePuzzles.map(p => {
+                        const score = savedScores[p.puzzleNumber] || 'New';
+                        return `
+                            <button data-date="${p.date}" class="archive-date-btn block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md flex justify-between items-center">
+                                <span>#${p.puzzleNumber} - ${p.date}</span>
+                                <span class="font-bold">${score}</span>
+                            </button>
+                        `;
+                    }).join('')}
+                </div>`;
+
+                openModal('Archives', content);
+            } catch (error) {
+                openModal('Archives', '<p class="text-gray-300">Could not load archives.</p>');
+            }
+            DOM.menuDropdown.classList.add('hidden');
+        });
+
+        DOM.modalContent.addEventListener('click', (e) => {
+            // Handle archive puzzle clicks
             if (e.target.matches('.archive-date-btn')) {
                 const date = e.target.dataset.date;
-                initGame(date);
-                DOM.archivesModal.classList.add('hidden');
+                transitionToPuzzle(date);
+                closeModal();
+            }
+
+            // Handle export button
+            if (e.target.matches('#export-code-btn')) {
+                const code = generateProgressCode();
+                navigator.clipboard.writeText(code).then(() => {
+                    showSnackbar('Progress code copied to clipboard!');
+                }).catch(() => {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = code;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    showSnackbar('Progress code copied!');
+                });
+            }
+            
+            // Handle import button
+            if (e.target.matches('#import-code-btn')) {
+                const code = document.getElementById('import-code-input').value.trim();
+                if (!code) {
+                    showSnackbar('Please enter a progress code');
+                    return;
+                }
+                
+                try {
+                    importProgressCode(code);
+                    showSnackbar('Progress imported successfully!');
+                    document.getElementById('import-code-input').value = '';
+                    closeModal();
+                    if (state.puzzle) {
+                        const currentDate = state.puzzle.date;
+                        initGame(currentDate);
+                    }
+                } catch (error) {
+                    showSnackbar('Invalid progress code');
+                }
+            }
+            
+            // Handle clear data button
+            if (e.target.matches('#clear-data-btn')) {
+                closeModal();
+                showConfirmationModal(
+                    'Clear All Data?',
+                    'This will reset all your scores and settings. This action cannot be undone.',
+                    () => {
+                        localStorage.clear();
+                        location.reload();
+                    }
+                );
             }
         });
-        DOM.archivesCtaBtn.addEventListener('click', () => {
-             showArchives();
+
+        // Handle speed mode toggle
+        DOM.modalContent.addEventListener('change', (e) => {
+            if (e.target.matches('#speed-mode-toggle')) {
+                if (state.moves > 0 && !state.gameOver) {
+                    e.target.checked = !e.target.checked; // Revert visual state
+                    showConfirmationModal(
+                        'Switch Mode?',
+                        'Your progress on this puzzle will be lost.',
+                        () => {
+                            const mode = e.target.checked ? 'speed' : 'turns';
+                            localStorage.setItem('keyhunt-mode', mode);
+                            closeModal();
+                            initGame(state.puzzle.date);
+                        }
+                    );
+                    return;
+                }
+                const mode = e.target.checked ? 'speed' : 'turns';
+                localStorage.setItem('keyhunt-mode', mode);
+                initGame(state.puzzle.date);
+            }
         });
+
         DOM.shareBtn.addEventListener('click', handleShare);
         DOM.playNextBtn.addEventListener('click', async () => {
             const response = await fetch('/api/archives');
@@ -764,9 +1775,22 @@
                 DOM.menuDropdown.classList.add('hidden');
             }
         });
-        
-        loadAndRenderInstructions();
+
+        handlePlayerId();
         initGame(); // Load today's puzzle on start
+        if (!localStorage.getItem('keyhunt-scores-turns') && !localStorage.getItem('keyhunt-scores-speed')) {
+            setTimeout(async () => {
+                try {
+                    const response = await fetch('/api/instructions');
+                    const data = await response.json();
+                    const content = data.steps.map(step => `<p class="text-gray-300 mb-3">${step}</p>`).join('');
+                    openModal('How to Play', content);
+                } catch(e) {
+                    openModal('How to Play', '<p class="text-gray-300">Could not load instructions.</p>');
+                }
+            }, 1000);
+        }
     </script>
+    </div>
 </body>
 </html>
