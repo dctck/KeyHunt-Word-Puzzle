@@ -302,9 +302,18 @@
 
         @media (max-width: 450px) {
 
+            .main-wrapper {
+                min-height: 100dvh; /* Use dynamic viewport height */
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 20px 0;
+            }
+
             #game-container {
                 height: 100dvh;
-                max-height: none;
+                max-height: 100dvh;
                 display: flex;
                 flex-direction: column;
             }
@@ -319,6 +328,14 @@
             #keyboard-container {
                 flex-shrink: 0;
             }
+
+            @supports not (height: 100dvh) {
+                #game-container {
+                    height: calc(100vh - 60px); /* Subtract estimated browser UI */
+                    max-height: calc(100vh - 60px);
+                }
+            }
+
         }
 
         /* RESPONSIVE STYLES - Smallest to largest */
