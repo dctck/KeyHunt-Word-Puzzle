@@ -1,42 +1,67 @@
 [
     {
         "puzzleNumber": 1,
+        "date": "2025-07-11",
+        "startWord": "LIKE",
+        "endWord": "HATE",
+        "targetMoves": 6
+    },
+
+    {
+        "puzzleNumber": 2,
         "date": "2025-07-12",
         "startWord": "BLUE",
         "endWord": "PINK",
         "targetMoves": 7
     },
     {
-        "puzzleNumber": 2,
+        "puzzleNumber": 3,
         "date": "2025-07-13",
         "startWord": "LIKE",
         "endWord": "HATE",
         "targetMoves": 6
     },
     {
-        "puzzleNumber": 3,
+        "puzzleNumber": 4,
         "date": "2025-07-14",
         "startWord": "SEND",
         "endWord": "MORE",
         "targetMoves": 5
     },
     {
-        "puzzleNumber": 4,
+        "puzzleNumber": 5,
         "date": "2025-07-15",
         "startWord": "FOUR",
         "endWord": "FIVE",
         "targetMoves": 4
     },
     {
-        "puzzleNumber": 4,
+        "puzzleNumber": 6,
         "date": "2025-07-16",
         "startWord": "FOUR",
         "endWord": "FIVE",
         "targetMoves": 4
     },
+
     {
-        "puzzleNumber": 5,
+        "puzzleNumber": 7,
         "date": "2025-07-17",
+        "startWord": "FOUR",
+        "endWord": "FIVE",
+        "targetMoves": 4
+    },
+
+    {
+        "puzzleNumber": 8,
+        "date": "2025-07-18",
+        "startWord": "FOUR",
+        "endWord": "FIVE",
+        "targetMoves": 4
+    },
+
+    {
+        "puzzleNumber": 9,
+        "date": "2025-07-19",
         "startWord": "COLD",
         "endWord": "WARM",
         "targetMoves": 5
