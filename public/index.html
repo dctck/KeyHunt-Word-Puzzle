@@ -275,7 +275,6 @@
 
         /* Base keyboard styles (no breakpoints) */
         #keyboard {
-            padding: 0 12px;
             width: 100%;
             margin: 0 auto;
         }
@@ -302,26 +301,25 @@
         /* Mobile viewport fixes */
 
         @media (max-width: 450px) {
-    #game-container {
-        height: 100vh;
-        max-height: none;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    #board-content {
-        flex: 1;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end; /* Align content to bottom */
-        padding-bottom: 10px; /* Small gap before keyboard */
-    }
-    
-    #keyboard-container {
-        flex-shrink: 0;
-    }
-}
+
+            #game-container {
+                height: 100vh;
+                max-height: none;
+                display: flex;
+                flex-direction: column;
+            }
+
+            #board-content {
+                overflow-y: auto;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            #keyboard-container {
+                flex-shrink: 0;
+            }
+        }
 
         /* RESPONSIVE STYLES - Smallest to largest */
 
@@ -764,7 +762,6 @@
         }
 
         function showLoader() {
-            console.log('Showing loader...'); // Debug log
             
             const loader = document.createElement('div');
             loader.id = 'puzzle-loader';
@@ -775,34 +772,44 @@
             `;
             document.body.appendChild(loader);
             
-            console.log('Loader added to DOM'); // Debug log
         }
 
         function hideLoader() {
-            console.log('Hiding loader...'); // Debug log
             
             const loader = document.getElementById('puzzle-loader');
             if (loader) {
                 loader.remove();
-                console.log('Loader removed'); // Debug log
             }
         }
 
         async function transitionToPuzzle(dateString) {
-            console.log('Transition started'); // Debug log
-            
             showLoader();
             
-            // Force a minimum 2 second delay
+            // Force a minimum delay
             await new Promise(resolve => setTimeout(resolve, 500));
             
             try {
+                // First call initGame to load the puzzle data
                 await initGame(dateString);
+                
+                // After puzzle is loaded, check if it's completed
+                if (state.puzzle && state.puzzle.puzzleNumber) {
+                    const savedScores = getSavedScores();
+                    const isCompleted = savedScores[state.puzzle.puzzleNumber];
+                    
+                    // Use the same date logic as initGame
+                    const todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'});
+                    const isToday = state.puzzle.date === todayStr;
+                    
+                    if (isCompleted) {
+                        // Show completed puzzle with victory screen
+                        showCompletedPuzzle(state.puzzle, isToday);
+                    }
+                    // If not completed, initGame already set up the fresh game
+                }
             } finally {
                 hideLoader();
             }
-            
-            console.log('Transition completed'); // Debug log
         }
 
         function getSavedScores() {
@@ -866,37 +873,54 @@
             DOM.confirmationTitle.textContent = title;
             DOM.confirmationMessage.textContent = message;
             
-            // This makes the confirm button flexible. It will do whatever we tell it to.
+            // Handle confirm button
             DOM.confirmBtn.onclick = () => {
+                closeModal(DOM.confirmationModal);
                 onConfirm();
+            };
+
+            // Handle cancel button - just close modal
+            DOM.cancelConfirmationBtn.onclick = () => {
                 closeModal(DOM.confirmationModal);
             };
 
-            openModal(DOM.confirmationModal);
+            DOM.confirmationModal.classList.remove('hidden');
         }
 
         // Generic modal functions
-        function openModal(title, content, footerButtons = null) {
+        function openModal(title, content, footer = '') {
             DOM.modalTitle.textContent = title;
             DOM.modalContent.innerHTML = content;
             
-            if (footerButtons) {
-                DOM.modalFooter.innerHTML = footerButtons;
-                DOM.modalFooter.classList.remove('hidden');
-            } else {
-                DOM.modalFooter.classList.add('hidden');
+            // Don't pass any footer with onclick
+            DOM.modalFooter.innerHTML = `<button id="modal-close-btn" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">Close</button>`;
+            
+            // Remove any existing listeners and add new one
+            const closeBtn = document.getElementById('modal-close-btn');
+            if (closeBtn) {
+                closeBtn.onclick = function() {
+                    closeModal(); // This calls without parameters
+                };
             }
             
             DOM.modal.classList.remove('hidden');
         }
 
-        function closeModal() {
-            DOM.modal.classList.add('hidden');
-            DOM.modalContent.innerHTML = '';
-            DOM.modalFooter.innerHTML = '';
+        function closeModal(modalElement) {
+            // If anything other than a DOM element with classList, close generic modal
+            if (!modalElement || !modalElement.classList) {
+                
+                if (DOM.modal) {
+                    DOM.modal.classList.add('hidden');
+                    DOM.modalContent.innerHTML = '';
+                    DOM.modalFooter.innerHTML = '';
+                }
+            } else {
+            
+                modalElement.classList.add('hidden');
+            }
         }
-
-        function handleSkip(direction) {
+                function handleSkip(direction) {
             if (state.moves > 0 && !state.gameOver) {
                 showConfirmationModal(
                     'Skip Puzzle?', 
@@ -935,7 +959,7 @@
         }
 
         function generateShareGrid() {
-            const fullPath = [...state.history]; // Remove starting word
+            const fullPath = state.history.slice(1); // Remove starting word
             const keysInEndWord = new Set(state.puzzle.endWord.split(''));
             const discoveredForGrid = new Set();
             const grid = [];
@@ -1096,6 +1120,7 @@
 
 
         async function handleSubmit() {
+            DOM.boardContent.scrollTop = DOM.boardContent.scrollHeight;
             if (state.isChecking || state.gameOver) return;
             if (state.inputWord.length !== state.puzzle.startWord.length) {
                 showSnackbar("Word must be 4 letters long.");
@@ -1194,7 +1219,7 @@
 
         function handleVirtualKeyboard(key) {
             renderBoard();
-            DOM.gameContainer.scrollTop = DOM.gameContainer.scrollHeight;
+            DOM.boardContent.scrollTop = DOM.boardContent.scrollHeight;
 
              if (state.gameOver) return;
             if (!key) return;
@@ -1210,7 +1235,7 @@
 
         function handlePhysicalKeyboard(e) {
             renderBoard();
-            DOM.gameContainer.scrollTop = DOM.gameContainer.scrollHeight;
+            DOM.boardContent.scrollTop = DOM.boardContent.scrollHeight;
 
             if (state.gameOver || !DOM.modal.classList.contains('hidden')) return;
             if (e.key.match(/^[a-zA-Z]$/)) {
@@ -1265,6 +1290,7 @@
             } catch (error) {
                 showSnackbar(error.message);
             }
+
         }
 
         // Helper function for completed puzzles
@@ -1290,10 +1316,11 @@
             } else {
                 state.gameOver = true;
             }
-            
+
             render();
             setTimeout(() => {
                 DOM.gameContainer.scrollTop = DOM.gameContainer.scrollHeight;
+                DOM.boardContent.scrollTop = DOM.boardContent.scrollHeight;
             }, 100);
             
             // Hide keyboard and show victory content
@@ -1305,8 +1332,11 @@
             
             const savedScores = getSavedScores();
             const savedScore = savedScores[puzzle.puzzleNumber];
+
             const isWin = savedScore !== '💤' && savedScore !== 'null';
             
+            state.isWin = isWin;
+
             // Set up all victory content
             if (isWin) {
                 DOM.victoryTitle.textContent = 'Completed!';
@@ -1319,8 +1349,8 @@
             }
             
             DOM.resultScore.textContent = savedScore;
-            DOM.resultScoreLabel.textContent = 'SCORE';
-            
+            DOM.resultScoreLabel.textContent = state.gameMode === 'speed' ? 'TIME' : 'SCORE';
+                        
             // Show buttons
             DOM.archivesCtaBtn.style.display = 'block';
             DOM.shareBtn.style.display = isToday ? 'block' : 'none';
@@ -1357,8 +1387,9 @@
         }
 
         function handleShare() {
-            state.shareGrid = generateShareGrid();
-    
+            // Always generate fresh share grid from current state
+            const shareGrid = generateShareGrid();
+            
             let statusText;
             if (!state.isWin) {
                 statusText = 'Game Over...';
@@ -1369,18 +1400,20 @@
                 }
             }
             
-            const shareText = `KeyHunt #${state.puzzle.puzzleNumber}\n${statusText}\n\n${state.shareGrid}`;
-            const textarea = document.createElement('textarea');
-            textarea.value = shareText;
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-                document.execCommand('copy');
+            const shareText = `KeyHunt #${state.puzzle.puzzleNumber}\n${statusText}\n\n${shareGrid}`;
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(shareText).then(() => {
                 showSnackbar('Copied to clipboard!');
-            } catch (err) {
-                showSnackbar('Failed to copy!');
-            }
-            document.body.removeChild(textarea);
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = shareText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showSnackbar('Copied to clipboard!');
+            });
         }
 
         function encodeScore(score) {
@@ -1543,24 +1576,31 @@
         });
 
         DOM.menuBtn.addEventListener('click', () => {
-            // If game is in progress, show confirmation
             if (state.moves > 0 && !state.gameOver) {
                 showConfirmationModal(
                     'Forfeit Current Puzzle?',
                     'Your progress will be lost and the puzzle will reset.',
                     () => {
+                        // First close the modal
+                        closeModal(DOM.confirmationModal);
+                        
                         // Reset the puzzle
-                        initGame(state.puzzle.date);
-                        // Open menu after reset
-                        DOM.menuDropdown.classList.remove('hidden');
+                        if (state.puzzle && state.puzzle.date) {
+                            initGame(state.puzzle.date);
+                        } else {
+                            initGame();
+                        }
+                        
+                        // Then open the menu dropdown
+                        setTimeout(() => {
+                            DOM.menuDropdown.classList.remove('hidden');
+                        }, 100); // Small delay to ensure game resets first
                     }
                 );
             } else {
-                // Normal menu toggle if no progress
                 DOM.menuDropdown.classList.toggle('hidden');
             }
         });
-
         DOM.todayBtn.addEventListener('click', (e) => {
             e.preventDefault();
             transitionToPuzzle();
@@ -1600,6 +1640,7 @@
         });
 
         DOM.settingsBtn.addEventListener('click', () => {
+            closeModal();
             const settingsContent = `
                 <div class="flex items-center justify-between py-2 mb-4">
                     <div>
@@ -1638,7 +1679,7 @@
             `;
             
             openModal('Settings', settingsContent);
-            DOM.menuDropdown.classList.add('hidden');
+        
         });
         
         DOM.cancelConfirmationBtn.addEventListener('click', () => closeModal(DOM.confirmationModal));
