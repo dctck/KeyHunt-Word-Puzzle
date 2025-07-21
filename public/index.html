@@ -47,7 +47,8 @@
             .main-wrapper {
                 width: 100%;
                 max-width: 100%;
-                overflow-y: hidden;
+                overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-y: auto;   /* Allow vertical scroll */
                 box-sizing: border-box;
             }
 
@@ -294,6 +295,7 @@
             #keyboard {
                 width: 100%;
                 margin: 0 auto;
+                overflow: hidden;
             }
 
             /* Keyboard rows */
