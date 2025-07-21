@@ -10,421 +10,532 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <style>
-        /* Base styles first */
-        body {
-            font-family: 'Inter', sans-serif;
-            touch-action: manipulation;
-            min-width: 300px;
-            overflow-x: auto;
-        }
+            /* Base styles first */
+            body {
+                font-family: 'Inter', sans-serif;
+                background-color: #0F110C !important;
+                touch-action: manipulation;
+                min-width: 300px;
+                overflow-x: auto;
+                padding: 8px;
+            }
 
-        /* Global icon styles */
-        .icon {
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 1.5;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
+            /* Global icon styles */
+            .icon {
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.5;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
 
-        .icon-sm { width: 16px; height: 16px; }
-        .icon-md { width: 20px; height: 20px; }
-        .icon-lg { width: 24px; height: 24px; }
-        .icon-xl { width: 32px; height: 32px; }
+            .icon-sm { width: 16px; height: 16px; }
+            .icon-md { width: 20px; height: 20px; }
+            .icon-lg { width: 24px; height: 24px; }
+            .icon-xl { width: 32px; height: 32px; }
 
-        /* Base element styles */
-        #game-container,
-        #keyboard-container,
-        header {
-            min-width: 300px;
-        }
+            /* Base element styles */
+            #game-container,
+            #keyboard-container,
+            header {
+                /*min-width: 300px;8*/                
+                width: 100%;
+                box-sizing: border-box;
+            }
 
-        #game-container::-webkit-scrollbar { display: none; }
-        #game-container { 
-            -ms-overflow-style: none; 
-            scrollbar-width: none;
-            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            will-change: transform;
-        }
-
-        #game-container.transitioning {
-            transform: translateY(-20px);
-            opacity: 0.6;
-        }
-
-        #keyboard, #victory-footer {
-            transition: opacity 0.5s ease-out;
-        }
-
-        /* Typography */
-        .font-title { font-family: 'Space+Grotesk', sans-serif; }
-
-        /* Button and key base styles */
-        button, .key {
-            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        button:hover, .key:hover {
-            transform: translateY(-1px);
-        }
-
-        button:active, .key:active {
-            transform: translateY(0);
-            transition-duration: 0.05s;
-        }
-
-        .key { 
-            transition: all 0.1s ease-out; 
-        }
-
-        .key:active { 
-            transform: scale(0.95); 
-        }
-
-        .key.discovered {
-            background-color: #06b6d4;
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .key.tried {
-            background-color: #374151;
-        }
-
-        /* Game tiles */
-        .tile-container {
-            perspective: 1000px;
-        }
-
-        .tile-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            transform-style: preserve-3d;
-        }
-
-        .tile-inner.flip {
-            transform: rotateX(180deg);
-        }
-
-        .tile-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.25rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            border-radius: 0.5rem;
-        }
-
-        .tile-front {
-            background-color: #374151;
-            border: 2px solid #4b5563;
-        }
-
-        .tile-back {
-            background-color: #06b6d4;
-            border: 2px solid #22d3ee;
-            transform: rotateX(180deg);
-        }
-
-        .input-tile {
-            background-color: #1f2937;
-            border: 2px solid #4b5563;
-        }
-
-        .input-tile.discovered {
-            background-color: #06b6d4;
-            border-color: #22d3ee;
-        }
-
-        /* Animations */
-        .tile-inner.shake { 
-            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; 
-        }
-
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); } 
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 
-            40%, 60% { transform: translate3d(4px, 0, 0); }
-        }
-
-        .all-keys-glow { 
-            animation: glowing 2s ease-in-out infinite alternate; 
-        }
-
-        @keyframes glowing {
-            from { box-shadow: 0 0 3px #06b6d4, 0 0 6px #06b6d4, 0 0 9px #0891b2; }
-            to { box-shadow: 0 0 6px #0891b2, 0 0 12px #0e7490, 0 0 18px #0e7490; }
-        }
-
-        .word-dance { 
-            animation: dance 0.8s ease-in-out; 
-        }
-
-        @keyframes dance {
-            0%, 100% { transform: translateY(0) rotate(0); } 
-            20% { transform: translateY(-5px) rotate(-2deg); }
-            40% { transform: translateY(0) rotate(2deg); } 
-            60% { transform: translateY(-5px) rotate(-1deg); }
-            80% { transform: translateY(0) rotate(1deg); }
-        }
-
-        /* UI Components */
-        .gold-text {
-            background: -webkit-linear-gradient(45deg, #fde047, #facc15, #eab308);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .snackbar {
-            visibility: hidden;
-            opacity: 0;
-            transition: visibility 0s 2.5s, opacity 0.3s ease-out, transform 0.3s ease-out;
-            transform: translate(-50%, -50%) scale(0.9);
-            position: fixed;
-            top: 30%;
-            left: 50%;
-            z-index: 60;
-            background: #374151;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            font-size: 14px;
-            font-weight: 500;
-            max-width: 280px;
-            text-align: center;
-            word-wrap: break-word;
-        }
-
-        .snackbar.show {
-            visibility: visible;
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-            transition: opacity 0.3s ease-in, transform 0.3s ease-in;
-        }
-
-        .spinner {
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top: 3px solid #06b6d4;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.40);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            color: white;
-        }
-
-        /* Menu dropdown */
-        #menu-dropdown {
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            transform-origin: top right;
-            will-change: transform, opacity;
-        }
-
-        #menu-dropdown.hidden {
-            opacity: 0;
-            transform: scale(0.96) translateY(-8px);
-            pointer-events: none;
-        }
-
-        #menu-dropdown:not(.hidden) {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-        }
-
-        /* Toggle switch */
-        #speed-mode-toggle:checked ~ .dot {
-            transform: translateX(1.5rem);
-        }
-
-        #speed-mode-toggle:checked ~ .block {
-            background-color: #0e7490;
-        }
-
-        .dot {
-            transition: transform 0.2s ease-in-out;
-        }
-
-        /* Base keyboard styles (no breakpoints) */
-        #keyboard {
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        #keyboard .flex {
-            gap: 4px;
-            margin: 4px 0;
-            justify-content: center;
-            display: flex;
-        }
-
-        .key {
-            border-radius: 4px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-transform: uppercase;
-            border: none;
-            cursor: pointer;
-        }
-
-
-        /* Mobile viewport fixes */
-
-        @media (max-width: 450px) {
-
+            /* Ensure all main containers stay centered */
             .main-wrapper {
-                min-height: 100dvh; /* Use dynamic viewport height */
+                width: 100%;
+                max-width: 100%;
+                overflow-y: hidden;
+                box-sizing: border-box;
+            }
+
+            /* Fix narrow screen layout issues */
+            @media (max-width: 320px) {
+                body {
+                    padding: 4px;
+                }
+                
+                #game-container,
+                #board-content,
+                #keyboard-container,
+                header {
+                    width:100%;
+                    padding-left: 0;
+                    padding-right: 0;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+                
+            }
+
+            #game-container::-webkit-scrollbar { display: none; }
+            #game-container { 
+                -ms-overflow-style: none; 
+                scrollbar-width: none;
+                transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                will-change: transform;
+            }
+
+            #game-container.transitioning {
+                transform: translateY(-20px);
+                opacity: 0.6;
+            }
+
+            #keyboard, #victory-footer {
+                transition: opacity 0.5s ease-out;
+            }
+
+            /* Typography */
+            .font-title { font-family: 'Space+Grotesk', sans-serif; }
+
+            /* Game tiles */
+            .tile-container {
+                perspective: 1000px;
+            }
+
+            .tile-inner {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+                transform-style: preserve-3d;
+            }
+
+            .tile-inner.flip {
+                transform: rotateX(180deg);
+            }
+
+            .tile-face {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                backface-visibility: hidden;
+                -webkit-backface-visibility: hidden;
                 display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2.25rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                border-radius: 0.5rem;
+            }
+
+            .tile-front {
+                background-color: #374151;
+                border: 2px solid #4b5563;
+            }
+
+            .tile-back {
+                background-color: #06b6d4;
+                border: 2px solid #22d3ee;
+                transform: rotateX(180deg);
+            }
+
+            .input-tile {
+                background-color: #1f2937;
+                border: 2px solid #4b5563;
+            }
+
+            .input-tile.discovered {
+                background-color: #06b6d4;
+                border-color: #22d3ee;
+            }
+
+            /* Animations */
+            .tile-inner.shake { 
+                animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; 
+            }
+
+            @keyframes shake {
+                10%, 90% { transform: translate3d(-1px, 0, 0); } 
+                20%, 80% { transform: translate3d(2px, 0, 0); }
+                30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 
+                40%, 60% { transform: translate3d(4px, 0, 0); }
+            }
+
+            .all-keys-glow { 
+                animation: glowing 2s ease-in-out infinite alternate; 
+            }
+
+            @keyframes glowing {
+                from { box-shadow: 0 0 3px #06b6d4, 0 0 6px #06b6d4, 0 0 9px #0891b2; }
+                to { box-shadow: 0 0 6px #0891b2, 0 0 12px #0e7490, 0 0 18px #0e7490; }
+            }
+
+            .word-dance { 
+                animation: dance 0.8s ease-in-out; 
+            }
+
+            @keyframes dance {
+                0%, 100% { transform: translateY(0) rotate(0); } 
+                20% { transform: translateY(-5px) rotate(-2deg); }
+                40% { transform: translateY(0) rotate(2deg); } 
+                60% { transform: translateY(-5px) rotate(-1deg); }
+                80% { transform: translateY(0) rotate(1deg); }
+            }
+
+            /* UI Components */
+            .gold-text {
+                background: -webkit-linear-gradient(45deg, #fde047, #facc15, #eab308);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+            .snackbar {
+                visibility: hidden;
+                opacity: 0;
+                transition: visibility 0s 2.5s, opacity 0.3s ease-out, transform 0.3s ease-out;
+                transform: translate(-50%, -50%) scale(0.9);
+                position: fixed;
+                top: 30%;
+                left: 50%;
+                z-index: 60;
+                background: #374151;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                font-size: 14px;
+                font-weight: 500;
+                max-width: 280px;
+                text-align: center;
+                word-wrap: break-word;
+            }
+
+            .snackbar.show {
+                visibility: visible;
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+                transition: opacity 0.3s ease-in, transform 0.3s ease-in;
+            }
+
+            .spinner {
+                border: 3px solid rgba(255, 255, 255, 0.1);
+                border-top: 3px solid #06b6d4;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: spin 1s linear infinite;
+                margin: 20px auto;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            .loading-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.40);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                z-index: 100;
+                color: white;
+            }
+
+            /* Menu dropdown */
+            #menu-dropdown {
+                transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+                transform-origin: top right;
+                will-change: transform, opacity;
+            }
+
+            #menu-dropdown.hidden {
+                opacity: 0;
+                transform: scale(0.96) translateY(-8px);
+                pointer-events: none;
+            }
+
+            #menu-dropdown:not(.hidden) {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+
+            /* Toggle switch */
+            #speed-mode-toggle:checked ~ .dot {
+                transform: translateX(1.5rem);
+            }
+
+            #speed-mode-toggle:checked ~ .block {
+                background-color: #0e7490;
+            }
+
+            .dot {
+                transition: transform 0.2s ease-in-out;
+            }
+
+            /* CSS Variables for key dimensions*/
+            :root {
+                --keyboard-container-width: 100%; /* Fixed width based on 10 keys */
+                --key-width: calc(var(--keyboard-container-width) / 10); /* Each key is 1/10th */
+                --key-height: calc(var(--key-width) * 1.17);
+                --key-padding: calc(var(--key-width) * 0.33);
+                --key-font-size: max(16px, calc(var(--key-width) * 0.5));
+                --key-border-width: 1px;
+            }
+
+            .middle-row {
+                width:100%;
+            }
+
+
+
+            /* ===== KEYBOARD STYLES ===== */
+            
+            /* Base keyboard container */
+            #keyboard {
+                width: 100%;
+                margin: 0 auto;
+            }
+
+            /* Keyboard rows */
+            .keyboard-row {
+                display: flex;
+                justify-content: flex-start;
+                gap: 0;
+                margin: 0;
+            }
+
+            .keyboard-row.middle-row {
+                margin-left: calc(var(--key-width) * 0.5);
+            }
+
+            /* Base key layout using variables*/
+            .key {
+                display: flex;
+                width: var(--key-width);
+                height: var(--key-height);
+                padding: var(--key-padding);
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                padding: 20px 0;
-            }
-
-            #game-container {
-                height: 100dvh;
-                max-height: 100dvh;
-                display: flex;
-                flex-direction: column;
-            }
-
-            #board-content {
-                overflow-y: auto;
-                height: 100dvh;
-                display: flex;
-                flex-direction: column;
-            }
-            
-            #keyboard-container {
+                gap: 8px;
                 flex-shrink: 0;
+                border-radius: 4px;
+                border: var(--key-border-width) solid #0F110C;
+                background: #303030;
+                cursor: pointer;
+                position: relative;
+                box-sizing: border-box;
+                margin: 0;
+                outline: none;
+                
+                /* Typography */
+                color: #ECE1E1;
+                text-align: center;
+                font-family: Inter;
+                font-size: var(--key-font-size);
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+                align-self: stretch;
             }
 
-            @supports not (height: 100dvh) {
+            /* Key states */
+            .key-normal {
+                background: #303030;
+            }
+
+            .key-discovered {
+                background: #06B6D4;
+            }
+
+            .key-used {
+                background: #1E1E1E;
+            }
+
+            /* Submit key */
+            .submit-key {
+                background: #70E581;
+                color: #0F110C;
+                font-size: max(16px, calc(var(--key-font-size) * 0.9));
+                width: var(--key-width); /* Same width as regular keys */
+                height: var(--key-height); /* Same height as regular keys */
+            }
+
+            /* Delete key  */
+            .delete-key {
+                background: #E57070;
+                color: #0F110C;
+                font-size: max(16px, calc(var(--key-font-size) * 0.9));
+                font-weight: 600;
+                width: calc(var(--key-width) * 2);
+                height: var(--key-height); /* Same height as regular keys */
+            }
+
+            /* Proximity indicators */
+            .pips-container {
+                position: absolute;
+                bottom: 8px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                height: 4px;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .pip {
+                width: 8px;
+                height: 4px;
+                background: #06B6D4;
+            }
+
+
+            /* Modal styles */
+            @media (max-width: 480px) {
+                /* Mobile viewport fixes */
                 #game-container {
-                    height: calc(100vh - 60px); /* Subtract estimated browser UI */
-                    max-height: calc(100vh - 60px);
+                    height: 100dvh;
+                    max-height: 100dvh;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                
+                
+                #keyboard-container {
+                    flex-shrink: 0;
+                }
+
+                .pips-container {
+                    bottom: 2px;
+                    gap: 1px;
+                }
+                
+                .pip {
+                    width: 4px;
+                    height: 2px;
+                }
+
+                @supports not (height: 100dvh) {
+                    #game-container {
+                        height: calc(100vh - 60px);
+                        max-height: calc(100vh - 60px);
+                    }
+                }
+                
+                #settings-modal .bg-gray-800 {
+                    max-height: 90dvh;
+                    overflow-y: auto;
+                    margin: 1rem;
+                    width: calc(100% - 2rem);
+                }
+                
+                #settings-modal .p-6 {
+                    padding: 1rem;
+                }
+                
+                #settings-modal .flex.gap-2 {
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+                
+                #import-code-btn {
+                    font-size: 0.875rem;
+                    padding: 0.5rem 1rem;
+                }
+                
+                #settings-modal h3 {
+                    font-size: 1rem;
+                }
+                
+                #settings-modal p {
+                    font-size: 0.75rem;
                 }
             }
 
-        }
+            @media (max-width: 768px) {
+                .pips-container {
+                    bottom: 4px;
+                    gap: 2px;
+                }
+                
+                .pip {
+                    width: 6px;
+                    height: 3px;
+                }
+            }
 
-        /* RESPONSIVE STYLES - Smallest to largest */
+            @media (max-width: 320px) {
+                #settings-modal .bg-gray-800 {
+                    margin: 0.5rem;
+                    width: calc(100% - 1rem);
+                }
+                
+                #settings-modal .p-6 {
+                    padding: 0.75rem;
+                }
+            }
 
-        /* Mobile screens */
-        @media (max-width: 768px) {
-            .keyboard-icon { width: 20px; height: 20px; }
-            
+            .archive-date-btn span {
+                    pointer-events: none;
+            }
+
+
+            /* Key hover and active states */
+            .key:hover {
+                background: #404040;
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            .key:active {
+                background: #505050;
+                transform: translateY(0);
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            }
+
+            .submit-key:hover {
+                background: #5FD470;
+            }
+
+            .submit-key:active {
+                background: #4FC05F;
+            }
+
+            .delete-key:hover {
+                background: #D85F5F;
+            }
+
+            .delete-key:active {
+                background: #C74F4F;
+            }
+
+            /* Mobile tap states - shows feedback on touch devices */
+            @media (hover: none) and (pointer: coarse) {
+                .key:active {
+                    background: #505050;
+                    transform: scale(0.98);
+                    transition: all 0.1s ease;
+                }
+
+                .submit-key:active {
+                        background: #4FC05F;
+                }
+                
+                .delete-key:active {
+                        background: #C74F4F;
+                        transform: scale(0.98);
+                }
+
+            }
             .key {
-                height: 48px;
-                font-size: 16px;
+                transition: all 0.15s ease;
+                user-select: none;
+                -webkit-user-select: none;
+                -webkit-tap-highlight-color: transparent;
             }
-            
-            .key:not([data-key="SUBMIT"]):not([data-key="DELETE"]) {
-                width: 32px;
-            }
-            
-            .key[data-key="SUBMIT"], 
-            .key[data-key="DELETE"] {
-                width: 50px;
-            }
-        }
 
-        /* Desktop screens */
-        @media (min-width: 769px) {
-            .keyboard-icon { width: 24px; height: 24px; }
-            
-            .key {
-                height: 54px;
-                font-size: 18px;
-            }
-            
-            .key:not([data-key="SUBMIT"]):not([data-key="DELETE"]) {
-                width: 42px;
-            }
-            
-            .key[data-key="SUBMIT"], 
-            .key[data-key="DELETE"] {
-                width: 70px;
-            }
-            
-            #keyboard .flex {
-                gap: 6px;
-                margin: 6px 0;
-            }
-        }
-
-        /* Modal styles */
-        @media (max-width: 480px) {
-            #settings-modal .bg-gray-800 {
-                max-height: 90dvh;
-                overflow-y: auto;
-                margin: 1rem;
-                width: calc(100% - 2rem);
-            }
-            
-            #settings-modal .p-6 {
-                padding: 1rem;
-            }
-            
-            #settings-modal .flex.gap-2 {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-            
-            #import-code-btn {
-                font-size: 0.875rem;
-                padding: 0.5rem 1rem;
-            }
-            
-            #settings-modal h3 {
-                font-size: 1rem;
-            }
-            
-            #settings-modal p {
-                font-size: 0.75rem;
-            }
-        }
-
-        @media (max-width: 320px) {
-            #settings-modal .bg-gray-800 {
-                margin: 0.5rem;
-                width: calc(100% - 1rem);
-            }
-            
-            #settings-modal .p-6 {
-                padding: 0.75rem;
-            }
-        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-200 flex flex-col h-screen p-2 sm:p-4">
@@ -433,11 +544,12 @@
 
     
     <!-- Header -->
-    <header class="flex-shrink-0 flex items-center justify-between flex-wrap w-full max-w-2xl mx-auto p-2">
+    <header class="flex-shrink-0 flex gap-justify items-center w-full max-w-2xl mx-auto p-2">
         <div class="flex items-center gap-2">
             
             <h1 class="text-3xl sm:text-4xl font-bold font-title text-cyan-400">Key<span class="text-3xl sm:text-4xl font-bold font-title text-white">Hunt</span></h1>
         </div>
+        <div class="flex-grow" style="min-width: 16px;"></div>
         <div class="flex items-center gap-2 sm:gap-4 mt-2 sm:mt-0">
             <div id="turns-mode-header" class="flex items-center gap-2 sm:gap-4">
                 <div class="text-center">
@@ -588,6 +700,35 @@
             puzzleTitle: document.getElementById('puzzle-title')
         };
 
+        const ADJACENCY_MAP = {
+            'Q': ['W', 'A'],
+            'W': ['Q', 'E', 'A', 'S'],
+            'E': ['W', 'R', 'S', 'D'],
+            'R': ['E', 'T', 'D', 'F'],
+            'T': ['R', 'Y', 'F', 'G'],
+            'Y': ['T', 'U', 'G', 'H'],
+            'U': ['Y', 'I', 'H', 'J'],
+            'I': ['U', 'O', 'J', 'K'],
+            'O': ['I', 'P', 'K', 'L'],
+            'P': ['O', 'L'],
+            'A': ['Q', 'W', 'S', 'Z'],
+            'S': ['W', 'E', 'A', 'D', 'Z', 'X'],
+            'D': ['E', 'R', 'S', 'F', 'X', 'C'],
+            'F': ['R', 'T', 'D', 'G', 'C', 'V'],
+            'G': ['T', 'Y', 'F', 'H', 'V', 'B'],
+            'H': ['Y', 'U', 'G', 'J', 'B', 'N'],
+            'J': ['U', 'I', 'H', 'K', 'N', 'M'],
+            'K': ['I', 'O', 'J', 'L', 'M'],
+            'L': ['O', 'P', 'K'],
+            'Z': ['A', 'S', 'X'],
+            'X': ['S', 'D', 'Z', 'C'],
+            'C': ['D', 'F', 'X', 'V'],
+            'V': ['F', 'G', 'C', 'B'],
+            'B': ['G', 'H', 'V', 'N'],
+            'N': ['H', 'J', 'B', 'M'],
+            'M': ['J', 'K', 'N']
+        };
+
         const VICTORY_SYNONYMS = ["Excellent!", "Superb!", "Brilliant!", "Outstanding!", "Magnificent!", "Fantastic!"];
 
         let state = {};
@@ -617,6 +758,12 @@
             if(state.gameMode === 'turns'){
                 state.totalTurns = puzzle.targetMoves + 4;
             }
+        }
+
+        function countKeyNeighbors(letter) {
+            if (!ADJACENCY_MAP[letter]) return 0;
+            const endWordLetters = new Set(state.puzzle.endWord.split(''));
+            return ADJACENCY_MAP[letter].filter(neighbor => endWordLetters.has(neighbor)).length;
         }
 
         async function renderPuzzleTitle() {
@@ -689,7 +836,7 @@
             
             DOM.boardContent.innerHTML = historyHtml + currentHtml + inputHtml;
             
-            //DOM.gameContainer.scrollTop = DOM.gameContainer.scrollHeight;
+            
         }
 
         function createTileRow(word, isInput) {
@@ -723,26 +870,38 @@
                 ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
                 ['SUBMIT', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'DELETE']
             ];
-            DOM.keyboard.innerHTML = keysLayout.map(row => {
+            DOM.keyboard.innerHTML = keysLayout.map((row, rowIndex) => {
                 const rowHtml = row.map(key => {
                     const isDiscovered = state.discoveredKeys.has(key);
                     const isTried = state.triedLetters.has(key);
-                    const baseClass = 'key rounded-md font-bold ';
-                    let stateClass = 'bg-gray-500 hover:bg-gray-600';
+                    let keyClass = 'key'; // Only use 'key' as base class
+                    let proximityHtml = '';
+                    
+                    // Add state classes
                     if (isDiscovered) {
-                        stateClass = 'discovered';
+                        keyClass += ' key-discovered';
                     } else if (isTried) {
-                        stateClass = 'tried';
+                        keyClass += ' key-used';
+                        const proximityCount = countKeyNeighbors(key);
+                        if (proximityCount > 0) {
+                            const pips = Array(proximityCount).fill('<div class="pip"></div>').join('');
+                            proximityHtml = `<div class="pips-container">${pips}</div>`;
+                        }
+                    } else {
+                        keyClass += ' key-normal';
                     }
-
-                    if (key === 'SUBMIT') return `<button data-key="SUBMIT" class="${baseClass} bg-green-600 hover:bg-green-700 text-white"><svg class="icon keyboard-icon" style="stroke-width:2.5; transform: translateX(1px);" viewBox="0 0 24 24"><path d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18"/></svg></button>`;
-
-                    if (key === 'DELETE') return `<button data-key="DELETE" class="${baseClass} bg-gray-600 hover:bg-gray-700"><svg class="icon keyboard-icon" style="stroke-width: 2; width: 24px; height: 24px;" viewBox="0 0 24 24"><path d="M12 9.75 14.25 12m0 0 2.25 2.25M14.25 12l2.25-2.25M14.25 12 12 14.25m-2.58 4.92-6.374-6.375a1.125 1.125 0 0 1 0-1.59L9.42 4.83c.21-.211.497-.33.795-.33H19.5a2.25 2.25 0 0 1 2.25 2.25v10.5a2.25 2.25 0 0 1-2.25 2.25h-9.284c-.298 0-.585-.119-.795-.33Z"/></svg></button>`;
-
-                    return `<button data-key="${key}" class="${baseClass} ${stateClass}">${key}</button>`;
+                    
+                    if (key === 'SUBMIT') {
+                        return `<button data-key="SUBMIT" class="key submit-key">↳${proximityHtml}</button>`;
+                    }
+                    if (key === 'DELETE') {
+                        return `<button data-key="DELETE" class="key delete-key">⌫${proximityHtml}</button>`;
+                    }
+                    return `<button data-key="${key}" class="${keyClass}">${key}${proximityHtml}</button>`;
                 }).join('');
                 
-                return `<div class="flex justify-center w-full gap-1 sm:gap-2 my-1">${rowHtml}</div>`;
+                const rowClass = rowIndex === 1 ? 'keyboard-row middle-row' : 'keyboard-row';
+                return `<div class="${rowClass}">${rowHtml}</div>`;
             }).join('');
         }
         
@@ -804,7 +963,7 @@
             
             // Force a minimum delay
             await new Promise(resolve => setTimeout(resolve, 500));
-            
+
             try {
                 // First call initGame to load the puzzle data
                 await initGame(dateString);
@@ -856,7 +1015,7 @@
                 }
             }
             
-            // If we get here, save the score
+            //save the score
             scores[puzzleNumber] = score;
             
             // Only save history for daily puzzles
@@ -935,17 +1094,6 @@
             } else {
             
                 modalElement.classList.add('hidden');
-            }
-        }
-                function handleSkip(direction) {
-            if (state.moves > 0 && !state.gameOver) {
-                showConfirmationModal(
-                    'Skip Puzzle?', 
-                    'Your progress on this puzzle will be lost.', 
-                    () => initGame(state.puzzleIndex + direction)
-                );
-            } else {
-                initGame(state.puzzleIndex + direction);
             }
         }
 
@@ -1122,6 +1270,8 @@
                 }
             }
 
+            DOM.gameContainer.scrollTop = DOM.gameContainer.scrollHeight;
+
         }
 
 
@@ -1208,6 +1358,7 @@
 
             render();
             renderKeyboard();
+            DOM.gameContainer.scrollTop = DOM.gameContainer.scrollHeight;
             
             const currentWordRow = DOM.boardContent.children[state.history.length];
             if (currentWordRow) {
@@ -1496,29 +1647,6 @@
             localStorage.setItem('keyhunt-scores-speed', JSON.stringify(speedScores));
         }
 
-        function smoothScrollToBottom(duration = 800) {
-            const container = DOM.gameContainer;
-            const start = container.scrollTop;
-            const target = container.scrollHeight - container.clientHeight;
-            const distance = target - start;
-            let startTime = null;
-
-            function scrollAnimation(currentTime) {
-                if (startTime === null) startTime = currentTime;
-                const timeElapsed = currentTime - startTime;
-                const progress = Math.min(timeElapsed / duration, 1);
-                
-                // Smooth easing function
-                const ease = progress * (2 - progress);
-                container.scrollTop = start + (distance * ease);
-                
-                if (timeElapsed < duration) {
-                    requestAnimationFrame(scrollAnimation);
-                }
-            }
-            
-            requestAnimationFrame(scrollAnimation);
-        }
 
         function calculateDateForPuzzle(puzzleNumber) {
             // This depends on your puzzle numbering system
@@ -1532,7 +1660,7 @@
         // Handle archive navigation chevrons
         DOM.puzzleTitle.addEventListener('click', async (e) => {
             if (state.isToday) return;
-            
+
             const currentPuzzleNum = state.puzzle.puzzleNumber;
             let targetPuzzleNum = null;
             
@@ -1541,12 +1669,25 @@
                     showSnackbar('This is the first puzzle!');
                     return;
                 }
+/*findme*/
+                if (state.moves > 0 && !state.gameOver) {
+                    confirmForfeit();
+                    return;
+                }
+
                 targetPuzzleNum = currentPuzzleNum - 1;
+
             } else if (e.target.closest('#next-puzzle')) {
                 if (e.target.closest('#next-puzzle').dataset.disabled === 'true') {
                     showSnackbar('This is the last archive puzzle!');
                     return;
                 }
+
+                if (state.moves > 0 && !state.gameOver) {
+                    confirmForfeit();
+                    return;
+                }
+
                 targetPuzzleNum = currentPuzzleNum + 1;
             }
             
@@ -1592,68 +1733,42 @@
             }
         });
 
+        function confirmForfeit(onComplete) {
+            showConfirmationModal(
+                'Forfeit Current Puzzle?',
+                'Your progress will be lost and the puzzle will reset.',
+                async () => {
+                    // User CONFIRMED - reset game
+                    if (state.puzzle && state.puzzle.date) {
+                        await transitionToPuzzle(state.puzzle.date);
+                    } else {
+                        await transitionToPuzzle();
+                    }
+                    // Call the callback if provided
+                    if (onComplete) onComplete();
+                }
+            );
+        }
+
         DOM.menuBtn.addEventListener('click', () => {
             if (state.moves > 0 && !state.gameOver) {
-                showConfirmationModal(
-                    'Forfeit Current Puzzle?',
-                    'Your progress will be lost and the puzzle will reset.',
-                    () => {
-                        // First close the modal
-                        closeModal(DOM.confirmationModal);
-                        
-                        // Reset the puzzle
-                        if (state.puzzle && state.puzzle.date) {
-                            initGame(state.puzzle.date);
-                        } else {
-                            initGame();
-                        }
-                        
-                        // Then open the menu dropdown
-                        setTimeout(() => {
-                            DOM.menuDropdown.classList.remove('hidden');
-                        }, 100); // Small delay to ensure game resets first
-                    }
-                );
+                /*pause timer*/
+                confirmForfeit(() => {
+                    // This only runs when called from menu button
+                    setTimeout(() => {
+                        DOM.menuDropdown.classList.remove('hidden');
+                    }, 100);
+                });
             } else {
                 DOM.menuDropdown.classList.toggle('hidden');
             }
         });
+
+
         DOM.todayBtn.addEventListener('click', (e) => {
             e.preventDefault();
             transitionToPuzzle();
             DOM.menuDropdown.classList.add('hidden');
-        });
-
-        DOM.archivesCtaBtn.addEventListener('click', async () => {
-            try {
-                const response = await fetch('/api/archives');
-                const puzzles = await response.json();
-                const savedScores = getSavedScores();
-                
-                // Get today's puzzle number
-                const todayResponse = await fetch('/api/puzzle');
-                const todayPuzzle = await todayResponse.json();
-                const todayPuzzleNumber = todayPuzzle.puzzleNumber;
-                
-                // Filter archives
-                const archivePuzzles = puzzles.filter(p => p.puzzleNumber < todayPuzzleNumber);
-
-                const content = `<div class="space-y-2 max-h-64 overflow-y-auto">
-                    ${archivePuzzles.map(p => {
-                        const score = savedScores[p.puzzleNumber] || 'New';
-                        return `
-                            <button data-date="${p.date}" class="archive-date-btn block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md flex justify-between items-center">
-                                <span>#${p.puzzleNumber} - ${p.date}</span>
-                                <span class="font-bold">${score}</span>
-                            </button>
-                        `;
-                    }).join('')}
-                </div>`;
-
-                openModal('Archives', content);
-            } catch (error) {
-                openModal('Archives', '<p class="text-gray-300">Could not load archives.</p>');
-            }
         });
 
         DOM.settingsBtn.addEventListener('click', () => {
@@ -1701,7 +1816,7 @@
         
         DOM.cancelConfirmationBtn.addEventListener('click', () => closeModal(DOM.confirmationModal));
 
-        DOM.archivesBtn.addEventListener('click', async () => {
+        async function handleArchivesClick() {
             try {
                 const response = await fetch('/api/archives');
                 const puzzles = await response.json();
@@ -1732,7 +1847,10 @@
                 openModal('Archives', '<p class="text-gray-300">Could not load archives.</p>');
             }
             DOM.menuDropdown.classList.add('hidden');
-        });
+        }
+
+        DOM.archivesCtaBtn.addEventListener('click', handleArchivesClick);
+        DOM.archivesBtn.addEventListener('click', handleArchivesClick);
 
         DOM.modalContent.addEventListener('click', (e) => {
             // Handle archive puzzle clicks
