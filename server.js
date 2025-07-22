@@ -10,6 +10,7 @@ const PORT = process.env.PORT || 3000;
 // Serve the main index.html file and other static assets.
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/miniKeyboardLayout', express.static(path.join(__dirname, 'miniKeyboardLayout')));
+app.use('/words2.json', express.static(path.join(__dirname, 'words2.json')));
 
 /**
  * Calculates the current date string in the "America/New_York" (EST/EDT) timezone.
