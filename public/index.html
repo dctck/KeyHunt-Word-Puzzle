@@ -907,14 +907,32 @@
             }).join('');
         }
         
-        async function isValidWord(word) {
+        // Load word list once when the game starts
+        let validWords = new Set();
+        
+        async function loadWordList() {
             try {
-                const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-                return response.ok;
+                const response = await fetch('/words2.json');
+                if (!response.ok) throw new Error('Could not load word list');
+                const wordArray = await response.json();
+                
+                // Convert to Set for O(1) lookup and normalize to lowercase
+                validWords = new Set(wordArray.map(word => word.toLowerCase()));
+                console.log(`Loaded ${validWords.size} words`);
             } catch (error) {
-                showSnackbar("Network error. Please try again.");
-                return false;
+                console.error('Failed to load word list:', error);
+                showSnackbar("Could not load word dictionary");
             }
+        }
+        
+        async function isValidWord(word) {
+            // If word list isn't loaded yet, try to load it
+            if (validWords.size === 0) {
+                await loadWordList();
+            }
+            
+            // Check if word exists in our list (case-insensitive)
+            return validWords.has(word.toLowerCase());
         }
 
         function checkWordChangeRule(current, next) {
