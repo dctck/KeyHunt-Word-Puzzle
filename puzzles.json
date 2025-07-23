@@ -3,210 +3,420 @@
         "puzzleNumber": 1,
         "date": "2025-07-05",
         "startWord": "DAWN",
-        "endWord": "DUSK",
-        "targetMoves": 6
+        "endWord": "KITE",
+        "targetMoves": 7
     },
     {
         "puzzleNumber": 2,
         "date": "2025-07-06",
         "startWord": "WORK",
-        "endWord": "PLAY",
+        "endWord": "MINT",
         "targetMoves": 8
     },
     {
         "puzzleNumber": 3,
         "date": "2025-07-07",
         "startWord": "HEAD",
-        "endWord": "TAIL",
-        "targetMoves": 6
+        "endWord": "JUMP",
+        "targetMoves": 8
     },
     {
         "puzzleNumber": 4,
         "date": "2025-07-08",
         "startWord": "RICH",
-        "endWord": "POOR",
+        "endWord": "FAWN",
         "targetMoves": 9
     },
     {
         "puzzleNumber": 5,
         "date": "2025-07-09",
         "startWord": "FIRE",
-        "endWord": "ICE",
+        "endWord": "WOLF",
         "targetMoves": 8
     },
     {
         "puzzleNumber": 6,
         "date": "2025-07-10",
         "startWord": "BEER",
-        "endWord": "WINE",
-        "targetMoves": 6
+        "endWord": "MYTH",
+        "targetMoves": 8
     },
     {
         "puzzleNumber": 7,
         "date": "2025-07-11",
         "startWord": "SLOW",
-        "endWord": "FAST",
-        "targetMoves": 6
+        "endWord": "BIKE",
+        "targetMoves": 7
     },
     {
         "puzzleNumber": 8,
         "date": "2025-07-12",
         "startWord": "HIGH",
-        "endWord": "LOW",
-        "targetMoves": 5
+        "endWord": "MAZE",
+        "targetMoves": 7
     },
     {
         "puzzleNumber": 9,
         "date": "2025-07-13",
         "startWord": "GOOD",
-        "endWord": "EVIL",
-        "targetMoves": 7
+        "endWord": "TRAP",
+        "targetMoves": 8
     },
     {
         "puzzleNumber": 10,
         "date": "2025-07-14",
         "startWord": "BOOK",
-        "endWord": "READ",
-        "targetMoves": 6
+        "endWord": "LIME",
+        "targetMoves": 7
     },
     {
         "puzzleNumber": 11,
         "date": "2025-07-15",
         "startWord": "SHIP",
-        "endWord": "DOCK",
-        "targetMoves": 6
+        "endWord": "YARN",
+        "targetMoves": 8
     },
     {
         "puzzleNumber": 12,
         "date": "2025-07-16",
         "startWord": "HAND",
-        "endWord": "FOOT",
-        "targetMoves": 6
+        "endWord": "QUIZ",
+        "targetMoves": 8
     },
     {
         "puzzleNumber": 13,
         "date": "2025-07-17",
         "startWord": "PORK",
-        "endWord": "BEEF",
+        "endWord": "JADE",
         "targetMoves": 8
     },
     {
         "puzzleNumber": 14,
         "date": "2025-07-18",
         "startWord": "EYES",
-        "endWord": "NOSE",
-        "targetMoves": 6
+        "endWord": "FROG",
+        "targetMoves": 7
     },
     {
         "puzzleNumber": 15,
         "date": "2025-07-19",
         "startWord": "TIDE",
-        "endWord": "WAVE",
-        "targetMoves": 6
+        "endWord": "GLOW",
+        "targetMoves": 7
     },
     {
         "puzzleNumber": 16,
         "date": "2025-07-20",
         "startWord": "ROCK",
-        "endWord": "SAND",
-        "targetMoves": 6
+        "endWord": "HYMN",
+        "targetMoves": 8
     },
     {
         "puzzleNumber": 17,
         "date": "2025-07-21",
         "startWord": "SEND",
-        "endWord": "MORE",
-        "targetMoves": 5
+        "endWord": "JAZZ",
+        "targetMoves": 8
     },
     {
         "puzzleNumber": 18,
         "date": "2025-07-22",
         "startWord": "RAIN",
-        "endWord": "SNOW",
-        "targetMoves": 6
+        "endWord": "FLUX",
+        "targetMoves": 7
     },
     {
         "puzzleNumber": 19,
         "date": "2025-07-23",
         "startWord": "COLD",
-        "endWord": "WARM",
-        "targetMoves": 7
+        "endWord": "VIBE",
+        "targetMoves": 8
     },
     {
         "puzzleNumber": 20,
         "date": "2025-07-24",
         "startWord": "LIKE",
-        "endWord": "HATE",
-        "targetMoves": 8
+        "endWord": "GOLF",
+        "targetMoves": 7
     },
     {
         "puzzleNumber": 21,
         "date": "2025-07-25",
         "startWord": "FOUR",
-        "endWord": "FIVE",
-        "targetMoves": 6
+        "endWord": "TWIN",
+        "targetMoves": 7
     },
     {
         "puzzleNumber": 22,
         "date": "2025-07-26",
         "startWord": "MOON",
-        "endWord": "STAR",
-        "targetMoves": 7
+        "endWord": "BEEF",
+        "targetMoves": 8
     },
     {
         "puzzleNumber": 23,
         "date": "2025-07-27",
         "startWord": "RICE",
-        "endWord": "BEAN",
-        "targetMoves": 7
+        "endWord": "HOLY",
+        "targetMoves": 8
     },
     {
         "puzzleNumber": 24,
         "date": "2025-07-28",
         "startWord": "CLAY",
-        "endWord": "VASE",
-        "targetMoves": 6
+        "endWord": "DUMP",
+        "targetMoves": 7
     },
     {
         "puzzleNumber": 25,
         "date": "2025-07-29",
         "startWord": "ATOM",
-        "endWord": "BOND",
-        "targetMoves": 6
+        "endWord": "KEYS",
+        "targetMoves": 7
     },
     {
         "puzzleNumber": 26,
         "date": "2025-07-30",
         "startWord": "WIRE",
-        "endWord": "CODE",
-        "targetMoves": 7
+        "endWord": "BATH",
+        "targetMoves": 8
     },
     {
         "puzzleNumber": 27,
         "date": "2025-07-31",
         "startWord": "BLUE",
-        "endWord": "PINK",
+        "endWord": "MYTH",
         "targetMoves": 7
     },
     {
         "puzzleNumber": 28,
         "date": "2025-08-01",
         "startWord": "CHEF",
-        "endWord": "MEAL",
-        "targetMoves": 6
+        "endWord": "WIND",
+        "targetMoves": 7
     },
     {
         "puzzleNumber": 29,
         "date": "2025-08-02",
         "startWord": "SALT",
-        "endWord": "PEST",
-        "targetMoves": 5
+        "endWord": "QUIZ",
+        "targetMoves": 8
     },
     {
         "puzzleNumber": 30,
         "date": "2025-08-03",
         "startWord": "RAIN",
-        "endWord": "SNOW",
-        "targetMoves": 6
+        "endWord": "CUBE",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 31,
+        "date": "2025-08-04",
+        "startWord": "LAMP",
+        "endWord": "YOGA",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 32,
+        "date": "2025-08-05",
+        "startWord": "NEST",
+        "endWord": "AXLE",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 33,
+        "date": "2025-08-06",
+        "startWord": "DUCK",
+        "endWord": "VERB",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 34,
+        "date": "2025-08-07",
+        "startWord": "MASK",
+        "endWord": "IRON",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 35,
+        "date": "2025-08-08",
+        "startWord": "LENS",
+        "endWord": "QUIT",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 36,
+        "date": "2025-08-09",
+        "startWord": "WAVE",
+        "endWord": "JURY",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 37,
+        "date": "2025-08-10",
+        "startWord": "CAKE",
+        "endWord": "FORM",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 38,
+        "date": "2025-08-11",
+        "startWord": "GOLD",
+        "endWord": "PINK",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 39,
+        "date": "2025-08-12",
+        "startWord": "TRIP",
+        "endWord": "BOWL",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 40,
+        "date": "2025-08-13",
+        "startWord": "VOTE",
+        "endWord": "GRID",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 41,
+        "date": "2025-08-14",
+        "startWord": "FACT",
+        "endWord": "WISE",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 42,
+        "date": "2025-08-15",
+        "startWord": "PALM",
+        "endWord": "DUCK",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 43,
+        "date": "2025-08-16",
+        "startWord": "HERB",
+        "endWord": "TAXI",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 44,
+        "date": "2025-08-17",
+        "startWord": "ZONE",
+        "endWord": "HAWK",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 45,
+        "date": "2025-08-18",
+        "startWord": "BELL",
+        "endWord": "FLUX",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 46,
+        "date": "2025-08-19",
+        "startWord": "GAME",
+        "endWord": "LYNX",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 47,
+        "date": "2025-08-20",
+        "startWord": "FILM",
+        "endWord": "JOEY",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 48,
+        "date": "2025-08-21",
+        "startWord": "PLOT",
+        "endWord": "WAGE",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 49,
+        "date": "2025-08-22",
+        "startWord": "ITEM",
+        "endWord": "BUZZ",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 50,
+        "date": "2025-08-23",
+        "startWord": "HYMN",
+        "endWord": "FOX",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 51,
+        "date": "2025-08-24",
+        "startWord": "JUNK",
+        "endWord": "PAVE",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 52,
+        "date": "2025-08-25",
+        "startWord": "QUIT",
+        "endWord": "HELM",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 53,
+        "date": "2025-08-26",
+        "startWord": "APEX",
+        "endWord": "DRUG",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 54,
+        "date": "2025-08-27",
+        "startWord": "BOWL",
+        "endWord": "TINY",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 55,
+        "date": "2025-08-28",
+        "startWord": "FLEX",
+        "endWord": "COIN",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 56,
+        "date": "2025-08-29",
+        "startWord": "JUMP",
+        "endWord": "VEIL",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 57,
+        "date": "2025-08-30",
+        "startWord": "OXEN",
+        "endWord": "BIKE",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 58,
+        "date": "2025-08-31",
+        "startWord": "ZINC",
+        "endWord": "FOWL",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 59,
+        "date": "2025-09-01",
+        "startWord": "WASP",
+        "endWord": "GRID",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 60,
+        "date": "2025-09-02",
+        "startWord": "YAWN",
+        "endWord": "BELT",
+        "targetMoves": 8
     }
 ]
