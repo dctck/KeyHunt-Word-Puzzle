@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -61,6 +62,42 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <!-- ANALYTICS CODE start -->
+    <script>
+      const isDevelopment = window.location.hostname === 'localhost' || 
+                           window.location.hostname === '127.0.0.1' ||
+                           window.location.hostname.includes('localhost');
+      
+      const isProduction = !isDevelopment;
+      
+      // Only load Google Analytics in production
+      if (isProduction) {
+        // Google tag (gtag.js)
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-LYP3V7LTWR';
+        document.head.appendChild(script);
+        
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-LYP3V7LTWR', {
+          send_page_view: true
+        });
+        
+        console.log('📊 Google Analytics loaded (Production)');
+      } else {
+        console.log('🔧 Development mode - Analytics disabled');
+      }
+
+    
+    </script>
+    <!-- END ANALYTICS CODE -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
@@ -826,6 +863,69 @@
 
         let state = {};
 
+        // Analytics helper functions
+        function trackEvent(eventName, parameters = {}) {
+          const envData = {
+            environment: isDevelopment ? 'development' : 'production',
+            timestamp: new Date().toISOString(),
+            game_version: '1.0',
+            ...parameters
+          };
+          
+          if (isProduction && typeof gtag !== 'undefined') {
+            gtag('event', eventName, envData);
+            console.log('📊 Analytics sent:', eventName, envData);
+          } else {
+            console.log('🔧 Analytics (DEV):', eventName, envData);
+          }
+        }
+
+        function trackGameStart() {
+          trackEvent('game_start', {
+            puzzle_number: state.puzzle.puzzleNumber,
+            game_mode: state.gameMode,
+            is_daily_puzzle: state.isToday,
+            target_moves: state.puzzle.targetMoves
+          });
+        }
+
+        function trackGameComplete(isWin) {
+          const timeInSeconds = state.finalTime ? timeToSeconds(state.finalTime) : null;
+          
+          trackEvent('level_end', {
+            level_name: `puzzle_${state.puzzle.puzzleNumber}`,
+            success: isWin,
+            score: state.moves,
+            puzzle_number: state.puzzle.puzzleNumber,
+            game_mode: state.gameMode,
+            moves_used: state.moves,
+            target_moves: state.puzzle.targetMoves,
+            time_seconds: timeInSeconds,
+            keys_found: state.discoveredKeys.size,
+            total_one_letter_violations: state.oneLetterViolations || 0
+          });
+        }
+
+        function trackWordSubmission(word, isValid, newKeysFound = 0) {
+          trackEvent('word_submitted', {
+            puzzle_number: state.puzzle.puzzleNumber,
+            move_number: state.moves,
+            word_length: word.length,
+            is_valid: isValid,
+            new_keys_found: newKeysFound,
+            total_keys_found: state.discoveredKeys.size
+          });
+        }
+
+        function trackUserAction(action, details = {}) {
+          trackEvent('user_interaction', {
+            interaction_type: action,
+            puzzle_number: state.puzzle?.puzzleNumber || 0,
+            ...details
+          });
+        }
+
+        // Game helper functions
         function setupGame(puzzle) {
             const savedScores = getSavedScores();
             const gameMode = localStorage.getItem('keyhunt-mode') || 'turns';
@@ -847,10 +947,13 @@
                 shareGrid: "",
                 isToday: isToday,
                 gameMode: gameMode,
+                oneLetterViolations: 0
             };
             if(state.gameMode === 'turns'){
                 state.totalTurns = puzzle.targetMoves + 4;
             }
+
+            DOM.resultTime.textContent = '0:00';
         }
 
         function countKeyNeighbors(letter) {
@@ -1285,7 +1388,7 @@
                             line += '🟦';
                         }
                     } else {
-                        line += '⬛️';
+                        line += '⬛';
                     }
                 }
                 grid.push(line);
@@ -1322,6 +1425,10 @@
             state.gameOver = true;
             state.isWin = isWin;
             
+            if (!isReplay) {
+                trackGameComplete(isWin);
+            }
+
             DOM.gameContainer.classList.remove('all-keys-glow');
 
             const finalWordRow = DOM.boardContent.lastElementChild;
@@ -1450,7 +1557,21 @@
                         showSnackbar("Word already used.");
                         return;
                     }
+
                     if (!checkWordChangeRule(state.currentWord, nextWord)) {
+
+                        trackEvent('rule_violation_one_letter', {
+                            puzzle_number: state.puzzle.puzzleNumber,
+                            current_word: state.currentWord,
+                            attempted_word: nextWord,
+                            move_number: state.moves + 1,
+                            game_mode: state.gameMode,
+                            session_violations: (state.oneLetterViolations || 0) + 1
+                        });
+                        
+                        // Track violations per session
+                        state.oneLetterViolations = (state.oneLetterViolations || 0) + 1;
+
                         showSnackbar("You can only change one letter.");
                         return;
                     }
@@ -1460,6 +1581,12 @@
                     state.isChecking = false;
 
                     if (!isRealWord) {
+
+                        trackEvent('invalid_word', {
+                            attempted_word: nextWord,
+                            puzzle_number: state.puzzle.puzzleNumber
+                        });
+
                         showSnackbar("Not a valid word.");
                         return;
                     }
@@ -1753,6 +1880,8 @@
             
             setupGame(puzzle);
             state.isToday = isToday;
+
+            trackGameStart();
             
             render();
             DOM.victoryFooter.classList.add('hidden');
