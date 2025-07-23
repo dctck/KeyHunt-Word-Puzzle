@@ -2107,7 +2107,2189 @@
                 } catch(e) {
                     openModal('How to Play', '<p class="text-gray-300">Could not load instructions.</p>');
                 }
+            }, 1000);<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>KeyHunt - Daily Word Puzzle Game | Find All Key Letters!</title>
+    <meta name="title" content="KeyHunt - Daily Word Puzzle Game | Find Key Letters & Transform Words">
+    <meta name="description" content="Play KeyHunt, the addictive daily word puzzle game! Submit words by changing one letter at a time to discover key letters. Challenge your vocabulary with new puzzles every day. Free to play!">
+    <meta name="keywords" content="word puzzle game, daily word game, word ladder, vocabulary game, puzzle game, word finder, daily puzzle, letter game, brain training, word challenge, wordle alternative, free word games, online puzzle">
+    <meta name="author" content="KeyHunt">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="1 day">
+
+    <link rel="canonical" href="https://keyhunter.org/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://keyhunter.org/">
+    <meta property="og:title" content="KeyHunt - Daily Word Puzzle Game | Find Key Letters & Transform Words">
+    <meta property="og:description" content="Play KeyHunt, the addictive daily word puzzle game! Submit words by changing one letter at a time to discover key letters. Challenge your vocabulary with new puzzles every day.">
+    <!-- <meta property="og:image" content="https://keyhunter.org/images/keyhunt-og-image.jpg"> -->
+    <!--<meta property="og:image:width" content="1200"> -->
+    <!--<meta property="og:image:height" content="630"> -->
+    <!--<meta property="og:image:alt" content="KeyHunt word puzzle game screenshot showing letter tiles and keyboard"> -->
+    <meta property="og:site_name" content="KeyHunt">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://keyhunter.org/">
+    <meta property="twitter:title" content="KeyHunt - Daily Word Puzzle Game">
+    <meta property="twitter:description" content="Submit words by changing one letter at a time to discover key letters. New puzzles daily!">
+
+    <!-- Additional Meta Tags -->
+    <meta name="theme-color" content="#06b6d4">
+    <meta name="msapplication-TileColor" content="#06b6d4">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KeyHunt">
+    <meta name="application-name" content="KeyHunt">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+
+
+    <!-- Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+
+    <!-- DNS Prefetch -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//cdn.tailwindcss.com">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+
+
+    <style>
+            /* Base styles first */
+            body {
+                font-family: 'Inter', sans-serif;
+                background-color: #0F110C !important;
+                touch-action: manipulation;
+                min-width: 300px;
+                overflow-x: auto;
+                padding: 8px;
+            }
+
+            /* Global icon styles */
+            .icon {
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 1.5;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+            .icon-sm { width: 16px; height: 16px; }
+            .icon-md { width: 20px; height: 20px; }
+            .icon-lg { width: 24px; height: 24px; }
+            .icon-xl { width: 32px; height: 32px; }
+
+            /* Base element styles */
+            #game-container,
+            #keyboard-container,
+            header {
+                /*min-width: 300px;8*/                
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 50;
+                background-color: #0F110C;
+            }
+
+            /* Ensure all main containers stay centered */
+            .main-wrapper {
+                width: 100%;
+                max-width: 100%;
+                overflow-x: hidden; /* Prevent horizontal scroll */
+                overflow-y: auto;   /* Allow vertical scroll */
+                box-sizing: border-box;
+                padding-top: 64px;
+            }
+
+            /* Fix narrow screen layout issues */
+            @media (max-width: 320px) {
+                body {
+                    padding: 4px;
+                }
+                
+                #game-container,
+                #board-content,
+                #keyboard-container,
+                header {
+                    width:100%;
+                    padding-left: 0;
+                    padding-right: 0;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+                
+            }
+
+            #game-container::-webkit-scrollbar { display: none; }
+            #game-container { 
+                -ms-overflow-style: none; 
+                scrollbar-width: none;
+                transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                will-change: transform;
+            }
+
+            #game-container.transitioning {
+                transform: translateY(-20px);
+                opacity: 0.6;
+            }
+
+            #keyboard, #victory-footer {
+                transition: opacity 0.5s ease-out;
+            }
+
+            /* Typography */
+            .font-title { font-family: 'Space+Grotesk', sans-serif; }
+
+            /* Game tiles */
+            .tile-container {
+                perspective: 1000px;
+            }
+
+            .tile-inner {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+                transform-style: preserve-3d;
+            }
+
+            .tile-inner.flip {
+                transform: rotateX(180deg);
+            }
+
+            .tile-face {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                backface-visibility: hidden;
+                -webkit-backface-visibility: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2.25rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                border-radius: 0.5rem;
+            }
+
+            .tile-front {
+                background-color: #374151;
+                border: 2px solid #4b5563;
+            }
+
+            .tile-back {
+                background-color: #06b6d4;
+                border: 2px solid #22d3ee;
+                transform: rotateX(180deg);
+            }
+
+            .input-tile {
+                background-color: #1f2937;
+                border: 2px solid #4b5563;
+            }
+
+            .input-tile.discovered {
+                background-color: #06b6d4;
+                border-color: #22d3ee;
+            }
+
+            /* Animations */
+            .tile-inner.shake { 
+                animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; 
+            }
+
+            @keyframes shake {
+                10%, 90% { transform: translate3d(-1px, 0, 0); } 
+                20%, 80% { transform: translate3d(2px, 0, 0); }
+                30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 
+                40%, 60% { transform: translate3d(4px, 0, 0); }
+            }
+
+            .all-keys-glow { 
+                animation: glowing 2s ease-in-out infinite alternate; 
+            }
+
+            @keyframes glowing {
+                from { box-shadow: 0 0 3px #06b6d4, 0 0 6px #06b6d4, 0 0 9px #0891b2; }
+                to { box-shadow: 0 0 6px #0891b2, 0 0 12px #0e7490, 0 0 18px #0e7490; }
+            }
+
+            .word-dance { 
+                animation: dance 0.8s ease-in-out; 
+            }
+
+            @keyframes dance {
+                0%, 100% { transform: translateY(0) rotate(0); } 
+                20% { transform: translateY(-5px) rotate(-2deg); }
+                40% { transform: translateY(0) rotate(2deg); } 
+                60% { transform: translateY(-5px) rotate(-1deg); }
+                80% { transform: translateY(0) rotate(1deg); }
+            }
+
+            /* UI Components */
+            .gold-text {
+                background: -webkit-linear-gradient(45deg, #fde047, #facc15, #eab308);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+            .snackbar {
+                visibility: hidden;
+                opacity: 0;
+                transition: visibility 0s 2.5s, opacity 0.3s ease-out, transform 0.3s ease-out;
+                transform: translate(-50%, -50%) scale(0.9);
+                position: fixed;
+                top: 30%;
+                left: 50%;
+                z-index: 60;
+                background: #374151;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                font-size: 14px;
+                font-weight: 500;
+                max-width: 280px;
+                text-align: center;
+                word-wrap: break-word;
+            }
+
+            .snackbar.show {
+                visibility: visible;
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+                transition: opacity 0.3s ease-in, transform 0.3s ease-in;
+            }
+
+            .spinner {
+                border: 3px solid rgba(255, 255, 255, 0.1);
+                border-top: 3px solid #06b6d4;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: spin 1s linear infinite;
+                margin: 20px auto;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            .loading-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.40);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                z-index: 100;
+                color: white;
+            }
+
+            /* Menu dropdown */
+            #menu-dropdown {
+                transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+                transform-origin: top right;
+                will-change: transform, opacity;
+            }
+
+            #menu-dropdown.hidden {
+                opacity: 0;
+                transform: scale(0.96) translateY(-8px);
+                pointer-events: none;
+            }
+
+            #menu-dropdown:not(.hidden) {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+
+            /* Toggle switch */
+            #speed-mode-toggle:checked ~ .dot {
+                transform: translateX(1.5rem);
+            }
+
+            #speed-mode-toggle:checked ~ .block {
+                background-color: #0e7490;
+            }
+
+            .dot {
+                transition: transform 0.2s ease-in-out;
+            }
+
+            /* CSS Variables for key dimensions*/
+            :root {
+                --keyboard-container-width: 100%; /* Fixed width based on 10 keys */
+                --key-width: calc(var(--keyboard-container-width) / 10); /* Each key is 1/10th */
+                --key-height: calc(var(--key-width) * 1.6);
+                --key-padding: calc(var(--key-width) * 0.33);
+                --key-font-size: max(16px, calc(var(--key-width) * 0.5));
+                --key-border-width: 1px;
+            }
+
+            .middle-row {
+                width:100%;
+            }
+
+
+
+            /* ===== KEYBOARD STYLES ===== */
+            
+            /* Base keyboard container */
+            #keyboard {
+                width: 100%;
+                margin: 0 auto;
+                overflow: hidden;
+            }
+
+            /* Keyboard rows */
+            .keyboard-row {
+                display: flex;
+                justify-content: flex-start;
+                gap: 0;
+                margin: 0;
+            }
+
+            .keyboard-row.middle-row {
+                margin-left: calc(var(--key-width) * 0.5);
+            }
+
+            /* Base key layout using variables*/
+            .key {
+                display: flex;
+                width: var(--key-width);
+                padding: var(--key-padding);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 8px;
+                flex-shrink: 0;
+                border-radius: 4px;
+                border: var(--key-border-width) solid #0F110C;
+                background: #303030;
+                cursor: pointer;
+                position: relative;
+                box-sizing: border-box;
+                margin: 0;
+                outline: none;
+                
+                /* Typography */
+                color: #ECE1E1;
+                text-align: center;
+                font-family: Inter;
+                font-size: var(--key-font-size);
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+                align-self: stretch;
+            }
+
+            /* Key states */
+            .key-normal {
+                background: #303030;
+            }
+
+            .key-discovered {
+                background: #06B6D4;
+            }
+
+            .key-used {
+                background: #1E1E1E;
+            }
+
+            /* Submit key */
+            .submit-key {
+                background: #70E581;
+                color: #0F110C;
+                font-size: var(--key-font-size);
+                width: var(--key-width); /* Same width as regular keys */
+                font-weight: 700;
+            }
+
+            /* Delete key  */
+            .delete-key {
+                background: #E57070;
+                color: #0F110C;
+                font-size: var(--key-font-size);
+                font-weight: 600;
+                width: calc(var(--key-width) * 2);
+            }
+
+            /* Proximity indicators */
+            .pips-container {
+                position: absolute;
+                bottom: 8px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                height: 4px;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .pip {
+                width: 8px;
+                height: 4px;
+                background: #06B6D4;
+            }
+
+            .tile-icon {
+                position: absolute;
+                bottom: 5%;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 16px;
+                height: 16px;
+            }
+
+
+            /* Modal styles */
+            @media (max-width: 480px) {
+                /* Mobile viewport fixes */
+                #game-container {
+                    height: 100dvh;
+                    max-height: 100dvh;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                
+                
+                #keyboard-container {
+                    flex-shrink: 0;
+                }
+
+                .pips-container {
+                    bottom: 2px;
+                    gap: 1px;
+                }
+                
+                .pip {
+                    width: 4px;
+                    height: 2px;
+                }
+
+                @supports not (height: 100dvh) {
+                    #game-container {
+                        height: calc(100vh - 60px);
+                        max-height: calc(100vh - 60px);
+                    }
+                }
+                
+                #settings-modal .bg-gray-800 {
+                    max-height: 90dvh;
+                    overflow-y: auto;
+                    margin: 1rem;
+                    width: calc(100% - 2rem);
+                }
+                
+                #settings-modal .p-6 {
+                    padding: 1rem;
+                }
+                
+                #settings-modal .flex.gap-2 {
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+                
+                #import-code-btn {
+                    font-size: 0.875rem;
+                    padding: 0.5rem 1rem;
+                }
+                
+                #settings-modal h3 {
+                    font-size: 1rem;
+                }
+                
+                #settings-modal p {
+                    font-size: 0.75rem;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .pips-container {
+                    bottom: 4px;
+                    gap: 2px;
+                }
+                
+                .pip {
+                    width: 6px;
+                    height: 3px;
+                }
+            }
+
+            @media (max-width: 320px) {
+                #settings-modal .bg-gray-800 {
+                    margin: 0.5rem;
+                    width: calc(100% - 1rem);
+                }
+                
+                #settings-modal .p-6 {
+                    padding: 0.75rem;
+                }
+            }
+
+            .archive-date-btn span {
+                    pointer-events: none;
+            }
+
+
+            /* Key hover and active states */
+            .key:hover {
+                background: #404040;
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            .key:active {
+                background: #505050;
+                transform: translateY(0);
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            }
+
+            .submit-key:hover {
+                background: #5FD470;
+            }
+
+            .submit-key:active {
+                background: #4FC05F;
+            }
+
+            .delete-key:hover {
+                background: #D85F5F;
+            }
+
+            .key-discovered:hover {
+                background: #0891B2;
+            }
+
+            .key-discovered:active {
+                background: #0E7490;
+            }
+
+            .delete-key:active {
+                background: #C74F4F;
+            }
+
+            @supports (-webkit-touch-callout: none) {
+                .submit-key, .delete-key {
+                    font-weight: 700; /* or even 800 */
+                }
+            }
+
+            /* Mobile tap states - shows feedback on touch devices */
+            @media (hover: none) and (pointer: coarse) {
+                .key:active {
+                    background: #505050;
+                    transform: scale(0.98);
+                    transition: all 0.1s ease;
+                }
+
+                .submit-key:active {
+                        background: #4FC05F;
+                }
+                
+                .delete-key:active {
+                        background: #C74F4F;
+                        transform: scale(0.98);
+                }
+
+            }
+            .key {
+                transition: all 0.15s ease;
+                user-select: none;
+                -webkit-user-select: none;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 flex flex-col h-screen p-1">
+        <div class="main-wrapper flex flex-col h-full">
+
+
+    
+    <!-- Header -->
+    <header class="flex-shrink-0 flex gap-justify items-center w-full max-w-2xl mx-auto p-2">
+        <div class="flex items-center gap-2">
+            
+            <h1 class="text-3xl sm:text-4xl font-bold font-title text-cyan-400">Key<span class="text-3xl sm:text-4xl font-bold font-title text-white">Hunt</span></h1>
+        </div>
+        <div class="flex-grow" style="min-width: 16px;"></div>
+        <div class="flex items-center gap-2 sm:gap-4 mt-2 sm:mt-0">
+            <div id="turns-mode-header" class="flex items-center gap-2 sm:gap-4">
+                <div class="text-center">
+                    <div id="turns-left-display" class="text-xl font-bold">0</div>
+                    <div class="text-xs text-gray-400">TURNS LEFT</div>
+                </div>
+            </div>
+             <div id="speed-mode-header" class="hidden flex items-center gap-2 sm:gap-4">
+                <div class="text-center">
+                    <div id="resultTime" class="text-xl font-bold">0:00</div>
+                    <div class="text-xs text-gray-400">TIME</div>
+                </div>
+                <div class="text-center">
+                    <div id="speed-moves-display" class="text-xl font-bold">0</div>
+                    <div class="text-xs text-gray-400">TURNS</div>
+                </div>
+            </div>
+            <div class="relative">
+                 <button id="menu-btn" class="p-2 rounded-full hover:bg-gray-700 transition">
+                    <svg class="icon icon-lg text-white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+                <div id="menu-dropdown" class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-20 hidden">
+                    <a href="#" id="help-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition">How to Play</a>
+                    <a href="#" id="today-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition">Today's Puzzle</a>
+                    <a href="#" id="archives-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition">Archives</a>
+                    <a href="#" id="settings-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition">Settings</a>
+                    <button id="player-id-btn" class="w-full text-left block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition"></button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <h2 id="puzzle-title" class="text-center text-lg text-gray-400 font-semibold mb-4"></h2>
+
+    <!-- Game Board -->
+    <main id="game-container" class="flex-grow flex flex-col items-center w-full max-w-sm mx-auto pt-4 rounded-lg">
+        <div id="board-content" class="w-full space-y-2">
+            <!-- JS will populate this -->
+        </div>
+
+        <div id="victory-footer" class="hidden text-center mt-4">
+            <h2 id="victory-title" class="text-3xl font-bold gold-text"></h2>
+            <p id="victory-message" class="text-lg mt-2"></p>
+            <div class="flex justify-center gap-8 my-4 text-gray-300">
+                <div class="text-center">
+                    <div id="result-score" class="text-3xl font-bold"></div>
+                    <div id="result-score-label" class="text-xs">SCORE</div>
+                </div>
+            </div>
+            <div id="countdown-container" class="hidden mt-2 text-center">
+                <p class="text-sm text-gray-400">Next puzzle in:</p>
+                <div id="countdown-timer" class="text-2xl font-bold text-cyan-400"></div>
+            </div>
+            <div id="result-buttons" class="flex gap-2 mt-4 mb-6">
+                <button id="share-btn" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-md transition">Share</button> 
+                <button id="try-again-btn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md transition">Try Again</button>
+                <button id="archives-cta-btn" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-md transition">Archives</button>
+                <button id="play-next-btn" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-md transition">Next</button>
+            </div>
+        </div>
+
+        <!-- On-screen Keyboard -->
+        <footer id="keyboard-container" class="flex-shrink-0 w-full max-w-2xl mx-auto pt-4">
+            <div id="keyboard">
+                <!-- Keyboard rows will be generated here -->
+            </div>
+        </footer>
+
+    </main>
+
+    </div>
+
+
+    <!-- Snackbar for messages -->
+    <div id="snackbar" class="snackbar bg-gray-900 text-white px-4 py-2 rounded-md shadow-lg"></div>
+
+    <!-- Modals -->
+    <div id="modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
+        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md border border-gray-700 max-h-[80dvh] flex flex-col">
+            <div class="flex justify-between items-center mb-4 flex-shrink-0">
+                <h2 id="modal-title" class="text-2xl font-bold text-cyan-400"></h2>
+                <button id="modal-close" class="p-1 rounded-full hover:bg-gray-700 text-2xl leading-none">&times;</button>
+            </div>
+            <div id="modal-content" class="flex-grow overflow-y-auto"></div>
+            <div id="modal-footer" class="mt-4 flex-shrink-0 hidden"></div>
+        </div>
+    </div>
+
+    <!-- Generic Confirmation Modal Template -->
+    <div id="confirmation-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
+        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md border border-gray-700 text-center">
+            <h2 id="confirmation-title" class="text-2xl font-bold text-yellow-400 mb-4"></h2>
+            <p id="confirmation-message" class="text-gray-300 mb-6"></p>
+            <div class="flex gap-4">
+                <button id="cancel-confirmation-btn" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition">Cancel</button>
+                <button id="confirm-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+        const DOM = {
+            gameContainer: document.getElementById('game-container'),
+            boardContent: document.getElementById('board-content'),
+            keyboard: document.getElementById('keyboard'),
+            keyboardContainer: document.getElementById('keyboard-container'),
+            victoryFooter: document.getElementById('victory-footer'),
+            victoryTitle: document.getElementById('victory-title'),
+            victoryMessage: document.getElementById('victory-message'),
+            menuBtn: document.getElementById('menu-btn'),
+            menuDropdown: document.getElementById('menu-dropdown'),
+            archivesBtn: document.getElementById('archives-btn'),
+            helpBtn: document.getElementById('help-btn'),
+            settingsBtn: document.getElementById('settings-btn'),
+            confirmationModal: document.getElementById('confirmation-modal'),
+            confirmationTitle: document.getElementById('confirmation-title'),
+            confirmationMessage: document.getElementById('confirmation-message'),
+            confirmBtn: document.getElementById('confirm-btn'),
+            cancelConfirmationBtn: document.getElementById('cancel-confirmation-btn'),
+            countdownContainer: document.getElementById('countdown-container'),
+            countdownTimer: document.getElementById('countdown-timer'),
+            archivesCtaBtn: document.getElementById('archives-cta-btn'),
+            shareBtn: document.getElementById('share-btn'),
+            playNextBtn: document.getElementById('play-next-btn'),
+            snackbar: document.getElementById('snackbar'),
+            movesDisplay: document.getElementById('moves-display'),
+            speedMovesDisplay: document.getElementById('speed-moves-display'),
+            puzzleTitle: document.getElementById('puzzle-title'),
+            turnsLeftDisplay: document.getElementById('turns-left-display'),
+            turnsModeHeader: document.getElementById('turns-mode-header'),
+            speedModeHeader: document.getElementById('speed-mode-header'),
+            resultScore: document.getElementById('result-score'),
+            resultScoreLabel: document.getElementById('result-score-label'),
+            resultTime: document.getElementById('resultTime'),
+            playerIdBtn: document.getElementById('player-id-btn'),
+            todayBtn: document.getElementById('today-btn'),
+            tryAgainBtn: document.getElementById('try-again-btn'),
+            importCodeInput: document.getElementById('import-code-input'),
+            
+            // New generic modal elements
+            modal: document.getElementById('modal'),
+            modalTitle: document.getElementById('modal-title'),
+            modalContent: document.getElementById('modal-content'),
+            modalFooter: document.getElementById('modal-footer'),
+            modalClose: document.getElementById('modal-close'),
+
+            puzzleTitle: document.getElementById('puzzle-title')
+        };
+
+        const mainWrapperBox = document.querySelector('.main-wrapper');
+
+        const ADJACENCY_MAP = {
+            'Q': ['W', 'A'],
+            'W': ['Q', 'E', 'A', 'S'],
+            'E': ['W', 'R', 'S', 'D'],
+            'R': ['E', 'T', 'D', 'F'],
+            'T': ['R', 'Y', 'F', 'G'],
+            'Y': ['T', 'U', 'G', 'H'],
+            'U': ['Y', 'I', 'H', 'J'],
+            'I': ['U', 'O', 'J', 'K'],
+            'O': ['I', 'P', 'K', 'L'],
+            'P': ['O', 'L'],
+            'A': ['Q', 'W', 'S', 'Z'],
+            'S': ['W', 'E', 'A', 'D', 'Z', 'X'],
+            'D': ['E', 'R', 'S', 'F', 'X', 'C'],
+            'F': ['R', 'T', 'D', 'G', 'C', 'V'],
+            'G': ['T', 'Y', 'F', 'H', 'V', 'B'],
+            'H': ['Y', 'U', 'G', 'J', 'B', 'N'],
+            'J': ['U', 'I', 'H', 'K', 'N', 'M'],
+            'K': ['I', 'O', 'J', 'L', 'M'],
+            'L': ['O', 'P', 'K'],
+            'Z': ['A', 'S', 'X'],
+            'X': ['S', 'D', 'Z', 'C'],
+            'C': ['D', 'F', 'X', 'V'],
+            'V': ['F', 'G', 'C', 'B'],
+            'B': ['G', 'H', 'V', 'N'],
+            'N': ['H', 'J', 'B', 'M'],
+            'M': ['J', 'K', 'N']
+        };
+
+
+        const VICTORY_SYNONYMS = ["Excellent!", "Superb!", "Brilliant!", "Outstanding!", "Magnificent!", "Fantastic!"];
+
+        let state = {};
+
+        function setupGame(puzzle) {
+            const savedScores = getSavedScores();
+            const gameMode = localStorage.getItem('keyhunt-mode') || 'turns';
+            const todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'});
+            const isToday = puzzle.date === todayStr;
+            
+            state = {
+                puzzle,
+                currentWord: puzzle.startWord,
+                inputWord: "",
+                history: [],
+                triedLetters: new Set(),
+                discoveredKeys: new Set(),
+                isChecking: false,
+                gameOver: false, // Always start fresh for any game
+                allKeysFound: false,
+                moves: 0,
+                countdownInterval: null,
+                shareGrid: "",
+                isToday: isToday,
+                gameMode: gameMode,
+            };
+            if(state.gameMode === 'turns'){
+                state.totalTurns = puzzle.targetMoves + 4;
+            }
+        }
+
+        function countKeyNeighbors(letter) {
+            if (!ADJACENCY_MAP[letter]) return 0;
+            const endWordLetters = new Set(state.puzzle.endWord.split(''));
+            return ADJACENCY_MAP[letter].filter(neighbor => endWordLetters.has(neighbor)).length;
+        }
+
+        async function renderPuzzleTitle() {
+            if (!state.isToday) {
+                const maxArchive = await getCurrentMaxArchivePuzzle();
+                
+                DOM.puzzleTitle.innerHTML = `
+                    <div class="flex items-center justify-center gap-4">
+                        <button id="prev-puzzle" class="p-2 rounded-full hover:bg-gray-700 transition ${state.puzzle.puzzleNumber <= 1 ? 'opacity-30 cursor-not-allowed' : ''}" data-disabled="${state.puzzle.puzzleNumber <= 1}">
+                            <svg class="icon icon-md" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                        </button>
+                        <span>Archive #${state.puzzle.puzzleNumber}</span>
+                        <button id="next-puzzle" class="p-2 rounded-full hover:bg-gray-700 transition ${state.puzzle.puzzleNumber >= maxArchive ? 'opacity-30 cursor-not-allowed' : ''}" data-disabled="${state.puzzle.puzzleNumber >= maxArchive}">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+            } else {
+                DOM.puzzleTitle.textContent = `Daily Puzzle #${state.puzzle.puzzleNumber}`;
+            }
+        }
+
+        async function render() {
+            renderBoard();
+            renderKeyboard();
+            renderHeader();
+            await renderPuzzleTitle(); // Now async
+        }
+        
+        async function getCurrentMaxArchivePuzzle() {
+            try {
+                const response = await fetch('/api/archives');
+                const puzzles = await response.json();
+                
+                // Get today's puzzle number
+                const todayResponse = await fetch('/api/puzzle');
+                const todayPuzzle = await todayResponse.json();
+                
+                // Filter archives (puzzles < today) and get the highest number
+                const archivePuzzles = puzzles.filter(p => p.puzzleNumber < todayPuzzle.puzzleNumber);
+                const maxArchivePuzzle = Math.max(...archivePuzzles.map(p => p.puzzleNumber));
+                
+                return maxArchivePuzzle;
+            } catch {
+                return 6; // Fallback
+            }
+        }
+
+        function renderHeader() {
+            if (state.gameMode === 'speed') {
+                DOM.turnsModeHeader.classList.add('hidden');
+                DOM.speedModeHeader.classList.remove('hidden');
+                DOM.speedMovesDisplay.textContent = state.moves;
+            } else {
+                DOM.turnsModeHeader.classList.remove('hidden');
+                DOM.speedModeHeader.classList.add('hidden');
+                DOM.turnsLeftDisplay.textContent = state.totalTurns - state.moves;
+            }
+        }
+
+        function renderBoard() {
+            const historyHtml = state.history.map(word => createTileRow(word, false)).join('');
+            const currentHtml = createTileRow(state.currentWord, false);
+
+            const inputHtml = state.gameOver ? '' : createTileRow(state.inputWord, true);
+            
+            DOM.boardContent.innerHTML = historyHtml + currentHtml + inputHtml;
+            
+            
+        }
+
+        function createTileRow(word, isInput) {
+            const wordArr = word.padEnd(state.puzzle.startWord.length, ' ').split('');
+            const tilesHtml = wordArr.map((letter, i) => {
+                const content = letter.trim();
+                const isKey = state.puzzle.endWord.includes(content);
+                const isDiscovered = isKey && state.discoveredKeys.has(content);
+                const isTriedNonKey = content && state.triedLetters.has(content) && !isKey;
+                
+                let icon = '';
+                if (isInput && content) {
+                    // Question mark for pending submission
+                    icon = `<svg class="tile-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path fill="#9ca3af" d="M14.6 8.075q0-1.075-.712-1.725T12 5.7q-.725 0-1.312.313t-1.013.912q-.4.575-1.088.663T7.4 7.225q-.35-.325-.387-.8t.237-.9q.8-1.2 2.038-1.862T12 3q2.425 0 3.938 1.375t1.512 3.6q0 1.125-.475 2.025t-1.75 2.125q-.925.875-1.25 1.363T13.55 14.6q-.1.6-.513 1t-.987.4t-.987-.387t-.413-.963q0-.975.425-1.787T12.5 11.15q1.275-1.125 1.688-1.737t.412-1.338M12 22q-.825 0-1.412-.587T10 20t.588-1.412T12 18t1.413.588T14 20t-.587 1.413T12 22"/>
+                    </svg>`;
+                } else if (isDiscovered) {
+                    // Key icon for discovered letters
+                    icon = `<svg class="tile-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path fill="white" d="M7 18q-2.5 0-4.25-1.75T1 12t1.75-4.25T7 6q1.65 0 3.025.825T12.2 9H21q.825 0 1.413.588T23 11v2q0 .825-.587 1.413T21 15v1q0 .825-.587 1.413T19 18h-2q-.825 0-1.412-.587T15 16v-1h-2.8q-.8 1.35-2.175 2.175T7 18m0-2q1.65 0 2.65-1.012T10.85 13H17v3h2v-3h2v-2H10.85q-.2-.975-1.2-1.987T7 8T4.175 9.175T3 12t1.175 2.825T7 16m0-2q.825 0 1.413-.587T9 12t-.587-1.412T7 10t-1.412.588T5 12t.588 1.413T7 14m0-2"/>
+                    </svg>`; 
+                } else if (content && !state.triedLetters.has(content)) {
+                    // Question mark for starting word that hasn't been submitted yet
+                    icon = `<svg class="tile-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path fill="#9ca3af" d="M14.6 8.075q0-1.075-.712-1.725T12 5.7q-.725 0-1.312.313t-1.013.912q-.4.575-1.088.663T7.4 7.225q-.35-.325-.387-.8t.237-.9q.8-1.2 2.038-1.862T12 3q2.425 0 3.938 1.375t1.512 3.6q0 1.125-.475 2.025t-1.75 2.125q-.925.875-1.25 1.363T13.55 14.6q-.1.6-.513 1t-.987.4t-.987-.387t-.413-.963q0-.975.425-1.787T12.5 11.15q1.275-1.125 1.688-1.737t.412-1.338M12 22q-.825 0-1.412-.587T10 20t.588-1.412T12 18t1.413.588T14 20t-.587 1.413T12 22"/>
+                    </svg>`;
+                } else if (content && state.triedLetters.has(content) && !isKey) {
+                    // X icon for non-key letters in submitted words
+                    icon = `<svg class="tile-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path fill="#9ca3af" d="m12 13.4l-4.9 4.9q-.275.275-.7.275t-.7-.275t-.275-.7t.275-.7l4.9-4.9l-4.9-4.9q-.275-.275-.275-.7t.275-.7t.7-.275t.7.275l4.9 4.9l4.9-4.9q.275-.275.7-.275t.7.275t.275.7t-.275.7L13.4 12l4.9 4.9q.275.275.275.7t-.275.7t-.7.275t-.7-.275z"/>
+                    </svg>`;
+                }
+                
+                
+                if (isInput) {
+                    const tileClasses = isDiscovered ? 'input-tile discovered' : 'input-tile';
+                    return `<div class="w-full aspect-square rounded-lg flex items-center justify-center text-4xl font-bold uppercase ${tileClasses}">${content}${icon}</div>`;
+                }
+                
+                const tileStyle = isTriedNonKey ? 'background-color: #1E1E1E !important;' : '';
+                const isNewlyDiscovered = isDiscovered && state.newlyDiscoveredKeys && state.newlyDiscoveredKeys.has(content);
+                const flipClass = (isDiscovered && !isNewlyDiscovered) ? 'flip' : '';
+                return `
+                    <div class="tile-container w-full aspect-square">
+                        <div class="tile-inner ${flipClass}" data-is-key="${isKey}">
+                            <div class="tile-face tile-front" style="${tileStyle}">${content}${icon}</div>
+                            <div class="tile-face tile-back">${content}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            return `<div class="grid grid-cols-${state.puzzle.startWord.length} gap-2">${tilesHtml}</div>`;
+        }
+
+        function renderKeyboard() {
+            const keysLayout = [
+                ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+                ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+                ['SUBMIT', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'DELETE']
+            ];
+            DOM.keyboard.innerHTML = keysLayout.map((row, rowIndex) => {
+                const rowHtml = row.map(key => {
+                    const isDiscovered = state.discoveredKeys.has(key);
+                    const isTried = state.triedLetters.has(key);
+                    let keyClass = 'key'; // Only use 'key' as base class
+                    let proximityHtml = '';
+                    
+                    // Add state classes
+                    if (isDiscovered) {
+                        keyClass += ' key-discovered';
+                    } else if (isTried) {
+                        keyClass += ' key-used';
+                        const proximityCount = countKeyNeighbors(key);
+                        if (proximityCount > 0) {
+                            const pips = Array(proximityCount).fill('<div class="pip"></div>').join('');
+                            proximityHtml = `<div class="pips-container">${pips}</div>`;
+                        }
+                    } else {
+                        keyClass += ' key-normal';
+                    }
+                    
+                    if (key === 'SUBMIT') {
+                        return `<button data-key="SUBMIT" class="key submit-key"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m11 7.825l-4.9 4.9q-.3.3-.7.288t-.7-.313q-.275-.3-.288-.7t.288-.7l6.6-6.6q.15-.15.325-.212T12 4.425t.375.063t.325.212l6.6 6.6q.275.275.275.688t-.275.712q-.3.3-.712.3t-.713-.3L13 7.825V19q0 .425-.288.713T12 20t-.712-.288T11 19z"/></svg>${proximityHtml}</button>`;
+                    }
+                    if (key === 'DELETE') {
+                        return `<button data-key="DELETE" class="key delete-key"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m14 13.4l1.9 1.9q.275.275.7.275t.7-.275t.275-.7t-.275-.7L15.4 12l1.9-1.9q.275-.275.275-.7t-.275-.7t-.7-.275t-.7.275L14 10.6l-1.9-1.9q-.275-.275-.7-.275t-.7.275t-.275.7t.275.7l1.9 1.9l-1.9 1.9q-.275.275-.275.7t.275.7t.7.275t.7-.275zM9 20q-.475 0-.9-.213t-.7-.587l-4.5-6q-.4-.525-.4-1.2t.4-1.2l4.5-6q.275-.375.7-.587T9 4h11q.825 0 1.413.588T22 6v12q0 .825-.587 1.413T20 20zm0-2h11V6H9l-4.5 6zm3.25-6"/></svg>${proximityHtml}</button>`;
+                    }
+                    return `<button data-key="${key}" class="${keyClass}">${key}${proximityHtml}</button>`;
+                }).join('');
+                
+                const rowClass = rowIndex === 1 ? 'keyboard-row middle-row' : 'keyboard-row';
+                return `<div class="${rowClass}">${rowHtml}</div>`;
+            }).join('');
+        }
+        
+        // Load word list once when the game starts
+        let validWords = new Set();
+        
+        async function loadWordList() {
+            try {
+                const response = await fetch('/words2.json');
+                if (!response.ok) throw new Error('Could not load word list');
+                const wordArray = await response.json();
+                
+                // Convert to Set for O(1) lookup and normalize to lowercase
+                validWords = new Set(wordArray.map(word => word.toLowerCase()));
+                
+            } catch (error) {
+                console.error('Failed to load word list:', error);
+                showSnackbar("Could not load word dictionary");
+            }
+        }
+
+        async function isValidWord(word) {
+            // If word list isn't loaded yet, try to load it
+            if (validWords.size === 0) {
+                await loadWordList();
+            }
+            
+            // Check if word exists in our list (case-insensitive)
+            return validWords.has(word.toLowerCase());
+        }
+
+        function checkWordChangeRule(current, next) {
+            const currentSet = current.split('');
+            const nextSet = next.split('');
+            let common = 0;
+            for (const letter of nextSet) {
+                const index = currentSet.indexOf(letter);
+                if (index > -1) {
+                    currentSet.splice(index, 1);
+                    common++;
+                }
+            }
+            return common === current.length - 1;
+        }
+        
+        function showSnackbar(message) {
+            DOM.snackbar.textContent = message;
+            DOM.snackbar.classList.add('show');
+            setTimeout(() => {
+                DOM.snackbar.classList.remove('show');
+            }, 2500);
+        }
+
+        function showLoader() {
+            
+            const loader = document.createElement('div');
+            loader.id = 'puzzle-loader';
+            loader.className = 'loading-overlay';
+            loader.innerHTML = `
+                <div class="spinner"></div>
+                <p style="margin-top: 10px; font-size: 16px;">Loading puzzle...</p>
+            `;
+            document.body.appendChild(loader);
+            
+        }
+
+        function hideLoader() {
+            
+            const loader = document.getElementById('puzzle-loader');
+            if (loader) {
+                loader.remove();
+            }
+        }
+
+        async function transitionToPuzzle(dateString) {
+            showLoader();
+
+            // Force a minimum delay
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            DOM.resultTime.textContent = '0:00';
+
+            try {
+                // First call initGame to load the puzzle data
+                await initGame(dateString);
+                
+                // After puzzle is loaded, check if it's completed
+                if (state.puzzle && state.puzzle.puzzleNumber) {
+                    const savedScores = getSavedScores();
+                    const isCompleted = savedScores[state.puzzle.puzzleNumber];
+                    
+                    const todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'});
+                    const isToday = state.puzzle.date === todayStr;
+                    
+                    if (isCompleted) {
+                        // Show completed puzzle with victory screen
+                        showCompletedPuzzle(state.puzzle, isToday);
+                    }
+                    // If not completed, initGame already set up the fresh game
+                }
+            } finally {
+                hideLoader();
+            }
+        }
+
+        function getSavedScores() {
+            const gameMode = localStorage.getItem('keyhunt-mode') || 'turns';
+            const scores = localStorage.getItem(`keyhunt-scores-${gameMode}`);
+            return scores ? JSON.parse(scores) : {};
+        }
+
+        function saveGameState(puzzleNumber, score) {
+            const gameMode = state.gameMode;
+            const scores = JSON.parse(localStorage.getItem(`keyhunt-scores-${gameMode}`) || '{}');
+            
+            // Check if we should save this score
+            const existingScore = scores[puzzleNumber];
+            if (existingScore) {
+                if (gameMode === 'speed') {
+                    // For speed: only save if time is faster (lower)
+                    if (score.includes(':') && existingScore.includes(':')) {
+                        const newTime = timeToSeconds(score);
+                        const oldTime = timeToSeconds(existingScore);
+                        if (newTime >= oldTime) return; // Don't save if slower
+                    }
+                } else {
+                    // For turns: only save if star rating is higher
+                    const starValues = {'💤': 0, '⛳️': 1, '★☆☆': 2, '★★☆': 3, '★★★': 4};
+                    if (starValues[score] <= starValues[existingScore]) return; // Don't save if worse
+                }
+            }
+            
+            //save the score
+            scores[puzzleNumber] = score;
+            
+            // Only save history for daily puzzles
+            if (state.isToday) {
+                const gameHistory = JSON.parse(localStorage.getItem(`keyhunt-history-${gameMode}`) || '{}');
+                gameHistory[puzzleNumber] = {
+                    history: [...state.history],
+                    currentWord: state.currentWord,
+                    discoveredKeys: Array.from(state.discoveredKeys),
+                    moves: state.moves,
+                    finalTime: state.finalTime,
+                    gameMode: state.gameMode
+                };
+                localStorage.setItem(`keyhunt-history-${gameMode}`, JSON.stringify(gameHistory));
+            }
+            
+            localStorage.setItem(`keyhunt-scores-${gameMode}`, JSON.stringify(scores));
+        }
+
+        function timeToSeconds(timeString) {
+            const [minutes, seconds] = timeString.split(':').map(Number);
+            return minutes * 60 + seconds;
+        } 
+        function loadGameHistory(puzzleNumber) {
+            const gameMode = localStorage.getItem('keyhunt-mode') || 'turns';
+            const gameHistory = JSON.parse(localStorage.getItem(`keyhunt-history-${gameMode}`) || '{}');
+            return gameHistory[puzzleNumber] || null;
+        }
+
+        function showConfirmationModal(title, message, onConfirm) {
+            DOM.confirmationTitle.textContent = title;
+            DOM.confirmationMessage.textContent = message;
+            
+            // Handle confirm button
+            DOM.confirmBtn.onclick = () => {
+                closeModal(DOM.confirmationModal);
+                onConfirm();
+            };
+
+            // Handle cancel button - just close modal
+            DOM.cancelConfirmationBtn.onclick = () => {
+                closeModal(DOM.confirmationModal);
+            };
+
+            DOM.confirmationModal.classList.remove('hidden');
+        }
+
+        // Generic modal functions
+        function openModal(title, content, footer = '') {
+            DOM.modalTitle.textContent = title;
+            DOM.modalContent.innerHTML = content;
+            
+            // Don't pass any footer with onclick
+            DOM.modalFooter.innerHTML = `<button id="modal-close-btn" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">Close</button>`;
+            
+            // Remove any existing listeners and add new one
+            const closeBtn = document.getElementById('modal-close-btn');
+            if (closeBtn) {
+                closeBtn.onclick = function() {
+                    closeModal(); // This calls without parameters
+                };
+            }
+            
+            DOM.modal.classList.remove('hidden');
+        }
+
+        function closeModal(modalElement) {
+            // If anything other than a DOM element with classList, close generic modal
+            if (!modalElement || !modalElement.classList) {
+                
+                if (DOM.modal) {
+                    DOM.modal.classList.add('hidden');
+                    DOM.modalContent.innerHTML = '';
+                    DOM.modalFooter.innerHTML = '';
+                }
+            } else {
+            
+                modalElement.classList.add('hidden');
+            }
+        }
+
+        function handlePlayerId() {
+            let playerId = localStorage.getItem('keyhunt-playerId');
+            if (!playerId) {
+                playerId = Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('keyhunt-playerId', playerId);
+            }
+            // Display a shortened version of the ID
+            DOM.playerIdBtn.textContent = `ID: ${playerId.substring(0, 10)}...`;
+            
+            // Add click event to copy the full ID
+            DOM.playerIdBtn.onclick = () => {
+                const textarea = document.createElement('textarea');
+                textarea.value = playerId;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showSnackbar('ID copied to clipboard!');
+                } catch (err) {
+                    showSnackbar('Failed to copy!');
+                }
+                document.body.removeChild(textarea);
+                DOM.menuDropdown.classList.add('hidden');
+            };
+        }
+
+        function generateShareGrid() {
+            const fullPath = state.history.slice(1); // Remove starting word
+
+            if (state.currentWord && !fullPath.includes(state.currentWord)) {
+                    fullPath.push(state.currentWord);
+            }
+
+            const keysInEndWord = new Set(state.puzzle.endWord.split(''));
+            const discoveredForGrid = new Set();
+            const grid = [];
+
+            for (const word of fullPath) {
+                let line = '';
+                const newKeysThisTurn = new Set();
+                for (const letter of word) {
+                    if (keysInEndWord.has(letter)) {
+                        if (!discoveredForGrid.has(letter)) {
+                            line += '🌟';
+                            newKeysThisTurn.add(letter);
+                        } else {
+                            line += '🟦';
+                        }
+                    } else {
+                        line += '⬛️';
+                    }
+                }
+                grid.push(line);
+                newKeysThisTurn.forEach(k => discoveredForGrid.add(k));
+            }
+
+            return grid.join('\n');
+        }
+        
+        function startNextPuzzleCountdown() {
+            if (state.countdownInterval) clearInterval(state.countdownInterval);
+
+            function updateCountdown() {
+                const now = new Date();
+                const tomorrow = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(0, 0, 0, 0);
+
+                const diff = tomorrow - new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
+
+                const h = Math.floor(diff / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+                DOM.countdownTimer.textContent = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            }
+            
+            updateCountdown();
+            state.countdownInterval = setInterval(updateCountdown, 1000);
+        }
+
+        function showEndState(isWin, message, isReplay = false) {
+
+            state.gameOver = true;
+            state.isWin = isWin;
+            
+            DOM.gameContainer.classList.remove('all-keys-glow');
+
+            const finalWordRow = DOM.boardContent.lastElementChild;
+            if(finalWordRow && !isReplay && isWin) finalWordRow.classList.add('word-dance');
+            
+            // First, fade out keyboard
+            DOM.keyboardContainer.style.opacity = '0';
+            DOM.keyboardContainer.style.transition = 'opacity 0.8s ease-out';
+            
+            // Simultaneously animate the victory footer sliding up
+            DOM.victoryFooter.classList.remove('hidden');
+            DOM.victoryFooter.style.transform = 'translateY(100px)'; // Start below
+            DOM.victoryFooter.style.opacity = '0';
+            
+            setTimeout(() => {
+                // Hide keyboard and animate victory content into place
+                DOM.keyboardContainer.style.display = 'none';
+                
+                // Animate victory footer sliding into position
+                DOM.victoryFooter.style.transition = 'all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                DOM.victoryFooter.style.transform = 'translateY(0)';
+                DOM.victoryFooter.style.opacity = '1';
+            }, 100); // Start before keyboard fade completes
+
+            let score = 'null';
+            let scoreLabel = 'SCORE';
+
+            if(isWin) {
+                if (!isReplay) {
+                    confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, angle: 90, startVelocity: 40 });
+                }
+                DOM.victoryTitle.textContent = VICTORY_SYNONYMS[Math.floor(Math.random() * VICTORY_SYNONYMS.length)];
+                DOM.victoryMessage.textContent = message;
+
+                // Reset text color for win messages
+                DOM.victoryMessage.classList.remove('text-red-400');
+
+                if (state.gameMode === 'speed') {
+                    score = state.finalTime;
+                    scoreLabel = 'TIME';
+                } else {
+                    const diff = state.moves - state.puzzle.targetMoves;
+                    if (diff <= 0) score = '★★★';
+                    else if (diff === 1) score = '★★☆';
+                    else if (diff === 2) score = '★☆☆';
+                    else score = '⛳️';
+                    DOM.resultScoreLabel.textContent = score.includes('★') ? 'STARS' : 'FINISH';
+                }
+
+                if (!isReplay) {
+                    saveGameState(state.puzzle.puzzleNumber, score);
+                } else {
+                }
+
+            } else {
+                 DOM.victoryTitle.textContent = "Game Over";
+                 DOM.victoryMessage.textContent = `You ran out of turns.`;
+                 DOM.victoryMessage.classList.add('text-red-400');
+                 score = '💤';
+                 
+                 if (!isReplay) {
+                     saveGameState(state.puzzle.puzzleNumber, score);
+                 }
+            }
+
+            DOM.resultScore.textContent = score;
+            DOM.resultScoreLabel.textContent = scoreLabel;
+
+            // Button logic
+            DOM.archivesCtaBtn.style.display = 'block';
+            /*DOM.shareBtn.style.display = 'block';*/
+
+            if (!isReplay || state.isToday) {
+                DOM.shareBtn.style.display = 'block';
+            } else {
+                DOM.shareBtn.style.display = 'none'; // Hide for archive revisits
+            }
+
+            if (state.isToday) {
+                DOM.countdownContainer.classList.remove('hidden');
+                DOM.playNextBtn.style.display = 'none';
+                DOM.tryAgainBtn.style.display = 'none'; // Hide for daily
+                startNextPuzzleCountdown();
+            } else {
+                DOM.countdownContainer.classList.add('hidden');
+                DOM.tryAgainBtn.style.display = 'block'; // Show for archives
+                if (state.puzzle.puzzleNumber < 4) { 
+                    DOM.playNextBtn.style.display = 'block';
+                } else {
+                    DOM.playNextBtn.style.display = 'none';
+                }
+            }
+
+            mainWrapperBox.scrollTop = mainWrapperBox.scrollHeight;
+
+        }
+
+
+        function updateTimer() {
+            if (!state.startTime || state.gameOver) return;
+            const now = new Date();
+            const diff = Math.floor((now - state.startTime) / 1000);
+            const minutes = Math.floor(diff / 60);
+            const seconds = diff % 60;
+            state.finalTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            DOM.resultTime.textContent = state.finalTime;
+        }
+
+
+        async function handleSubmit() {
+                    //tutorial
+                    
+
+                    mainWrapperBox.scrollTop = mainWrapperBox.scrollHeight;
+                    if (state.isChecking || state.gameOver) return;
+                    if (state.inputWord.length !== state.puzzle.startWord.length) {
+                        showSnackbar("Word must be 4 letters long.");
+                        const inputRow = DOM.boardContent.lastElementChild;
+                        inputRow.classList.add('shake');
+                        setTimeout(() => inputRow.classList.remove('shake'), 500);
+                        return;
+                    }
+
+                    const nextWord = state.inputWord;
+                    if (state.history.includes(nextWord) || state.currentWord === nextWord) {
+                        showSnackbar("Word already used.");
+                        return;
+                    }
+                    if (!checkWordChangeRule(state.currentWord, nextWord)) {
+                        showSnackbar("You can only change one letter.");
+                        return;
+                    }
+
+                    state.isChecking = true;
+                    const isRealWord = await isValidWord(nextWord);
+                    state.isChecking = false;
+
+                    if (!isRealWord) {
+                        showSnackbar("Not a valid word.");
+                        return;
+                    }
+
+                    state.history.push(state.currentWord);
+                    state.currentWord = nextWord;
+                    state.inputWord = "";
+
+                    if (state.moves === 0) {
+                        state.startTime = new Date();
+                        state.timerInterval = setInterval(updateTimer, 1000);
+                        if (state.gameMode === 'speed') {
+                            showSnackbar("Timer started!");
+                        }
+                    }
+
+                    state.moves++;
+                    
+                    nextWord.split('').forEach(letter => state.triedLetters.add(letter));
+                    
+                    const isWinningAnagram = nextWord.split('').sort().join('') === state.puzzle.endWord.split('').sort().join('');
+
+                    const endWordLetters = new Set(state.puzzle.endWord.split(''));
+                    const submittedWordLetters = new Set(nextWord.split(''));
+                    const hasAllKeyLetters = [...submittedWordLetters].every(letter => endWordLetters.has(letter));
+
+                    if (hasAllKeyLetters && !isWinningAnagram) {
+                        showSnackbar("Be sure to use all of the Key Letters!");
+                    }
+
+                    if (isWinningAnagram) {
+                        state.puzzle.endWord.split('').forEach(k => state.discoveredKeys.add(k));
+                        state.gameOver = true;
+                        render();
+                        
+                        const finalWordRow = DOM.boardContent.lastElementChild;
+                        if (finalWordRow) {
+                            finalWordRow.classList.add('word-dance');
+                        }
+
+                        showEndState(true, `You solved puzzle #${state.puzzle.puzzleNumber} in ${state.moves} turns!`);
+                        return;
+                    }
+                                    
+                    const newKeys = nextWord.split('').filter(letter => state.puzzle.endWord.includes(letter) && !state.discoveredKeys.has(letter));
+
+                    if (newKeys.length > 0) {
+                        // Track which keys were just discovered this turn
+                        state.newlyDiscoveredKeys = new Set(newKeys);
+                        newKeys.forEach(key => state.discoveredKeys.add(key));
+                    } else {
+                        state.newlyDiscoveredKeys = new Set(); // Clear if no new keys
+                    }
+
+                    render();
+                    renderKeyboard();
+
+                    // Animation for newly discovered keys only
+                    if (newKeys.length > 0) {
+                        setTimeout(() => {
+                            // Loop through ALL rows to find instances of newly discovered keys
+                            Array.from(DOM.boardContent.children).forEach((row, rowIndex) => {
+                                // Skip the empty input row (last row)
+                                if (rowIndex === DOM.boardContent.children.length - 1) return;
+                                
+                                Array.from(row.children).forEach((tileContainer, i) => {
+                                    const tileInner = tileContainer.querySelector('.tile-inner');
+                                    if (tileInner) {
+                                        // Get the letter from this tile
+                                        const letter = tileInner.querySelector('.tile-front').textContent.trim();
+                                        // Only animate if this letter was newly discovered
+                                        if (newKeys.includes(letter)) {
+                                            setTimeout(() => {
+                                                tileInner.classList.add('flip');
+                                            }, i * 100);
+                                        }
+                                    }
+                                });
+                            });
+                            
+                            // Clear newly discovered keys after animation
+                            setTimeout(() => {
+                                state.newlyDiscoveredKeys = new Set();
+                            }, 800);
+                        }, 400);
+                    }
+
+                    mainWrapperBox.scrollTop = mainWrapperBox.scrollHeight;
+
+                    if (!state.allKeysFound && state.discoveredKeys.size === state.puzzle.endWord.length) {
+                        state.allKeysFound = true;
+                        showSnackbar("All keys found! Now form the final word.");
+                        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#06b6d4', '#22d3ee', '#67e8f9'] });
+                        DOM.gameContainer.classList.add('all-keys-glow');
+                    }
+                    
+                    if (state.gameMode === 'turns' && state.moves >= state.totalTurns) {
+                        
+                        state.gameOver = true;
+                        render();
+                        showEndState(false);
+                    }
+                }
+
+        function updateInputRow() {
+            const inputRow = DOM.boardContent.lastElementChild;
+            if (inputRow && !state.gameOver) {
+                const wordArr = state.inputWord.padEnd(state.puzzle.startWord.length, ' ').split('');
+                const tiles = inputRow.children;
+                
+                wordArr.forEach((letter, i) => {
+                    if (tiles[i]) {
+                        const content = letter.trim();
+                        const isKey = state.puzzle.endWord.includes(content);
+                        const isDiscovered = isKey && state.discoveredKeys.has(content);
+                        
+                        tiles[i].textContent = content;
+                        tiles[i].className = `w-full aspect-square rounded-lg flex items-center justify-center text-4xl font-bold uppercase ${isDiscovered ? 'input-tile discovered' : 'input-tile'}`;
+                    }
+                });
+            }
+        }
+
+        function handleVirtualKeyboard(key) {
+            
+            if (state.moves > 0 && !state.gameOver) {
+                mainWrapperBox.scrollTop = mainWrapperBox.scrollHeight;
+            }
+            if (state.gameOver) return;
+            if (!key) return;
+            if (key === 'SUBMIT') {
+                handleSubmit();
+            } else if (key === 'DELETE') {
+                state.inputWord = state.inputWord.slice(0, -1);
+                updateInputRow();
+            } else if (state.inputWord.length < state.puzzle.startWord.length) {
+                state.inputWord += key;
+                updateInputRow();
+            }
+        }
+
+        function handlePhysicalKeyboard(e) {
+            
+            if (state.moves > 0 && !state.gameOver) {
+                mainWrapperBox.scrollTop = mainWrapperBox.scrollHeight;
+            }
+            if (state.gameOver || !DOM.modal.classList.contains('hidden')) return;
+            if (e.key.match(/^[a-zA-Z]$/)) {
+                handleVirtualKeyboard(e.key.toUpperCase());
+            } else if (e.key === 'Enter') {
+                handleVirtualKeyboard('SUBMIT');
+            } else if (e.key === 'Backspace') {
+                handleVirtualKeyboard('DELETE');
+            }
+        }
+        
+        async function initGame(dateString, forceRestart = false, puzzleNumber = null) {
+            const url = puzzleNumber 
+                ? `/api/puzzle?number=${puzzleNumber}`
+                : dateString 
+                    ? `/api/puzzle?date=${dateString}` 
+                    : '/api/puzzle';
+            try {
+                const url = dateString ? `/api/puzzle?date=${dateString}` : '/api/puzzle';
+                const response = await fetch(url);
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.error || 'Could not load puzzle.');
+                }
+                const puzzle = await response.json();
+                
+                const todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'});
+                const isToday = puzzle.date === todayStr;
+                const savedScores = getSavedScores();
+                
+                // For daily: show completed state with history
+                if (isToday && savedScores[puzzle.puzzleNumber] !== undefined) {
+                    showCompletedPuzzle(puzzle, isToday);
+                    return;
+                }
+
+                // For archives: just show end screen, no history restoration
+                if (!isToday && savedScores[puzzle.puzzleNumber] !== undefined) {
+                    setupGame(puzzle);
+                    state.isToday = isToday;
+                    render(); // Fresh game board
+                    
+                    const savedScore = savedScores[puzzle.puzzleNumber];
+                    const isWin = savedScore !== '💤' && savedScore !== 'null';
+                    showEndState(isWin, `You already completed puzzle #${puzzle.puzzleNumber}!`, true);
+                    return;
+                }
+                
+                // Setup fresh game
+                setupFreshGame(puzzle, isToday);
+                
+            } catch (error) {
+                showSnackbar(error.message);
+            }
+
+        }
+
+        // Helper function for completed puzzles
+        function showCompletedPuzzle(puzzle, isToday) {
+            if (state.timerInterval) clearInterval(state.timerInterval);
+            setupGame(puzzle);
+            state.isToday = isToday;
+            
+            // Only restore history for daily puzzles, not archives
+            if (isToday) {
+                const savedHistory = loadGameHistory(puzzle.puzzleNumber);
+                if (savedHistory) {
+                    Object.assign(state, {
+                        history: [...savedHistory.history],
+                        currentWord: savedHistory.currentWord,
+                        discoveredKeys: new Set(savedHistory.discoveredKeys),
+                        moves: savedHistory.moves,
+                        finalTime: savedHistory.finalTime,
+                        gameMode: savedHistory.gameMode,
+                        gameOver: true
+                    });
+                }
+            } else {
+                state.gameOver = true;
+            }
+
+            const submittedWords = state.history.slice(1); // Skip first word (starting word)
+            if (state.currentWord && state.currentWord !== state.puzzle.startWord) {
+                submittedWords.push(state.currentWord);
+            }
+            submittedWords.forEach(word => {
+                if (word) {
+                    word.split('').forEach(letter => state.triedLetters.add(letter));
+                }
+            });
+
+            render();
+            setTimeout(() => {
+                mainWrapperBox.scrollTop = mainWrapperBox.scrollHeight;
+            }, 100);
+            
+            // Hide keyboard and show victory content
+            DOM.keyboardContainer.style.display = 'none';
+            DOM.keyboardContainer.style.opacity = '0';
+            DOM.victoryFooter.classList.remove('hidden');
+            DOM.victoryFooter.style.opacity = '1';
+            DOM.victoryFooter.style.transform = 'translateY(0)';
+            
+            const savedScores = getSavedScores();
+            const savedScore = savedScores[puzzle.puzzleNumber];
+
+            const isWin = savedScore !== '💤' && savedScore !== 'null';
+            
+            state.isWin = isWin;
+
+            // Set up all victory content
+            if (isWin) {
+                DOM.victoryTitle.textContent = 'Completed!';
+                DOM.victoryMessage.textContent = `You already completed puzzle #${puzzle.puzzleNumber}!`;
+                DOM.victoryMessage.classList.remove('text-red-400'); // Remove red text
+            } else {
+                DOM.victoryTitle.textContent = "Attempted";
+                DOM.victoryMessage.textContent = `You already attempted puzzle #${puzzle.puzzleNumber}.`;
+                DOM.victoryMessage.classList.add('text-red-400');
+            }
+            
+            DOM.resultScore.textContent = savedScore;
+            DOM.resultScoreLabel.textContent = state.gameMode === 'speed' ? 'TIME' : 'SCORE';
+                        
+            // Show buttons
+            DOM.archivesCtaBtn.style.display = 'block';
+            DOM.shareBtn.style.display = isToday ? 'block' : 'none';
+            DOM.tryAgainBtn.style.display = isToday ? 'none' : 'block';
+            
+            // Handle countdown for daily puzzles
+            if (isToday) {
+                DOM.countdownContainer.classList.remove('hidden');
+                DOM.playNextBtn.style.display = 'none';
+                startNextPuzzleCountdown();
+            } else {
+                DOM.countdownContainer.classList.add('hidden');
+                DOM.playNextBtn.style.display = puzzle.puzzleNumber < 4 ? 'block' : 'none';
+            }
+        }
+
+        // Helper function for fresh games
+        function setupFreshGame(puzzle, isToday) {
+            if (state.timerInterval) clearInterval(state.timerInterval);
+            state.finalTime = null;
+            if (DOM.resultTime) DOM.resultTime.textContent = "0:00";
+            
+            setupGame(puzzle);
+            state.isToday = isToday;
+            
+            render();
+            DOM.victoryFooter.classList.add('hidden');
+            Object.assign(DOM.keyboardContainer.style, {
+                opacity: '1',
+                display: 'block',
+                transform: 'translateY(0)'
+            });
+            DOM.gameContainer.classList.remove('all-keys-glow');
+        }
+
+        function handleShare() {
+            // Always generate fresh share grid from current state
+            const shareGrid = generateShareGrid();
+            
+            let statusText;
+            if (!state.isWin) {
+                statusText = 'Game Over...';
+            } else {
+                statusText = `Solved in ${state.moves} turns!`;
+                if (state.gameMode === 'speed') {
+                    statusText += ` (${state.finalTime})`;
+                }
+            }
+            
+            const shareText = `KeyHunt #${state.puzzle.puzzleNumber}\n${statusText}\n\n${shareGrid}`;
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(shareText).then(() => {
+                showSnackbar('Copied to clipboard!');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = shareText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showSnackbar('Copied to clipboard!');
+            });
+        }
+
+        function encodeScore(score) {
+            if (!score || score === 'null') return '0';
+            if (score === '💤') return '1';
+            if (score === '⛳️') return '2';
+            if (score === '★☆☆') return '3';
+            if (score === '★★☆') return '4';
+            if (score === '★★★') return '5';
+            if (score && score.includes(':')) return '6'; // Speed times
+            return '0';
+        }
+
+        function decodeScore(char, isSpeed = false) {
+            switch(char) {
+                case '0': return null;
+                case '1': return '💤';
+                case '2': return '⛳️';
+                case '3': return '★☆☆';
+                case '4': return '★★☆';
+                case '5': return '★★★';
+                case '6': return isSpeed ? '1:00' : '⛳️'; // Placeholder time
+                default: return null;
+            }
+        }
+
+        function generateProgressCode() {
+            const turnsScores = JSON.parse(localStorage.getItem('keyhunt-scores-turns') || '{}');
+            const speedScores = JSON.parse(localStorage.getItem('keyhunt-scores-speed') || '{}');
+            
+            let code = '';
+            for (let i = 1; i <= 50; i++) { // Assuming max 50 puzzles
+                code += encodeScore(turnsScores[i]) + encodeScore(speedScores[i]);
+            }
+            
+            return 'KEYHUNT_v1_' + btoa(code);
+        }
+
+        function importProgressCode(codeString) {
+            if (!codeString.startsWith('KEYHUNT_v1_')) {
+                throw new Error('Invalid progress code format');
+            }
+            
+            const encoded = codeString.replace('KEYHUNT_v1_', '');
+            const decoded = atob(encoded);
+            
+            const turnsScores = {};
+            const speedScores = {};
+            
+            for (let i = 0; i < decoded.length; i += 2) {
+                const puzzleNum = (i / 2) + 1;
+                const turnChar = decoded[i];
+                const speedChar = decoded[i + 1];
+                
+                const turnScore = decodeScore(turnChar);
+                const speedScore = decodeScore(speedChar, true);
+                
+                if (turnScore) turnsScores[puzzleNum] = turnScore;
+                if (speedScore) speedScores[puzzleNum] = speedScore;
+            }
+            
+            localStorage.setItem('keyhunt-scores-turns', JSON.stringify(turnsScores));
+            localStorage.setItem('keyhunt-scores-speed', JSON.stringify(speedScores));
+        }
+
+
+        function calculateDateForPuzzle(puzzleNumber) {
+            // This depends on your puzzle numbering system
+            // Example: if puzzle #1 was on 2025-01-01
+            const startDate = new Date('2025-01-01');
+            const targetDate = new Date(startDate);
+            targetDate.setDate(startDate.getDate() + (puzzleNumber - 1));
+            return targetDate.toLocaleDateString('en-CA');
+        }
+
+        // Handle archive navigation chevrons
+        DOM.puzzleTitle.addEventListener('click', async (e) => {
+            if (state.isToday) return;
+
+            const currentPuzzleNum = state.puzzle.puzzleNumber;
+            let targetPuzzleNum = null;
+            
+            if (e.target.closest('#prev-puzzle')) {
+                if (e.target.closest('#prev-puzzle').dataset.disabled === 'true') {
+                    showSnackbar('This is the first puzzle!');
+                    return;
+                }
+/*findme*/
+                if (state.moves > 0 && !state.gameOver) {
+                    confirmForfeit();
+                    return;
+                }
+
+                targetPuzzleNum = currentPuzzleNum - 1;
+
+            } else if (e.target.closest('#next-puzzle')) {
+                if (e.target.closest('#next-puzzle').dataset.disabled === 'true') {
+                    showSnackbar('This is the last archive puzzle!');
+                    return;
+                }
+
+                if (state.moves > 0 && !state.gameOver) {
+                    confirmForfeit();
+                    return;
+                }
+
+                targetPuzzleNum = currentPuzzleNum + 1;
+            }
+            
+            if (targetPuzzleNum) {
+                
+                try {
+                    const response = await fetch('/api/archives');
+                    const puzzles = await response.json();
+                    const targetPuzzle = puzzles.find(p => p.puzzleNumber === targetPuzzleNum);
+                    
+                    if (targetPuzzle) {
+                        transitionToPuzzle(targetPuzzle.date);
+                    } else {
+                        showSnackbar('Puzzle not found');
+                    }
+                } catch (error) {
+                    showSnackbar('Error loading puzzle');
+                }
+            }
+        });
+
+        DOM.tryAgainBtn.addEventListener('click', () => {
+            if (!state.isToday) {
+                // Complete reset
+                setupFreshGame(state.puzzle, false);
+            }
+        });
+
+        DOM.keyboard.addEventListener('click', (e) => handleVirtualKeyboard(e.target.closest('.key')?.dataset.key));
+        document.addEventListener('keydown', handlePhysicalKeyboard);
+
+        // Generic modal close
+        DOM.modalClose.addEventListener('click', closeModal);
+
+        DOM.helpBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/instructions');
+                const data = await response.json();
+                const content = data.steps.map(step => `<p class="text-gray-300 mb-3">${step}</p>`).join('');
+                openModal('How to Play', content);
+            } catch(e) {
+                openModal('How to Play', '<p class="text-gray-300">Could not load instructions.</p>');
+            }
+        });
+
+        function confirmForfeit(onComplete) {
+            showConfirmationModal(
+                'Forfeit Current Puzzle?',
+                'Your progress will be lost and the puzzle will reset.',
+                async () => {
+                    // User CONFIRMED - reset game
+                    if (state.puzzle && state.puzzle.date) {
+                        await transitionToPuzzle(state.puzzle.date);
+                    } else {
+                        await transitionToPuzzle();
+                    }
+                    // Call the callback if provided
+                    if (onComplete) onComplete();
+                }
+            );
+        }
+
+        DOM.menuBtn.addEventListener('click', () => {
+            if (state.moves > 0 && !state.gameOver) {
+                /*pause timer*/
+                confirmForfeit(() => {
+                    // This only runs when called from menu button
+                    setTimeout(() => {
+                        DOM.menuDropdown.classList.remove('hidden');
+                    }, 100);
+                });
+            } else {
+                DOM.menuDropdown.classList.toggle('hidden');
+            }
+        });
+
+
+        DOM.todayBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            transitionToPuzzle();
+            DOM.menuDropdown.classList.add('hidden');
+        });
+
+        DOM.settingsBtn.addEventListener('click', () => {
+            closeModal();
+            const settingsContent = `
+                <div class="flex items-center justify-between py-2 mb-4">
+                    <div>
+                        <span class="text-gray-300">Speed Mode</span>
+                        <p class="text-xs text-gray-500 mr-2">Finish as fast as possible. No turn limit.</p>
+                    </div>
+                    <label for="speed-mode-toggle" class="flex items-center cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" id="speed-mode-toggle" class="sr-only" ${localStorage.getItem('keyhunt-mode') === 'speed' ? 'checked' : ''}>
+                            <div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
+                            <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+                        </div>
+                    </label>
+                </div>
+                
+                <div class="border-t border-gray-700 mt-4 pt-4">
+                    <span class="text-gray-300">Progress Backup</span>
+                    <p class="text-xs text-gray-500 mb-3">Export your progress or import from another device</p>
+                    <div class="space-y-2">
+                        <button id="export-code-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition text-sm">
+                            Export Progress Code
+                        </button>
+                        <div class="flex flex-col gap-2">
+                            <input id="import-code-input" type="text" placeholder="Enter progress code" 
+                                   class="w-full bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:border-blue-500 focus:outline-none text-xs">
+                            <button id="import-code-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition text-sm">
+                                Import Progress
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-700 mt-4 pt-4">
+                    <button id="clear-data-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition text-sm">Clear All Game Data</button>
+                </div>
+            `;
+            
+            openModal('Settings', settingsContent);
+        
+        });
+        
+        DOM.cancelConfirmationBtn.addEventListener('click', () => closeModal(DOM.confirmationModal));
+
+        async function handleArchivesClick() {
+            try {
+                const response = await fetch('/api/archives');
+                const puzzles = await response.json();
+                const savedScores = getSavedScores();
+                
+                // Get today's puzzle number to filter archives
+                const todayResponse = await fetch('/api/puzzle');
+                const todayPuzzle = await todayResponse.json();
+                const todayPuzzleNumber = todayPuzzle.puzzleNumber;
+                
+                // Filter to show only puzzles with numbers smaller than today's
+                const archivePuzzles = puzzles.filter(p => p.puzzleNumber < todayPuzzleNumber);
+
+                const content = `<div class="space-y-2 max-h-64 overflow-y-auto">
+                    ${archivePuzzles.map(p => {
+                        const score = savedScores[p.puzzleNumber] || 'New';
+                        return `
+                            <button data-date="${p.date}" class="archive-date-btn block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md flex justify-between items-center">
+                                <span>#${p.puzzleNumber} - ${p.date}</span>
+                                <span class="font-bold">${score}</span>
+                            </button>
+                        `;
+                    }).join('')}
+                </div>`;
+
+                openModal('Archives', content);
+            } catch (error) {
+                openModal('Archives', '<p class="text-gray-300">Could not load archives.</p>');
+            }
+            DOM.menuDropdown.classList.add('hidden');
+        }
+
+        DOM.archivesCtaBtn.addEventListener('click', handleArchivesClick);
+        DOM.archivesBtn.addEventListener('click', handleArchivesClick);
+
+        DOM.modalContent.addEventListener('click', (e) => {
+            // Handle archive puzzle clicks
+            if (e.target.matches('.archive-date-btn')) {
+                const date = e.target.dataset.date;
+                transitionToPuzzle(date);
+                closeModal();
+            }
+
+            // Handle export button
+            if (e.target.matches('#export-code-btn')) {
+                const code = generateProgressCode();
+                navigator.clipboard.writeText(code).then(() => {
+                    showSnackbar('Progress code copied to clipboard!');
+                }).catch(() => {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = code;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    showSnackbar('Progress code copied!');
+                });
+            }
+            
+            // Handle import button
+            if (e.target.matches('#import-code-btn')) {
+                const code = document.getElementById('import-code-input').value.trim();
+                if (!code) {
+                    showSnackbar('Please enter a progress code');
+                    return;
+                }
+                
+                try {
+                    importProgressCode(code);
+                    showSnackbar('Progress imported successfully!');
+                    document.getElementById('import-code-input').value = '';
+                    closeModal();
+                    if (state.puzzle) {
+                        const currentDate = state.puzzle.date;
+                        initGame(currentDate);
+                    }
+                } catch (error) {
+                    showSnackbar('Invalid progress code');
+                }
+            }
+            
+            // Handle clear data button
+            if (e.target.matches('#clear-data-btn')) {
+                closeModal();
+                showConfirmationModal(
+                    'Clear All Data?',
+                    'This will reset all your scores and settings. This action cannot be undone.',
+                    () => {
+                        localStorage.clear();
+                        location.reload();
+                    }
+                );
+            }
+        });
+
+        // Handle speed mode toggle
+        DOM.modalContent.addEventListener('change', (e) => {
+            if (e.target.matches('#speed-mode-toggle')) {
+                if (state.moves > 0 && !state.gameOver) {
+                    e.target.checked = !e.target.checked; // Revert visual state
+                    showConfirmationModal(
+                        'Switch Mode?',
+                        'Your progress on this puzzle will be lost.',
+                        () => {
+                            const mode = e.target.checked ? 'speed' : 'turns';
+                            localStorage.setItem('keyhunt-mode', mode);
+                            closeModal();
+                            initGame(state.puzzle.date);
+                        }
+                    );
+                    return;
+                }
+                const mode = e.target.checked ? 'speed' : 'turns';
+                localStorage.setItem('keyhunt-mode', mode);
+                initGame(state.puzzle.date);
+            }
+        });
+
+        DOM.shareBtn.addEventListener('click', handleShare);
+        DOM.playNextBtn.addEventListener('click', async () => {
+            const response = await fetch('/api/archives');
+            const puzzles = await response.json();
+            const currentIndex = puzzles.findIndex(p => p.date === state.puzzle.date);
+            if (currentIndex > 0) {
+                initGame(puzzles[currentIndex - 1].date);
+            }
+        });
+        
+        // Close dropdown if clicking outside
+        document.addEventListener('click', (e) => {
+            if (!DOM.menuBtn.contains(e.target) && !DOM.menuDropdown.contains(e.target)) {
+                DOM.menuDropdown.classList.add('hidden');
+            }
+        });
+
+        handlePlayerId();
+        initGame(); // Load today's puzzle on start
+        if (!localStorage.getItem('keyhunt-scores-turns') && !localStorage.getItem('keyhunt-scores-speed')) {
+            setTimeout(async () => {
+                try {
+                    const response = await fetch('/api/instructions');
+                    const data = await response.json();
+                    const content = data.steps.map(step => `<p class="text-gray-300 mb-3">${step}</p>`).join('');
+                    openModal('How to Play', content);
+                } catch(e) {
+                    openModal('How to Play', '<p class="text-gray-300">Could not load instructions.</p>');
+                }
             }, 1000);
+        }
+    </script>
+    </div>
+</body>
+</html>
+
         }
     </script>
     </div>
