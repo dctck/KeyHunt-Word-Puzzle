@@ -11,6 +11,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/miniKeyboardLayout', express.static(path.join(__dirname, 'miniKeyboardLayout')));
 app.use('/words2.json', express.static(path.join(__dirname, 'words2.json')));
+app.use('/favicon', express.static(path.join(__dirname, 'favicon')));
 
 /**
  * Calculates the current date string in the "America/New_York" (EST/EDT) timezone.
