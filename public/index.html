@@ -43,13 +43,23 @@
                 box-sizing: border-box;
             }
 
+            header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 50;
+                background-color: #0F110C;
+            }
+
             /* Ensure all main containers stay centered */
             .main-wrapper {
                 width: 100%;
                 max-width: 100%;
                 overflow-x: hidden; /* Prevent horizontal scroll */
-    overflow-y: auto;   /* Allow vertical scroll */
+                overflow-y: auto;   /* Allow vertical scroll */
                 box-sizing: border-box;
+                padding-top: 64px;
             }
 
             /* Fix narrow screen layout issues */
@@ -314,7 +324,6 @@
             .key {
                 display: flex;
                 width: var(--key-width);
-                height: var(--key-height);
                 padding: var(--key-padding);
                 flex-direction: column;
                 justify-content: center;
@@ -358,19 +367,18 @@
             .submit-key {
                 background: #70E581;
                 color: #0F110C;
-                font-size: max(16px, calc(var(--key-font-size) * 0.9));
+                font-size: var(--key-font-size);
                 width: var(--key-width); /* Same width as regular keys */
-                height: var(--key-height); /* Same height as regular keys */
+                font-weight: 700;
             }
 
             /* Delete key  */
             .delete-key {
                 background: #E57070;
                 color: #0F110C;
-                font-size: max(16px, calc(var(--key-font-size) * 0.9));
+                font-size: var(--key-font-size);
                 font-weight: 600;
                 width: calc(var(--key-width) * 2);
-                height: var(--key-height); /* Same height as regular keys */
             }
 
             /* Proximity indicators */
@@ -390,6 +398,15 @@
                 width: 8px;
                 height: 4px;
                 background: #06B6D4;
+            }
+
+            .tile-icon {
+                position: absolute;
+                bottom: 5%;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 16px;
+                height: 16px;
             }
 
 
@@ -509,8 +526,22 @@
                 background: #D85F5F;
             }
 
+            .key-discovered:hover {
+                background: #0891B2;
+            }
+
+            .key-discovered:active {
+                background: #0E7490;
+            }
+
             .delete-key:active {
                 background: #C74F4F;
+            }
+
+            @supports (-webkit-touch-callout: none) {
+                .submit-key, .delete-key {
+                    font-weight: 700; /* or even 800 */
+                }
             }
 
             /* Mobile tap states - shows feedback on touch devices */
@@ -571,7 +602,7 @@
             </div>
             <div class="relative">
                  <button id="menu-btn" class="p-2 rounded-full hover:bg-gray-700 transition">
-                    <svg class="icon icon-lg text-gray-400" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    <svg class="icon icon-lg text-white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                 </button>
                 <div id="menu-dropdown" class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-20 hidden">
                     <a href="#" id="help-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition">How to Play</a>
@@ -587,7 +618,7 @@
     <h2 id="puzzle-title" class="text-center text-lg text-gray-400 font-semibold mb-4"></h2>
 
     <!-- Game Board -->
-    <main id="game-container" class="flex-grow flex flex-col items-center w-full max-w-sm mx-auto overflow-y-auto pt-4 rounded-lg">
+    <main id="game-container" class="flex-grow flex flex-col items-center w-full max-w-sm mx-auto pt-4 rounded-lg">
         <div id="board-content" class="w-full space-y-2">
             <!-- JS will populate this -->
         </div>
@@ -702,6 +733,8 @@
             puzzleTitle: document.getElementById('puzzle-title')
         };
 
+        const mainWrapperBox = document.querySelector('.main-wrapper');
+
         const ADJACENCY_MAP = {
             'Q': ['W', 'A'],
             'W': ['Q', 'E', 'A', 'S'],
@@ -730,6 +763,7 @@
             'N': ['H', 'J', 'B', 'M'],
             'M': ['J', 'K', 'N']
         };
+
 
         const VICTORY_SYNONYMS = ["Excellent!", "Superb!", "Brilliant!", "Outstanding!", "Magnificent!", "Fantastic!"];
 
@@ -847,17 +881,44 @@
                 const content = letter.trim();
                 const isKey = state.puzzle.endWord.includes(content);
                 const isDiscovered = isKey && state.discoveredKeys.has(content);
-
+                const isTriedNonKey = content && state.triedLetters.has(content) && !isKey;
+                
+                let icon = '';
                 if (isInput) {
-                    const tileClasses = isDiscovered ? 'input-tile discovered' : 'input-tile';
-                    return `<div class="w-full aspect-square rounded-lg flex items-center justify-center text-4xl font-bold uppercase ${tileClasses}">${content}</div>`;
+                    // Question mark for pending submission
+                    icon = `<svg class="tile-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path fill="#9ca3af" d="M14.6 8.075q0-1.075-.712-1.725T12 5.7q-.725 0-1.312.313t-1.013.912q-.4.575-1.088.663T7.4 7.225q-.35-.325-.387-.8t.237-.9q.8-1.2 2.038-1.862T12 3q2.425 0 3.938 1.375t1.512 3.6q0 1.125-.475 2.025t-1.75 2.125q-.925.875-1.25 1.363T13.55 14.6q-.1.6-.513 1t-.987.4t-.987-.387t-.413-.963q0-.975.425-1.787T12.5 11.15q1.275-1.125 1.688-1.737t.412-1.338M12 22q-.825 0-1.412-.587T10 20t.588-1.412T12 18t1.413.588T14 20t-.587 1.413T12 22"/>
+                    </svg>`;
+                } else if (isDiscovered) {
+                    // Key icon for discovered letters
+                    icon = `<svg class="tile-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path fill="white" d="M7 18q-2.5 0-4.25-1.75T1 12t1.75-4.25T7 6q1.65 0 3.025.825T12.2 9H21q.825 0 1.413.588T23 11v2q0 .825-.587 1.413T21 15v1q0 .825-.587 1.413T19 18h-2q-.825 0-1.412-.587T15 16v-1h-2.8q-.8 1.35-2.175 2.175T7 18m0-2q1.65 0 2.65-1.012T10.85 13H17v3h2v-3h2v-2H10.85q-.2-.975-1.2-1.987T7 8T4.175 9.175T3 12t1.175 2.825T7 16m0-2q.825 0 1.413-.587T9 12t-.587-1.412T7 10t-1.412.588T5 12t.588 1.413T7 14m0-2"/>
+                    </svg>`; 
+                } else if (content && !state.triedLetters.has(content)) {
+                    // Question mark for starting word that hasn't been submitted yet
+                    icon = `<svg class="tile-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path fill="#9ca3af" d="M14.6 8.075q0-1.075-.712-1.725T12 5.7q-.725 0-1.312.313t-1.013.912q-.4.575-1.088.663T7.4 7.225q-.35-.325-.387-.8t.237-.9q.8-1.2 2.038-1.862T12 3q2.425 0 3.938 1.375t1.512 3.6q0 1.125-.475 2.025t-1.75 2.125q-.925.875-1.25 1.363T13.55 14.6q-.1.6-.513 1t-.987.4t-.987-.387t-.413-.963q0-.975.425-1.787T12.5 11.15q1.275-1.125 1.688-1.737t.412-1.338M12 22q-.825 0-1.412-.587T10 20t.588-1.412T12 18t1.413.588T14 20t-.587 1.413T12 22"/>
+                    </svg>`;
+                } else if (content && state.triedLetters.has(content) && !isKey) {
+                    // X icon for non-key letters in submitted words
+                    icon = `<svg class="tile-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path fill="#9ca3af" d="m12 13.4l-4.9 4.9q-.275.275-.7.275t-.7-.275t-.275-.7t.275-.7l4.9-4.9l-4.9-4.9q-.275-.275-.275-.7t.275-.7t.7-.275t.7.275l4.9 4.9l4.9-4.9q.275-.275.7-.275t.7.275t.275.7t-.275.7L13.4 12l4.9 4.9q.275.275.275.7t-.275.7t-.7.275t-.7-.275z"/>
+                    </svg>`;
                 }
                 
-                const flipClass = isDiscovered ? 'flip' : '';
+                
+                if (isInput) {
+                    const tileClasses = isDiscovered ? 'input-tile discovered' : 'input-tile';
+                    return `<div class="w-full aspect-square rounded-lg flex items-center justify-center text-4xl font-bold uppercase ${tileClasses}">${content}${icon}</div>`;
+                }
+                
+                const tileStyle = isTriedNonKey ? 'background-color: #1E1E1E !important;' : '';
+                const isNewlyDiscovered = isDiscovered && state.newlyDiscoveredKeys && state.newlyDiscoveredKeys.has(content);
+                const flipClass = (isDiscovered && !isNewlyDiscovered) ? 'flip' : '';
                 return `
                     <div class="tile-container w-full aspect-square">
                         <div class="tile-inner ${flipClass}" data-is-key="${isKey}">
-                            <div class="tile-face tile-front">${content}</div>
+                            <div class="tile-face tile-front" style="${tileStyle}">${content}${icon}</div>
                             <div class="tile-face tile-back">${content}</div>
                         </div>
                     </div>
@@ -894,10 +955,10 @@
                     }
                     
                     if (key === 'SUBMIT') {
-                        return `<button data-key="SUBMIT" class="key submit-key">↳${proximityHtml}</button>`;
+                        return `<button data-key="SUBMIT" class="key submit-key"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m11 7.825l-4.9 4.9q-.3.3-.7.288t-.7-.313q-.275-.3-.288-.7t.288-.7l6.6-6.6q.15-.15.325-.212T12 4.425t.375.063t.325.212l6.6 6.6q.275.275.275.688t-.275.712q-.3.3-.712.3t-.713-.3L13 7.825V19q0 .425-.288.713T12 20t-.712-.288T11 19z"/></svg>${proximityHtml}</button>`;
                     }
                     if (key === 'DELETE') {
-                        return `<button data-key="DELETE" class="key delete-key">⌫${proximityHtml}</button>`;
+                        return `<button data-key="DELETE" class="key delete-key"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m14 13.4l1.9 1.9q.275.275.7.275t.7-.275t.275-.7t-.275-.7L15.4 12l1.9-1.9q.275-.275.275-.7t-.275-.7t-.7-.275t-.7.275L14 10.6l-1.9-1.9q-.275-.275-.7-.275t-.7.275t-.275.7t.275.7l1.9 1.9l-1.9 1.9q-.275.275-.275.7t.275.7t.7.275t.7-.275zM9 20q-.475 0-.9-.213t-.7-.587l-4.5-6q-.4-.525-.4-1.2t.4-1.2l4.5-6q.275-.375.7-.587T9 4h11q.825 0 1.413.588T22 6v12q0 .825-.587 1.413T20 20zm0-2h11V6H9l-4.5 6zm3.25-6"/></svg>${proximityHtml}</button>`;
                     }
                     return `<button data-key="${key}" class="${keyClass}">${key}${proximityHtml}</button>`;
                 }).join('');
@@ -924,7 +985,7 @@
                 showSnackbar("Could not load word dictionary");
             }
         }
-        
+
         async function isValidWord(word) {
             // If word list isn't loaded yet, try to load it
             if (validWords.size === 0) {
@@ -980,9 +1041,11 @@
 
         async function transitionToPuzzle(dateString) {
             showLoader();
-            
+
             // Force a minimum delay
             await new Promise(resolve => setTimeout(resolve, 500));
+
+            DOM.resultTime.textContent = '0:00';
 
             try {
                 // First call initGame to load the puzzle data
@@ -1145,6 +1208,11 @@
 
         function generateShareGrid() {
             const fullPath = state.history.slice(1); // Remove starting word
+
+            if (state.currentWord && !fullPath.includes(state.currentWord)) {
+                    fullPath.push(state.currentWord);
+            }
+
             const keysInEndWord = new Set(state.puzzle.endWord.split(''));
             const discoveredForGrid = new Set();
             const grid = [];
@@ -1167,6 +1235,7 @@
                 grid.push(line);
                 newKeysThisTurn.forEach(k => discoveredForGrid.add(k));
             }
+
             return grid.join('\n');
         }
         
@@ -1200,7 +1269,7 @@
             DOM.gameContainer.classList.remove('all-keys-glow');
 
             const finalWordRow = DOM.boardContent.lastElementChild;
-            if(finalWordRow && !isReplay) finalWordRow.classList.add('word-dance');
+            if(finalWordRow && !isReplay && isWin) finalWordRow.classList.add('word-dance');
             
             // First, fade out keyboard
             DOM.keyboardContainer.style.opacity = '0';
@@ -1290,7 +1359,7 @@
                 }
             }
 
-            DOM.gameContainer.scrollTop = DOM.gameContainer.scrollHeight;
+            mainWrapperBox.scrollTop = mainWrapperBox.scrollHeight;
 
         }
 
@@ -1307,124 +1376,169 @@
 
 
         async function handleSubmit() {
-            DOM.boardContent.scrollTop = DOM.boardContent.scrollHeight;
-            if (state.isChecking || state.gameOver) return;
-            if (state.inputWord.length !== state.puzzle.startWord.length) {
-                showSnackbar("Word must be 4 letters long.");
-                const inputRow = DOM.boardContent.lastElementChild;
-                inputRow.classList.add('shake');
-                setTimeout(() => inputRow.classList.remove('shake'), 500);
-                return;
-            }
+                    //tutorial
+                    
 
-            const nextWord = state.inputWord;
-            if (state.history.includes(nextWord) || state.currentWord === nextWord) {
-                showSnackbar("Word already used.");
-                return;
-            }
-            if (!checkWordChangeRule(state.currentWord, nextWord)) {
-                showSnackbar("You can only change one letter.");
-                return;
-            }
+                    mainWrapperBox.scrollTop = mainWrapperBox.scrollHeight;
+                    if (state.isChecking || state.gameOver) return;
+                    if (state.inputWord.length !== state.puzzle.startWord.length) {
+                        showSnackbar("Word must be 4 letters long.");
+                        const inputRow = DOM.boardContent.lastElementChild;
+                        inputRow.classList.add('shake');
+                        setTimeout(() => inputRow.classList.remove('shake'), 500);
+                        return;
+                    }
 
-            state.isChecking = true;
-            const isRealWord = await isValidWord(nextWord);
-            state.isChecking = false;
+                    const nextWord = state.inputWord;
+                    if (state.history.includes(nextWord) || state.currentWord === nextWord) {
+                        showSnackbar("Word already used.");
+                        return;
+                    }
+                    if (!checkWordChangeRule(state.currentWord, nextWord)) {
+                        showSnackbar("You can only change one letter.");
+                        return;
+                    }
 
-            if (!isRealWord) {
-                showSnackbar("Not a valid word.");
-                return;
-            }
+                    state.isChecking = true;
+                    const isRealWord = await isValidWord(nextWord);
+                    state.isChecking = false;
 
-            if (state.moves === 0) {
-                state.startTime = new Date();
-                state.timerInterval = setInterval(updateTimer, 1000);
-                if (state.gameMode === 'speed') {
-                    showSnackbar("Timer started!");
-                }
-            }
+                    if (!isRealWord) {
+                        showSnackbar("Not a valid word.");
+                        return;
+                    }
 
-            state.moves++;
-            
-            nextWord.split('').forEach(letter => state.triedLetters.add(letter));
-            
-            const isWinningAnagram = nextWord.split('').sort().join('') === state.puzzle.endWord.split('').sort().join('');
-            
-            state.history.push(state.currentWord);
-            state.currentWord = nextWord;
-            state.inputWord = "";
-            
-            if (isWinningAnagram) {
-                state.puzzle.endWord.split('').forEach(k => state.discoveredKeys.add(k));
-                state.gameOver = true;
-                render();
-                
-                const finalWordRow = DOM.boardContent.lastElementChild;
-                if (finalWordRow) {
-                    finalWordRow.classList.add('word-dance');
-                }
+                    state.history.push(state.currentWord);
+                    state.currentWord = nextWord;
+                    state.inputWord = "";
 
-                showEndState(true, `You solved puzzle #${state.puzzle.puzzleNumber} in ${state.moves} turns!`);
-                
+                    if (state.moves === 0) {
+                        state.startTime = new Date();
+                        state.timerInterval = setInterval(updateTimer, 1000);
+                        if (state.gameMode === 'speed') {
+                            showSnackbar("Timer started!");
+                        }
+                    }
 
-                return;
-            }
-            
-            const newKeys = nextWord.split('').filter(letter => state.puzzle.endWord.includes(letter) && !state.discoveredKeys.has(letter));
-            
-            if (newKeys.length > 0) {
-                newKeys.forEach(key => state.discoveredKeys.add(key));
-            }
+                    state.moves++;
+                    
+                    nextWord.split('').forEach(letter => state.triedLetters.add(letter));
+                    
+                    const isWinningAnagram = nextWord.split('').sort().join('') === state.puzzle.endWord.split('').sort().join('');
 
-            render();
-            renderKeyboard();
-            DOM.gameContainer.scrollTop = DOM.gameContainer.scrollHeight;
-            
-            const currentWordRow = DOM.boardContent.children[state.history.length];
-            if (currentWordRow) {
-                const lettersInWord = state.currentWord.split('');
-                Array.from(currentWordRow.children).forEach((tileContainer, i) => {
-                    const tileInner = tileContainer.querySelector('.tile-inner');
-                    if (tileInner && state.discoveredKeys.has(lettersInWord[i])) {
+                    if (isWinningAnagram) {
+                        state.puzzle.endWord.split('').forEach(k => state.discoveredKeys.add(k));
+                        state.gameOver = true;
+                        render();
+                        
+                        const finalWordRow = DOM.boardContent.lastElementChild;
+                        if (finalWordRow) {
+                            finalWordRow.classList.add('word-dance');
+                        }
+
+                        showEndState(true, `You solved puzzle #${state.puzzle.puzzleNumber} in ${state.moves} turns!`);
+                        return;
+                    }
+                                    
+                    const newKeys = nextWord.split('').filter(letter => state.puzzle.endWord.includes(letter) && !state.discoveredKeys.has(letter));
+
+                    if (newKeys.length > 0) {
+                        // Track which keys were just discovered this turn
+                        state.newlyDiscoveredKeys = new Set(newKeys);
+                        newKeys.forEach(key => state.discoveredKeys.add(key));
+                    } else {
+                        state.newlyDiscoveredKeys = new Set(); // Clear if no new keys
+                    }
+
+                    render();
+                    renderKeyboard();
+
+                    // Animation for newly discovered keys only
+                    if (newKeys.length > 0) {
                         setTimeout(() => {
-                            tileInner.classList.add('flip');
-                        }, i * 100);
+                            // Loop through ALL rows to find instances of newly discovered keys
+                            Array.from(DOM.boardContent.children).forEach((row, rowIndex) => {
+                                // Skip the empty input row (last row)
+                                if (rowIndex === DOM.boardContent.children.length - 1) return;
+                                
+                                Array.from(row.children).forEach((tileContainer, i) => {
+                                    const tileInner = tileContainer.querySelector('.tile-inner');
+                                    if (tileInner) {
+                                        // Get the letter from this tile
+                                        const letter = tileInner.querySelector('.tile-front').textContent.trim();
+                                        // Only animate if this letter was newly discovered
+                                        if (newKeys.includes(letter)) {
+                                            setTimeout(() => {
+                                                tileInner.classList.add('flip');
+                                            }, i * 100);
+                                        }
+                                    }
+                                });
+                            });
+                            
+                            // Clear newly discovered keys after animation
+                            setTimeout(() => {
+                                state.newlyDiscoveredKeys = new Set();
+                            }, 800);
+                        }, 400);
+                    }
+
+                    mainWrapperBox.scrollTop = mainWrapperBox.scrollHeight;
+
+                    if (!state.allKeysFound && state.discoveredKeys.size === state.puzzle.endWord.length) {
+                        state.allKeysFound = true;
+                        showSnackbar("All keys found! Now form the final word.");
+                        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#06b6d4', '#22d3ee', '#67e8f9'] });
+                        DOM.gameContainer.classList.add('all-keys-glow');
+                    }
+                    
+                    if (state.gameMode === 'turns' && state.moves >= state.totalTurns) {
+                        showEndState(false);
+                    }
+                }
+
+        function updateInputRow() {
+            const inputRow = DOM.boardContent.lastElementChild;
+            if (inputRow && !state.gameOver) {
+                const wordArr = state.inputWord.padEnd(state.puzzle.startWord.length, ' ').split('');
+                const tiles = inputRow.children;
+                
+                wordArr.forEach((letter, i) => {
+                    if (tiles[i]) {
+                        const content = letter.trim();
+                        const isKey = state.puzzle.endWord.includes(content);
+                        const isDiscovered = isKey && state.discoveredKeys.has(content);
+                        
+                        tiles[i].textContent = content;
+                        tiles[i].className = `w-full aspect-square rounded-lg flex items-center justify-center text-4xl font-bold uppercase ${isDiscovered ? 'input-tile discovered' : 'input-tile'}`;
                     }
                 });
-            }
-
-            if (!state.allKeysFound && state.discoveredKeys.size === state.puzzle.endWord.length) {
-                state.allKeysFound = true;
-                showSnackbar("All keys found! Now form the final word.");
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#06b6d4', '#22d3ee', '#67e8f9'] });
-                DOM.gameContainer.classList.add('all-keys-glow');
-            }
-            
-            if (state.gameMode === 'turns' && state.moves >= state.totalTurns) {
-                showEndState(false);
             }
         }
 
         function handleVirtualKeyboard(key) {
-            renderBoard();
-            DOM.boardContent.scrollTop = DOM.boardContent.scrollHeight;
-
-             if (state.gameOver) return;
+            
+            if (state.moves > 0 && !state.gameOver) {
+                mainWrapperBox.scrollTop = mainWrapperBox.scrollHeight;
+            }
+            if (state.gameOver) return;
             if (!key) return;
             if (key === 'SUBMIT') {
                 handleSubmit();
             } else if (key === 'DELETE') {
                 state.inputWord = state.inputWord.slice(0, -1);
+                updateInputRow();
             } else if (state.inputWord.length < state.puzzle.startWord.length) {
                 state.inputWord += key;
+                updateInputRow();
             }
-            renderBoard();
         }
 
         function handlePhysicalKeyboard(e) {
-            renderBoard();
-            DOM.boardContent.scrollTop = DOM.boardContent.scrollHeight;
-
+            
+            if (state.moves > 0 && !state.gameOver) {
+                mainWrapperBox.scrollTop = mainWrapperBox.scrollHeight;
+            }
             if (state.gameOver || !DOM.modal.classList.contains('hidden')) return;
             if (e.key.match(/^[a-zA-Z]$/)) {
                 handleVirtualKeyboard(e.key.toUpperCase());
@@ -1505,10 +1619,19 @@
                 state.gameOver = true;
             }
 
+            const submittedWords = state.history.slice(1); // Skip first word (starting word)
+            if (state.currentWord && state.currentWord !== state.puzzle.startWord) {
+                submittedWords.push(state.currentWord);
+            }
+            submittedWords.forEach(word => {
+                if (word) {
+                    word.split('').forEach(letter => state.triedLetters.add(letter));
+                }
+            });
+
             render();
             setTimeout(() => {
-                DOM.gameContainer.scrollTop = DOM.gameContainer.scrollHeight;
-                DOM.boardContent.scrollTop = DOM.boardContent.scrollHeight;
+                mainWrapperBox.scrollTop = mainWrapperBox.scrollHeight;
             }, 100);
             
             // Hide keyboard and show victory content
