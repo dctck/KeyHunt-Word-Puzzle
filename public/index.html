@@ -1954,40 +1954,90 @@
         function generateProgressCode() {
             const turnsScores = JSON.parse(localStorage.getItem('keyhunt-scores-turns') || '{}');
             const speedScores = JSON.parse(localStorage.getItem('keyhunt-scores-speed') || '{}');
+            const turnsHistory = JSON.parse(localStorage.getItem('keyhunt-history-turns') || '{}');
+            const speedHistory = JSON.parse(localStorage.getItem('keyhunt-history-speed') || '{}');
             
-            let code = '';
-            for (let i = 1; i <= 50; i++) { // Assuming max 50 puzzles
-                code += encodeScore(turnsScores[i]) + encodeScore(speedScores[i]);
+            const encodedTurnsScores = {};
+            const encodedSpeedScores = {};
+
+            for (const [puzzleId, score] of Object.entries(turnsScores)) {
+                encodedTurnsScores[puzzleId] = encodeScore(score);
             }
             
-            return 'KEYHUNTer_v1_' + btoa(code);
+            for (const [puzzleId, score] of Object.entries(speedScores)) {
+                encodedSpeedScores[puzzleId] = encodeScore(score);
+            }
+
+            const exportData = {
+                scores: {
+                    turns: encodedTurnsScores,
+                    speed: encodedSpeedScores
+                },
+                history: {
+                    turns: turnsHistory,
+                    speed: speedHistory
+                },
+                exportDate: new Date().toISOString()
+            };
+            
+            // Compress and encode
+            const jsonString = JSON.stringify(exportData);
+            const compressed = btoa(jsonString);
+            
+            return 'KH_v1_' + compressed;
         }
 
         function importProgressCode(codeString) {
-            if (!codeString.startsWith('KeyHunter_v1_')) {
+            if (!codeString.startsWith('KH_v1_')) {
                 throw new Error('Invalid progress code format');
             }
             
-            const encoded = codeString.replace('KeyHunter_v1_', '');
-            const decoded = atob(encoded);
-            
-            const turnsScores = {};
-            const speedScores = {};
-            
-            for (let i = 0; i < decoded.length; i += 2) {
-                const puzzleNum = (i / 2) + 1;
-                const turnChar = decoded[i];
-                const speedChar = decoded[i + 1];
+            try {
+                const encoded = codeString.replace('KH_v1_', '');
+                const decoded = atob(encoded);
+                const importData = JSON.parse(decoded);
+
+                // Import scores
+                if (importData.scores) {
+                if (importData.scores.turns) {
+                    const decodedTurnsScores = {};
+                    for (const [puzzleId, encodedScore] of Object.entries(importData.scores.turns)) {
+                        const decodedScore = decodeScore(encodedScore, false);
+                        if (decodedScore !== null) {
+                            decodedTurnsScores[puzzleId] = decodedScore;
+                        }
+                    }
+                    localStorage.setItem('keyhunt-scores-turns', JSON.stringify(decodedTurnsScores));
+                }
                 
-                const turnScore = decodeScore(turnChar);
-                const speedScore = decodeScore(speedChar, true);
-                
-                if (turnScore) turnsScores[puzzleNum] = turnScore;
-                if (speedScore) speedScores[puzzleNum] = speedScore;
+                if (importData.scores.speed) {
+                    const decodedSpeedScores = {};
+                    for (const [puzzleId, encodedScore] of Object.entries(importData.scores.speed)) {
+                        const decodedScore = decodeScore(encodedScore, true);
+                        if (decodedScore !== null) {
+                            decodedSpeedScores[puzzleId] = decodedScore;
+                        }
+                    }
+                    localStorage.setItem('keyhunt-scores-speed', JSON.stringify(decodedSpeedScores));
+                }
+            }
+
+            // Import history (no encoding needed for history)
+            if (importData.history) {
+                if (importData.history.turns) {
+                    localStorage.setItem('keyhunt-history-turns', JSON.stringify(importData.history.turns));
+                }
+                if (importData.history.speed) {
+                    localStorage.setItem('keyhunt-history-speed', JSON.stringify(importData.history.speed));
+                }
             }
             
-            localStorage.setItem('keyhunt-scores-turns', JSON.stringify(turnsScores));
-            localStorage.setItem('keyhunt-scores-speed', JSON.stringify(speedScores));
+            return true;
+        
+            } catch (error) {
+                console.error('Import error:', error);
+                throw new Error('Invalid progress code format');
+            }
         }
 
 
@@ -2116,6 +2166,17 @@
 
         DOM.settingsBtn.addEventListener('click', () => {
             closeModal();
+
+            const turnsScores = JSON.parse(localStorage.getItem('keyhunt-scores-turns') || '{}');
+            const speedScores = JSON.parse(localStorage.getItem('keyhunt-scores-speed') || '{}');
+            const turnsHistory = JSON.parse(localStorage.getItem('keyhunt-history-turns') || '{}');
+            const speedHistory = JSON.parse(localStorage.getItem('keyhunt-history-speed') || '{}');
+            
+            const turnsPuzzleCount = Object.keys(turnsScores).length;
+            const speedPuzzleCount = Object.keys(speedScores).length;
+            const turnsHistoryCount = Object.keys(turnsHistory).length;
+            const speedHistoryCount = Object.keys(speedHistory).length;
+
             const settingsContent = `
                 <div class="flex items-center justify-between py-2 mb-4">
                     <div>
@@ -2134,17 +2195,29 @@
                 <div class="border-t border-gray-700 mt-4 pt-4">
                     <span class="text-gray-300">Progress Backup</span>
                     <p class="text-xs text-gray-500 mb-3">Export your progress or import from another device</p>
+
+                    <!-- Export Summary -->
+                    <div class="bg-gray-700 rounded-md p-3 mb-3 text-xs">
+                        <div class="text-gray-300 font-semibold mb-1">Your Progress:</div>
+                        <div class="text-gray-400 space-y-1">
+                            <div>• Turns Mode: ${turnsPuzzleCount} puzzles completed${turnsHistoryCount > 0 ? ` (${turnsHistoryCount} with history)` : ''}</div>
+                            <div>• Speed Mode: ${speedPuzzleCount} puzzles completed${speedHistoryCount > 0 ? ` (${speedHistoryCount} with history)` : ''}</div>
+                            <div class="text-cyan-400 mt-2">✓ Includes all scores and daily puzzle history</div>
+                        </div>
+                    </div>
+
                     <div class="space-y-2">
                         <button id="export-code-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition text-sm">
-                            Export Progress Code
+                            Backup Data
                         </button>
                         <div class="flex flex-col gap-2">
-                            <input id="import-code-input" type="text" placeholder="Enter progress code" 
+                            <input id="import-code-input" type="text" placeholder="Enter progress code (v1 or v2 format)" 
                                    class="w-full bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:border-blue-500 focus:outline-none text-xs">
                             <button id="import-code-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition text-sm">
-                                Import Progress
+                                Import Backup
                             </button>
                         </div>
+                        <p class="text-xs text-gray-500 mt-1">⚠️ Importing will overwrite your current progress</p>
                     </div>
                 </div>
                 
@@ -2205,21 +2278,26 @@
 
             // Handle export button
             if (e.target.matches('#export-code-btn')) {
-                const code = generateProgressCode();
-                navigator.clipboard.writeText(code).then(() => {
-                    showSnackbar('Progress code copied to clipboard!');
-                }).catch(() => {
-                    const textarea = document.createElement('textarea');
-                    textarea.value = code;
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textarea);
-                    showSnackbar('Progress code copied!');
-                });
+                try {
+                    const code = generateProgressCode();
+                    navigator.clipboard.writeText(code).then(() => {
+                        showSnackbar('Complete progress exported to clipboard!');
+                    }).catch(() => {
+                        const textarea = document.createElement('textarea');
+                        textarea.value = code;
+                        document.body.appendChild(textarea);
+                        textarea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textarea);
+                        showSnackbar('Complete progress exported!');
+                    });
+                } catch (error) {
+                    console.error('Export error:', error);
+                    showSnackbar('Export failed. Please try again.');
+                }
             }
             
-            // Handle import button
+            // Handle import button with enhanced feedback
             if (e.target.matches('#import-code-btn')) {
                 const code = document.getElementById('import-code-input').value.trim();
                 if (!code) {
@@ -2229,27 +2307,36 @@
                 
                 try {
                     importProgressCode(code);
-                    showSnackbar('Progress imported successfully!');
+                    showSnackbar('Progress imported successfully! Reloading...');
                     document.getElementById('import-code-input').value = '';
-                    closeModal();
-                    if (state.puzzle) {
-                        const currentDate = state.puzzle.date;
-                        initGame(currentDate);
-                    }
+                    
+                    // Give user time to see the success message before reloading
+                    setTimeout(() => {
+                        closeModal();
+                        if (state.puzzle) {
+                            const currentDate = state.puzzle.date;
+                            initGame(currentDate);
+                        } else {
+                            location.reload();
+                        }
+                    }, 1500);
+                    
                 } catch (error) {
-                    showSnackbar('Invalid progress code');
+                    console.error('Import error:', error);
+                    showSnackbar('Invalid or corrupted progress code');
                 }
             }
-            
+        
             // Handle clear data button
             if (e.target.matches('#clear-data-btn')) {
                 closeModal();
                 showConfirmationModal(
                     'Clear All Data?',
-                    'This will reset all your scores and settings. This action cannot be undone.',
+                    'This will reset all your scores, history, and settings. This action cannot be undone.',
                     () => {
                         localStorage.clear();
-                        location.reload();
+                        showSnackbar('All data cleared. Reloading...');
+                        setTimeout(() => location.reload(), 1000);
                     }
                 );
             }
