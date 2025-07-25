@@ -169,22 +169,22 @@
                 display: none;
                 width: 0;
                 height: 0;
-                background: transparent;
+                background: #0F110C;
             }
 
             #game-container::-webkit-scrollbar-track {
                 display: none;
-                background: transparent;
+                background: #0F110C;
             }
 
             #game-container::-webkit-scrollbar-thumb {
                 display: none;
-                background: transparent;
+                background: #0F110C;
             }
 
             #game-container::-webkit-scrollbar-corner {
                 display: none;
-                background: transparent;
+                background: #0F110C;
             }
 
 
@@ -192,7 +192,40 @@
             body::-webkit-scrollbar {
                 display: none;
                 width: 0;
+                background: #0F110C;
+            }
+
+            #modal-content {
+                scrollbar-width: thin;
+                scrollbar-color: #6b7280 transparent; /* thumb color, track color */
+            }
+
+            #modal-content::-webkit-scrollbar {
+                width: 4px; /* Very thin */
+                background: transparent; /* No track background */
+            }
+
+            #modal-content::-webkit-scrollbar-track {
+                background: transparent; /* Invisible track */
+            }
+
+            #modal-content::-webkit-scrollbar-thumb {
+                background: #6b7280; /* Gray thumb */
+                border-radius: 2px;
+                border: none;
+            }
+
+            #modal-content::-webkit-scrollbar-thumb:hover {
+                background: #9ca3af; /* Lighter on hover */
+            }
+
+            /* Hide scrollbar corner */
+            #modal-content::-webkit-scrollbar-corner {
                 background: transparent;
+            }
+
+            #modal .bg-gray-800::-webkit-scrollbar {
+                display: none !important;
             }
 
             #game-container { 
@@ -425,6 +458,7 @@
                 width: 100%;
                 margin: 0 auto;
                 overflow: hidden;
+                margin-bottom: 16px;
             }
 
             /* Keyboard rows */
@@ -589,6 +623,11 @@
             }
 
             @media (max-width: 480px) {
+                #modal .bg-gray-800 {
+                   max-height: 95dvh !important;
+                   margin: 0.5rem !important;
+                   width: calc(100% - 1rem) !important;
+               }
                 .pips-container {
                     bottom: 2px;
                     gap: 1px;
@@ -713,7 +752,7 @@
 
     <!-- Modals -->
     <div id="modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
-        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md border border-gray-700 max-h-[80dvh] flex flex-col">
+        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md border border-gray-700 max-h-[90dvh] flex flex-col">
             <div class="flex justify-between items-center mb-4 flex-shrink-0">
                 <h2 id="modal-title" class="text-2xl font-bold text-cyan-400"></h2>
                 <button id="modal-close" class="p-1 rounded-full hover:bg-gray-700 text-2xl leading-none">&times;</button>
@@ -1577,6 +1616,13 @@
 
                     if (isWinningAnagram) {
                         state.puzzle.endWord.split('').forEach(k => state.discoveredKeys.add(k));
+
+                        trackEvent('puzzle_solved', {
+                            puzzle_number: state.puzzle.puzzleNumber,
+                            final_word: nextWord,           // What the user typed
+                            answer: state.puzzle.endWord,   // The actual puzzle answer
+                        });
+
                         state.gameOver = true;
                         render();
                         
