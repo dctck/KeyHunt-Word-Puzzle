@@ -1534,9 +1534,22 @@
             DOM.resultTime.textContent = state.finalTime;
         }
 
+        async function hasValidMoves() {
+            const usedWords = new Set([...state.history, state.currentWord]);
+            
+            // Check all possible one-letter changes
+            for (let i = 0; i < state.currentWord.length; i++) {
+                for (let c = 65; c <= 90; c++) { // A-Z
+                    const newWord = state.currentWord.substring(0, i) + String.fromCharCode(c) + state.currentWord.substring(i + 1);
+                    if (!usedWords.has(newWord) && await isValidWord(newWord)) {
+                        return true; // Found one valid move
+                    }
+                }
+            }
+            return false;
+        }
 
         async function handleSubmit() {
-                    //tutorial
                     
 
                     mainWrapperBox.scrollTop = mainWrapperBox.scrollHeight;
@@ -1680,7 +1693,7 @@
 
                     mainWrapperBox.scrollTop = mainWrapperBox.scrollHeight;
 
-                    if (!state.allKeysFound && state.discoveredKeys.size === state.puzzle.endWord.length) {
+                    if (!state.allKeysFound && state.discoveredKeys.size === new Set(state.puzzle.endWord.split('')).size) {
                         state.allKeysFound = true;
                         showSnackbar("All keys found! Now form the final word.");
                         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#06b6d4', '#22d3ee', '#67e8f9'] });
@@ -1693,7 +1706,20 @@
                         render();
                         showEndState(false);
                     }
-                }
+
+                    if (!state.gameOver) {
+                        setTimeout(async () => {
+                            if (!await hasValidMoves()) {
+                                state.gameOver = true;
+                                render();
+                                const message = state.discoveredKeys.size === state.puzzle.endWord.length 
+                                    ? "No more valid moves! You found all keys but got stuck."
+                                    : `No more valid moves! Found ${state.discoveredKeys.size}/${state.puzzle.endWord.length} keys.`;
+                                showEndState(false, message);
+                            }
+                        }, 500);
+                    }
+        }
 
         function updateInputRow() {
             const inputRow = DOM.boardContent.lastElementChild;
