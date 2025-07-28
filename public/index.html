@@ -1733,10 +1733,10 @@
                     </select>
                     
                     <div>
-                        <textarea id="feedback-message" rows="4" maxlength="500" placeholder="Tell us what you think!" 
+                        <textarea id="feedback-message" rows="4" maxlength="450" placeholder="Tell us what you think!" 
                             class="w-full bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:border-blue-500 focus:outline-none resize-none"
                             oninput="this.nextElementSibling.firstElementChild.textContent=this.value.length"></textarea>
-                        <div class="text-right text-xs text-gray-500 mt-1"><span>0</span>/500</div>
+                        <div class="text-right text-xs text-gray-500 mt-1"><span>0</span>/450</div>
                     </div>
                     
                     <div class="text-center">
@@ -1745,9 +1745,6 @@
                         </div>
                         <div class="text-xs text-gray-500" id="rating-text">Click to rate</div>
                     </div>
-                    
-                    <input type="email" id="feedback-email" placeholder="your@email.com (optional)" 
-                        class="w-full bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:border-blue-500 focus:outline-none">
                     
                     <div class="flex gap-2">
                         <button id="send-feedback" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">Send</button>
@@ -2338,33 +2335,57 @@
                const rating = +e.target.dataset.rating;
                const stars = document.querySelectorAll('#stars button');
                stars.forEach((s, i) => {
-                   s.textContent = i < rating ? '★' : '☆';
-                   s.style.color = i < rating ? '#fbbf24' : '#6b7280';
-               });
-               document.getElementById('rating-text').textContent = ['','Poor','Fair','Good','Very Good','Excellent'][rating];
+                       if (i < rating) {
+                           s.textContent = '★';
+                           s.style.color = '#fbbf24';
+                           s.setAttribute('data-selected', 'true'); 
+                       } else {
+                           s.textContent = '☆';
+                           s.style.color = '#6b7280';
+                           s.removeAttribute('data-selected'); 
+                       }
+                   });
+               const ratingLabels = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+               document.getElementById('rating-text').textContent = ratingLabels[rating] || 'Click to rate';
+
+               const starsContainer = document.getElementById('stars');
+               starsContainer.setAttribute('data-current-rating', rating);
            }
            
            // Send feedback
            if (e.target.id === 'send-feedback') {
                const message = document.getElementById('feedback-message').value.trim();
-               if (!message) return showSnackbar('Please enter a message');
-               
-               // Send to Google Analytics only
-               if (typeof gtag !== 'undefined') {
-                   gtag('event', 'feedback_submitted', {
-                       feedback_type: document.getElementById('feedback-type').value,
-                       feedback_message: message.substring(0, 500),
-                       feedback_rating: document.getElementById('rating-text').textContent !== 'Click to rate' ? 
-                           document.querySelector('#stars button[style*="rgb(251, 191, 36)"]')?.dataset.rating : null,
-                       has_email: !!document.getElementById('feedback-email').value.trim(),
-                       puzzle_number: state.puzzle?.puzzleNumber || 0,
-                       player_id: localStorage.getItem('keyhunt-playerId')?.substring(0, 10) || 'unknown'
+                   if (!message) return showSnackbar('Please enter a message');
+                   
+                   const feedbackType = document.getElementById('feedback-type').value;
+                  const starsContainer = document.getElementById('stars');
+                  const rating = starsContainer ? starsContainer.getAttribute('data-current-rating') : null;
+                      
+                   // Create type codes
+                   const typeMap = {
+                       'bug': 'BR',
+                       'feature': 'FR', 
+                       'general': 'GF',
+                       'praise': 'PR',
+                       'difficulty': 'DF'
+                   };
+                   
+                   // Create complete message with all context
+                   const typeCode = typeMap[feedbackType] || 'GF';
+                   const ratingCode = rating ? `S${rating}` : 'S0';
+                   const puzzleInfo = `P${state.puzzle?.puzzleNumber || 0}`;
+                   
+                   // Format: [TYPE|RATING|PUZZLE] User message
+                   const formattedMessage = `[${typeCode}|${ratingCode}|${puzzleInfo}] ${message}`;
+                   
+                   // Send single event - everything visible at once
+                   trackEvent('feedback_submitted', {
+                       feedback_message: formattedMessage
                    });
-               }
-               
-               showSnackbar('Thank you! Feedback sent 🎉');
-               closeModal();
-           } 
+                   
+                   showSnackbar('Thank you! Feedback sent 🎉');
+                   closeModal();
+            }
 
             // Handle archive puzzle clicks
             if (e.target.matches('.archive-date-btn')) {
