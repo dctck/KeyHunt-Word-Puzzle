@@ -171,8 +171,8 @@
         "puzzleNumber": 25,
         "date": "2025-07-29",
         "startWord": "ATOM",
-        "endWord": "KEYS",
-        "targetMoves": 7
+        "endWord": "YEAR",
+        "targetMoves": 9
     },
     {
         "puzzleNumber": 26,
