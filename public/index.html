@@ -702,6 +702,7 @@
                         <a href="#" id="today-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition">Today's Puzzle</a>
                         <a href="#" id="archives-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition">Archives</a>
                         <a href="#" id="settings-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition">Settings</a>
+                        <a href="#" id="feedback-btn" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition">Send Feedback</a>
                         <button id="player-id-btn" class="w-full text-left block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition"></button>
                     </div>
                 </div>
@@ -812,6 +813,7 @@
             playerIdBtn: document.getElementById('player-id-btn'),
             todayBtn: document.getElementById('today-btn'),
             tryAgainBtn: document.getElementById('try-again-btn'),
+            feedbackBtn: document.getElementById('feedback-btn'),
             importCodeInput: document.getElementById('import-code-input'),
             
             
@@ -1721,6 +1723,41 @@
                     }
         }
 
+        DOM.feedbackBtn.addEventListener('click', () => {
+            openModal('Send Feedback', `
+                <div class="space-y-4">
+                    <select id="feedback-type" class="w-full bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600">
+                        <option value="bug">🐛 Bug Report</option>
+                        <option value="feature">💡 Feature Request</option>
+                        <option value="general">💬 General Feedback</option>
+                    </select>
+                    
+                    <div>
+                        <textarea id="feedback-message" rows="4" maxlength="500" placeholder="Tell us what you think!" 
+                            class="w-full bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:border-blue-500 focus:outline-none resize-none"
+                            oninput="this.nextElementSibling.firstElementChild.textContent=this.value.length"></textarea>
+                        <div class="text-right text-xs text-gray-500 mt-1"><span>0</span>/500</div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="flex gap-1 justify-center mb-1" id="stars">
+                            ${[1,2,3,4,5].map(i => `<button type="button" class="text-2xl text-gray-500 hover:text-yellow-400" data-rating="${i}">☆</button>`).join('')}
+                        </div>
+                        <div class="text-xs text-gray-500" id="rating-text">Click to rate</div>
+                    </div>
+                    
+                    <input type="email" id="feedback-email" placeholder="your@email.com (optional)" 
+                        class="w-full bg-gray-700 text-white px-3 py-2 rounded-md border border-gray-600 focus:border-blue-500 focus:outline-none">
+                    
+                    <div class="flex gap-2">
+                        <button id="send-feedback" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">Send</button>
+                        <button onclick="closeModal()" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">Cancel</button>
+                    </div>
+                </div>
+            `);
+            DOM.menuDropdown.classList.add('hidden');
+        });
+
         function updateInputRow() {
             const inputRow = DOM.boardContent.lastElementChild;
             if (inputRow && !state.gameOver) {
@@ -2295,6 +2332,40 @@
         DOM.archivesBtn.addEventListener('click', handleArchivesClick);
 
         DOM.modalContent.addEventListener('click', (e) => {
+
+           // Star rating
+           if (e.target.dataset.rating) {
+               const rating = +e.target.dataset.rating;
+               const stars = document.querySelectorAll('#stars button');
+               stars.forEach((s, i) => {
+                   s.textContent = i < rating ? '★' : '☆';
+                   s.style.color = i < rating ? '#fbbf24' : '#6b7280';
+               });
+               document.getElementById('rating-text').textContent = ['','Poor','Fair','Good','Very Good','Excellent'][rating];
+           }
+           
+           // Send feedback
+           if (e.target.id === 'send-feedback') {
+               const message = document.getElementById('feedback-message').value.trim();
+               if (!message) return showSnackbar('Please enter a message');
+               
+               // Send to Google Analytics only
+               if (typeof gtag !== 'undefined') {
+                   gtag('event', 'feedback_submitted', {
+                       feedback_type: document.getElementById('feedback-type').value,
+                       feedback_message: message.substring(0, 500),
+                       feedback_rating: document.getElementById('rating-text').textContent !== 'Click to rate' ? 
+                           document.querySelector('#stars button[style*="rgb(251, 191, 36)"]')?.dataset.rating : null,
+                       has_email: !!document.getElementById('feedback-email').value.trim(),
+                       puzzle_number: state.puzzle?.puzzleNumber || 0,
+                       player_id: localStorage.getItem('keyhunt-playerId')?.substring(0, 10) || 'unknown'
+                   });
+               }
+               
+               showSnackbar('Thank you! Feedback sent 🎉');
+               closeModal();
+           } 
+
             // Handle archive puzzle clicks
             if (e.target.matches('.archive-date-btn')) {
                 const date = e.target.dataset.date;
