@@ -1971,7 +1971,7 @@
                 }
             }
             
-            const shareText = `KeyHunter ${state.puzzle.puzzleNumber}\n${statusText}\n\n${shareGrid}\n\nkeyhunter.org`;
+            const shareText = `KeyHunter ${state.puzzle.puzzleNumber}\n${statusText}\n\n${shareGrid}\n\nhttps://keyhunter.org/`;
             
             // Copy to clipboard
             navigator.clipboard.writeText(shareText).then(() => {
@@ -2355,37 +2355,58 @@
            // Send feedback
            if (e.target.id === 'send-feedback') {
                const message = document.getElementById('feedback-message').value.trim();
-                   if (!message) return showSnackbar('Please enter a message');
-                   
-                   const feedbackType = document.getElementById('feedback-type').value;
-                  const starsContainer = document.getElementById('stars');
-                  const rating = starsContainer ? starsContainer.getAttribute('data-current-rating') : null;
-                      
-                   // Create type codes
-                   const typeMap = {
-                       'bug': 'BR',
-                       'feature': 'FR', 
-                       'general': 'GF',
-                       'praise': 'PR',
-                       'difficulty': 'DF'
-                   };
-                   
-                   // Create complete message with all context
-                   const typeCode = typeMap[feedbackType] || 'GF';
-                   const ratingCode = rating ? `S${rating}` : 'S0';
-                   const puzzleInfo = `P${state.puzzle?.puzzleNumber || 0}`;
-                   
-                   // Format: [TYPE|RATING|PUZZLE] User message
-                   const formattedMessage = `[${typeCode}|${ratingCode}|${puzzleInfo}] ${message}`;
-                   
-                   // Send single event - everything visible at once
-                   trackEvent('feedback_submitted', {
-                       feedback_message: formattedMessage
-                   });
-                   
-                   showSnackbar('Thank you! Feedback sent 🎉');
-                   closeModal();
-            }
+               if (!message) return showSnackbar('Please enter a message');
+               
+               const feedbackType = document.getElementById('feedback-type').value;
+               const starsContainer = document.getElementById('stars');
+               const rating = starsContainer ? starsContainer.getAttribute('data-current-rating') : null;
+
+               const typeMap = {
+                       'bug': 'Bug Report',
+                       'feature': 'Feature Request', 
+                       'general': 'General Feedback',
+                       'praise': 'Compliment',
+                       'difficulty': 'Puzzle Difficulty'
+               };
+               
+               // Submit to Google Form (replace YOUR_FORM_ID with actual form ID)
+               const formData = new FormData();
+               formData.append('entry.873680804', typeMap[feedbackType] || 'General Feedback');  // Use mapped value!
+               formData.append('entry.746742452', message);       
+               formData.append('entry.1364770418', rating || ''); // Send empty string instead of '0'
+               formData.append('entry.1029212732', state.puzzle?.puzzleNumber || 0);
+               formData.append('entry.1198672043', new Date().toISOString());
+               formData.append('entry.1223482797', localStorage.getItem('keyhunt-playerId') || 'unknown');
+
+               console.log('Sending to Google Form:', {
+                   type: typeMap[feedbackType],
+                   message: message,
+                   rating: rating || 'no rating',
+                   puzzle: state.puzzle?.puzzleNumber || 0
+               });
+               
+               // Submit to Google Form
+               fetch('https://docs.google.com/forms/d/e/1FAIpQLSfDhfl8cLZp5ZEv30uxTMDu-PQl2cwJw7ZmaLHRkB7q3049fA/formResponse', {
+                   method: 'POST',
+                   mode: 'no-cors',
+                   body: formData
+               }).then(() => {
+                   console.log('Feedback submitted to Google Form');
+               }).catch(err => {
+                   console.log('Form submission completed (CORS error is normal)');
+               });
+               
+               // Also send to GA for backup
+               if (typeof trackEvent === 'function') {
+                    trackEvent('feedback_submitted', {
+                        feedback_type: feedbackType,
+                        rating: rating || '0'
+                    });
+                }
+               
+               showSnackbar('Thank you! Feedback sent 🎉');
+               closeModal();
+           }
 
             // Handle archive puzzle clicks
             if (e.target.matches('.archive-date-btn')) {
