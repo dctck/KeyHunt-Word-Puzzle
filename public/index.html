@@ -1392,16 +1392,14 @@
             }
         }
 
-        DOM.profileBtn.addEventListener('click', (e) => {
+        DOM.profileBtn.addEventListener('click', async (e) => {
             e.preventDefault();
-            setTimeout(() => {
-                    showStatsDashboard();
-            }, 50);
+            await showStatsDashboard();
             DOM.menuDropdown.classList.add('hidden');
         });
 
-        function showStatsDashboard() {
-            const stats = calculatePlayerStats();
+        async function showStatsDashboard() {
+            const stats = await calculatePlayerStats();
             const playerId = ensurePlayerId();
             
             openModal('👤 Your Profile', `
@@ -1448,7 +1446,7 @@
                     </div>` : ''}
                     
                     <div class="bg-gray-700 rounded-lg p-4">
-                        <h3 class="text-white mb-2">📅 Last 7 Days</h3>
+                        <h3 class="text-white mb-2">🧩 Last 7 Puzzles</h3>
                         <div class="flex gap-1">
                             ${stats.recentActivity.map(day => {
                                 const color = day.status === 'completed' ? 'bg-green-500' : 
@@ -1463,7 +1461,7 @@
             `);
         }
 
-        function calculatePlayerStats() {
+        async function calculatePlayerStats() {
             const gameMode = localStorage.getItem('keyhunt-mode') || 'turns';
             const scores = JSON.parse(localStorage.getItem(`keyhunt-scores-${gameMode}`) || '{}');
             
@@ -1498,7 +1496,16 @@
                 });
             
             // Last 7 days - check history and scores
-            const todayPuzzleNumber = state.puzzle ? state.puzzle.puzzleNumber : 0;
+            let todayPuzzleNumber = 0;
+            try {
+                const response = await fetch('/api/puzzle');
+                const todayPuzzle = await response.json();
+                todayPuzzleNumber = todayPuzzle.puzzleNumber;
+            } catch (error) {
+                // Fallback if API fails
+                todayPuzzleNumber = state.puzzle ? state.puzzle.puzzleNumber : 0;
+            }
+
             let currentStreak = 0;
             
             const recentActivity = Array.from({length: 7}, (_, i) => {
