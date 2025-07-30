@@ -1394,7 +1394,9 @@
 
         DOM.profileBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            showStatsDashboard();
+            setTimeout(() => {
+                    showStatsDashboard();
+            }, 50);
             DOM.menuDropdown.classList.add('hidden');
         });
 
