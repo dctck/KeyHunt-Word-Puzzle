@@ -704,6 +704,14 @@
                             </svg>
                             How to Play
                         </a>
+
+                        <a href="#" onclick="startTutorial()" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-gray-700 transition">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m8-10v12a1 1 0 01-1 1H5a1 1 0 01-1-1V8m16-2a1 1 0 00-1-1H5a1 1 0 00-1 1" />
+                            </svg>
+                            Tutorial
+                        </a>
+
                         <a href="#" id="today-btn" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-gray-700 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -955,12 +963,147 @@
           });
         }
 
+        function setupFreshGameUI() {
+            trackGameStart();
+                render();
+                
+                // Show game board and keyboard
+                DOM.victoryFooter.classList.add('hidden');
+                Object.assign(DOM.keyboardContainer.style, {
+                    opacity: '1',
+                    display: 'block',
+                    transform: 'translateY(0)'
+                });
+                DOM.gameContainer.classList.remove('all-keys-glow');
+        }
+
+        let tutorial = { active: false, step: 0, steps: null };
+
+        window.startTutorial = async function() {
+
+            showLoader();
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            const data = await fetch('/api/tutorial').then(r => r.json()).catch(() => null);
+            if (!data) return showSnackbar("Tutorial unavailable");
+            
+            
+            tutorial = { active: true, step: 0, steps: data.steps };
+            // LIKE -> MACE tutorial puzzle
+
+            state.isTutorial = true;
+
+            const savedMode = localStorage.getItem('keyhunt-mode');
+            localStorage.setItem('keyhunt-mode', 'turns');
+
+            setupGame({ puzzleNumber: 0, date: 'tutorial', startWord: 'LIKE', endWord: 'MACE', targetMoves: 6 });
+            state.isTutorial = true;
+            state.gameMode = 'turns';
+
+            render();
+            hideLoader();
+
+            DOM.puzzleTitle.textContent = 'Tutorial';
+            showTutorialStep();
+        }
+
+        
+        function showTutorialStep() {
+            const step = tutorial.steps[tutorial.step];
+            if (!step) return endTutorial();
+            
+            if (step.action === 'continue') {
+                    openModal(`${step.step}. ${step.title}`, `
+                        <div class="text-center">
+                            <p class="text-gray-300 mb-4 text-left leading-relaxed">${step.instruction}</p>
+                            <button onclick="nextTutorialStep()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded">Continue (Enter)</button>
+                        </div>
+                    `);
+                    // Hide the X close button for continue steps
+                    DOM.modalClose.style.display = 'none';
+                } else {
+                    openModal(`${step.step}. ${step.title}`, `
+                        <div class="text-center">
+                            <p class="text-gray-300 mb-4 text-left leading-relaxed">${step.instruction}</p>
+                            ${step.action === 'finish' ? 
+                                '<div class="space-y-2"><button onclick="endTutorial(); initGame()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Play Today\'s Puzzle</button><button onclick="endTutorial(); handleArchivesClick()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Browse Archives</button></div>' :
+                                `<div class="text-center">
+                                    <div class="text-sm text-gray-400 bg-gray-700 p-3 rounded mb-3">Type "<strong>${step.expectedWord}</strong>" and press Submit</div>
+                                    <div class="text-xs text-gray-500">Press any letter key to start typing...</div>
+                                </div>`
+                            }
+                        </div>
+                    `);
+                    // Show the X close button for other steps
+                    DOM.modalClose.style.display = 'block';
+                }
+        }
+
+        window.nextTutorialStep = function () {
+            closeModal();
+            tutorial.step++;
+            setTimeout(showTutorialStep, 500);
+        }
+
+        window.endTutorial = function () {
+            tutorial.active = false;
+            state.isTutorial = false;
+            localStorage.setItem('khTut', 'true');
+
+            const savedMode = localStorage.getItem('keyhunt-mode-backup');
+                if (savedMode) {
+                    localStorage.setItem('keyhunt-mode', savedMode);
+                    localStorage.removeItem('keyhunt-mode-backup');
+            }
+
+            closeModal();
+            DOM.modalClose.style.display = 'block';
+        }
+
+        function checkTutorial() {
+            if (!tutorial.active) return false;
+            const step = tutorial.steps[tutorial.step];
+            if (step?.expectedWord && state.inputWord !== step.expectedWord) {
+                showSnackbar(`Try "${step.expectedWord}" for this tutorial step`);
+                return true;
+            }
+            // After successful submit, advance tutorial
+            if (step?.action === 'submit') setTimeout(nextTutorialStep, 1500);
+            return false;
+        }
+
+        function isTutorialContinueStep() {
+            if (!tutorial.active) return false;
+            const step = tutorial.steps[tutorial.step];
+            return step?.action === 'continue' && !DOM.modal.classList.contains('hidden');
+        }
+
         // Game helper functions
-        function setupGame(puzzle) {
+        function setupGame(puzzle, options = {}) {
+            const {
+                isToday = false,
+                gameState = 'fresh', // 'fresh' or 'completed'
+            } = options;
+            
+            // Clear any existing timers
+            if (state.timerInterval) clearInterval(state.timerInterval);
+            
+            // Reset timer for fresh games
+            if (gameState === 'fresh') {
+                state.finalTime = null;
+                if (DOM.resultTime) DOM.resultTime.textContent = "0:00";
+            }
+            
+            // Create base game state
             const savedScores = getSavedScores();
-            const gameMode = localStorage.getItem('keyhunt-mode') || 'turns';
-            const todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'});
-            const isToday = puzzle.date === todayStr;
+            let gameMode = localStorage.getItem('keyhunt-mode') || 'turns';
+
+            if (puzzle.date === 'tutorial') {
+                    // Backup current mode before switching
+                    localStorage.setItem('keyhunt-mode-backup', gameMode);
+                    gameMode = 'turns';
+                    localStorage.setItem('keyhunt-mode', 'turns');
+            }
             
             state = {
                 puzzle,
@@ -970,20 +1113,108 @@
                 triedLetters: new Set(),
                 discoveredKeys: new Set(),
                 isChecking: false,
-                gameOver: false, // Always start fresh for any game
+                gameOver: gameState === 'completed',
                 allKeysFound: false,
                 moves: 0,
                 countdownInterval: null,
                 shareGrid: "",
                 isToday: isToday,
                 gameMode: gameMode,
-                oneLetterViolations: 0
+                oneLetterViolations: 0,
+                isTutorial: puzzle.date === 'tutorial'
             };
-            if(state.gameMode === 'turns'){
+            
+            if (state.gameMode === 'turns') {
                 state.totalTurns = puzzle.targetMoves + 4;
             }
+            
+            // Restore history for completed daily puzzles
+            if (gameState === 'completed' && isToday) {
+                const savedHistory = loadGameHistory(puzzle.puzzleNumber);
+                if (savedHistory) {
+                    Object.assign(state, {
+                        history: [...savedHistory.history],
+                        currentWord: savedHistory.currentWord,
+                        discoveredKeys: new Set(savedHistory.discoveredKeys),
+                        moves: savedHistory.moves,
+                        finalTime: savedHistory.finalTime,
+                        gameMode: savedHistory.gameMode
+                    });
+                }
+            }
+            
+            // Mark letters as tried for completed games
+            if (gameState === 'completed') {
+                const submittedWords = state.history.slice(1); // Skip first word (starting word)
+                if (state.currentWord && state.currentWord !== state.puzzle.startWord) {
+                    submittedWords.push(state.currentWord);
+                }
+                submittedWords.forEach(word => {
+                    if (word) {
+                        word.split('').forEach(letter => state.triedLetters.add(letter));
+                    }
+                });
+            }
+            
+            // Setup UI based on game state
+            if (gameState === 'fresh') {
+                setupFreshGameUI();
+            } else {
+                setupCompletedGameUI();
+            }
+        }
 
-            DOM.resultTime.textContent = '0:00';
+        function setupCompletedGameUI() {
+            render();
+            
+            // Scroll to bottom after render
+            setTimeout(() => {
+                mainWrapperBox.scrollTop = mainWrapperBox.scrollHeight;
+            }, 100);
+            
+            // Hide keyboard and show victory content
+            DOM.keyboardContainer.style.display = 'none';
+            DOM.keyboardContainer.style.opacity = '0';
+            DOM.victoryFooter.classList.remove('hidden');
+            DOM.victoryFooter.style.opacity = '1';
+            DOM.victoryFooter.style.transform = 'translateY(0)';
+            
+            // Set up victory content
+            const savedScores = getSavedScores();
+            const savedScore = savedScores[state.puzzle.puzzleNumber];
+            const isWin = savedScore !== '💤' && savedScore !== 'null';
+            
+            state.isWin = isWin;
+
+            // Victory title and message
+            if (isWin) {
+                DOM.victoryTitle.textContent = 'Completed!';
+                DOM.victoryMessage.textContent = `You already completed puzzle #${state.puzzle.puzzleNumber}!`;
+                DOM.victoryMessage.classList.remove('text-red-400');
+            } else {
+                DOM.victoryTitle.textContent = "Attempted";
+                DOM.victoryMessage.textContent = `You already attempted puzzle #${state.puzzle.puzzleNumber}.`;
+                DOM.victoryMessage.classList.add('text-red-400');
+            }
+            
+            // Score display
+            DOM.resultScore.textContent = savedScore;
+            DOM.resultScoreLabel.textContent = state.gameMode === 'speed' ? 'TIME' : 'SCORE';
+            
+            // Button logic
+            DOM.archivesCtaBtn.style.display = 'block';
+            DOM.shareBtn.style.display = state.isToday ? 'block' : 'none';
+            DOM.tryAgainBtn.style.display = state.isToday ? 'none' : 'block';
+            
+            // Countdown or next puzzle button
+            if (state.isToday) {
+                DOM.countdownContainer.classList.remove('hidden');
+                DOM.playNextBtn.style.display = 'none';
+                startNextPuzzleCountdown();
+            } else {
+                DOM.countdownContainer.classList.add('hidden');
+                DOM.playNextBtn.style.display = state.puzzle.puzzleNumber < 4 ? 'block' : 'none';
+            }
         }
 
         function countKeyNeighbors(letter) {
@@ -993,6 +1224,15 @@
         }
 
         async function renderPuzzleTitle() {
+
+if (!state || !state.puzzle) {
+        return;
+    }
+            // Handle tutorial mode
+            if (state.isTutorial) {
+                DOM.puzzleTitle.textContent = 'Tutorial';
+                return;
+            }
             if (!state.isToday) {
                 const maxArchive = await getCurrentMaxArchivePuzzle();
                 
@@ -1231,34 +1471,45 @@
 
         async function transitionToPuzzle(dateString) {
             showLoader();
-
-            // Force a minimum delay
             await new Promise(resolve => setTimeout(resolve, 500));
-
             DOM.resultTime.textContent = '0:00';
 
             try {
-                // First call initGame to load the puzzle data
                 await initGame(dateString);
-                
-                // After puzzle is loaded, check if it's completed
-                if (state.puzzle && state.puzzle.puzzleNumber) {
-                    const savedScores = getSavedScores();
-                    const isCompleted = savedScores[state.puzzle.puzzleNumber];
-                    
-                    const todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'});
-                    const isToday = state.puzzle.date === todayStr;
-                    
-                    if (isCompleted) {
-                        // Show completed puzzle with victory screen
-                        showCompletedPuzzle(state.puzzle, isToday);
-                    }
-                    // If not completed, initGame already set up the fresh game
-                }
             } finally {
                 hideLoader();
             }
         }
+
+        function deobfuscateAnswer(obfuscated, puzzleNumber, startWord) {
+
+            if (/^[A-Z]{4}$/.test(obfuscated)) {
+                return obfuscated;
+            }
+            
+            try {
+                // Decode base64 directly - no splitting on '|'
+                const scrambled = atob(obfuscated);
+                
+                // Generate the same key as server
+                const key = `KeyHunter${puzzleNumber}${startWord}`;
+                
+                let result = '';
+                for (let i = 0; i < scrambled.length; i++) {
+                    const scrambledChar = scrambled.charCodeAt(i);
+                    const keyChar = key.charCodeAt(i % key.length);
+                    const original = scrambledChar ^ keyChar;
+                    
+                    result += String.fromCharCode(original);
+                }
+                
+                return result;
+                
+            } catch (error) {
+                return obfuscated; // Fallback - might be unencrypted in dev
+            }
+        }
+
 
         function getSavedScores() {
             const gameMode = localStorage.getItem('keyhunt-mode') || 'turns';
@@ -1267,6 +1518,9 @@
         }
 
         function saveGameState(puzzleNumber, score) {
+
+            if (state.isTutorial) return;
+
             const gameMode = state.gameMode;
             const scores = JSON.parse(localStorage.getItem(`keyhunt-scores-${gameMode}`) || '{}');
             
@@ -1377,7 +1631,7 @@
             DOM.modal.classList.remove('hidden');
         }
 
-        function closeModal(modalElement) {
+        window.closeModal = function (modalElement) {
             // If anything other than a DOM element with classList, close generic modal
             if (!modalElement || !modalElement.classList) {
                 
@@ -1677,9 +1931,9 @@
             state.gameOver = true;
             state.isWin = isWin;
             
-            if (!isReplay) {
-                trackGameComplete(isWin);
-            }
+            if (!isReplay && !state.isTutorial) {
+                    trackGameComplete(isWin);
+                }
 
             DOM.gameContainer.classList.remove('all-keys-glow');
 
@@ -1709,7 +1963,7 @@
             let scoreLabel = 'SCORE';
 
             if(isWin) {
-                if (!isReplay) {
+                if (!isReplay && !state.isTutorial) {
                     confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, angle: 90, startVelocity: 40 });
                 }
                 DOM.victoryTitle.textContent = VICTORY_SYNONYMS[Math.floor(Math.random() * VICTORY_SYNONYMS.length)];
@@ -1730,9 +1984,8 @@
                     DOM.resultScoreLabel.textContent = score.includes('★') ? 'STARS' : 'FINISH';
                 }
 
-                if (!isReplay) {
+                if (!isReplay && !state.isTutorial) {
                     saveGameState(state.puzzle.puzzleNumber, score);
-                } else {
                 }
 
             } else {
@@ -1741,13 +1994,22 @@
                  DOM.victoryMessage.classList.add('text-red-400');
                  score = '💤';
                  
-                 if (!isReplay) {
+                 if (!isReplay && !state.isTutorial) {
                      saveGameState(state.puzzle.puzzleNumber, score);
                  }
             }
 
             DOM.resultScore.textContent = score;
             DOM.resultScoreLabel.textContent = scoreLabel;
+
+            if (state.isTutorial) {
+                    DOM.archivesCtaBtn.style.display = 'none';
+                    DOM.shareBtn.style.display = 'none';
+                    DOM.countdownContainer.classList.add('hidden');
+                    DOM.playNextBtn.style.display = 'none';
+                    DOM.tryAgainBtn.style.display = 'none';
+                    return; // Exit early for tutorial
+                }
 
             // Button logic
             DOM.archivesCtaBtn.style.display = 'block';
@@ -1806,6 +2068,8 @@
 
         async function handleSubmit() {
                 
+                    if (checkTutorial()) return;
+
                     mainWrapperBox.scrollTop = mainWrapperBox.scrollHeight;
                     if (state.isChecking || state.gameOver) return;
                     if (state.inputWord.length !== state.puzzle.startWord.length) {
@@ -2049,6 +2313,20 @@
         }
 
         function handlePhysicalKeyboard(e) {
+
+            if (e.key.match(/^[a-zA-Z]$/) && tutorial.active && !DOM.modal.classList.contains('hidden')) {
+                const step = tutorial.steps[tutorial.step];
+                if (step?.action === 'submit') {
+                    closeModal(); // Dismiss modal first
+                    handleVirtualKeyboard(e.key.toUpperCase()); // Then process the letter
+                    return;
+                }
+            }
+
+            if (e.key === 'Enter' && isTutorialContinueStep()) {
+                nextTutorialStep();
+                return;
+            }
             
             if (state.moves > 0 && !state.gameOver) {
                 mainWrapperBox.scrollTop = mainWrapperBox.scrollHeight;
@@ -2064,153 +2342,44 @@
         }
         
         async function initGame(dateString, forceRestart = false, puzzleNumber = null) {
-            const url = puzzleNumber 
-                ? `/api/puzzle?number=${puzzleNumber}`
-                : dateString 
-                    ? `/api/puzzle?date=${dateString}` 
-                    : '/api/puzzle';
+            
             try {
                 const url = dateString ? `/api/puzzle?date=${dateString}` : '/api/puzzle';
+                
                 const response = await fetch(url);
                 if (!response.ok) {
                     const err = await response.json();
                     throw new Error(err.error || 'Could not load puzzle.');
                 }
+                
                 const puzzle = await response.json();
+                
+                // Deobfuscate once, right after getting from API
+                if (!puzzle.endWord.match(/^[A-Z]{4}$/)) {
+                    puzzle.endWord = deobfuscateAnswer(puzzle.endWord, puzzle.puzzleNumber, puzzle.startWord);
+                }
                 
                 const todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'});
                 const isToday = puzzle.date === todayStr;
                 const savedScores = getSavedScores();
+                const isCompleted = savedScores[puzzle.puzzleNumber] !== undefined;
                 
-                // For daily: show completed state with history
-                if (isToday && savedScores[puzzle.puzzleNumber] !== undefined) {
-                    showCompletedPuzzle(puzzle, isToday);
-                    return;
-                }
-
-                // For archives: just show end screen, no history restoration
-                if (!isToday && savedScores[puzzle.puzzleNumber] !== undefined) {
-                    setupGame(puzzle);
-                    state.isToday = isToday;
-                    render(); // Fresh game board
-                    
-                    const savedScore = savedScores[puzzle.puzzleNumber];
-                    const isWin = savedScore !== '💤' && savedScore !== 'null';
-                    showEndState(isWin, `You already completed puzzle #${puzzle.puzzleNumber}!`, true);
-                    return;
-                }
                 
-                // Setup fresh game
-                setupFreshGame(puzzle, isToday);
+                if (isCompleted) {
+                    setupGame(puzzle, {
+                        isToday,
+                        gameState: 'completed'
+                    });
+                } else {
+                    setupGame(puzzle, {
+                        isToday,
+                        gameState: 'fresh'
+                    });
+                }
                 
             } catch (error) {
                 showSnackbar(error.message);
             }
-
-        }
-
-        // Helper function for completed puzzles
-        function showCompletedPuzzle(puzzle, isToday) {
-            if (state.timerInterval) clearInterval(state.timerInterval);
-            setupGame(puzzle);
-            state.isToday = isToday;
-            
-            // Only restore history for daily puzzles, not archives
-            if (isToday) {
-                const savedHistory = loadGameHistory(puzzle.puzzleNumber);
-                if (savedHistory) {
-                    Object.assign(state, {
-                        history: [...savedHistory.history],
-                        currentWord: savedHistory.currentWord,
-                        discoveredKeys: new Set(savedHistory.discoveredKeys),
-                        moves: savedHistory.moves,
-                        finalTime: savedHistory.finalTime,
-                        gameMode: savedHistory.gameMode,
-                        gameOver: true
-                    });
-                }
-            } else {
-                state.gameOver = true;
-            }
-
-            const submittedWords = state.history.slice(1); // Skip first word (starting word)
-            if (state.currentWord && state.currentWord !== state.puzzle.startWord) {
-                submittedWords.push(state.currentWord);
-            }
-            submittedWords.forEach(word => {
-                if (word) {
-                    word.split('').forEach(letter => state.triedLetters.add(letter));
-                }
-            });
-
-            render();
-            setTimeout(() => {
-                mainWrapperBox.scrollTop = mainWrapperBox.scrollHeight;
-            }, 100);
-            
-            // Hide keyboard and show victory content
-            DOM.keyboardContainer.style.display = 'none';
-            DOM.keyboardContainer.style.opacity = '0';
-            DOM.victoryFooter.classList.remove('hidden');
-            DOM.victoryFooter.style.opacity = '1';
-            DOM.victoryFooter.style.transform = 'translateY(0)';
-            
-            const savedScores = getSavedScores();
-            const savedScore = savedScores[puzzle.puzzleNumber];
-
-            const isWin = savedScore !== '💤' && savedScore !== 'null';
-            
-            state.isWin = isWin;
-
-            // Set up all victory content
-            if (isWin) {
-                DOM.victoryTitle.textContent = 'Completed!';
-                DOM.victoryMessage.textContent = `You already completed puzzle #${puzzle.puzzleNumber}!`;
-                DOM.victoryMessage.classList.remove('text-red-400'); // Remove red text
-            } else {
-                DOM.victoryTitle.textContent = "Attempted";
-                DOM.victoryMessage.textContent = `You already attempted puzzle #${puzzle.puzzleNumber}.`;
-                DOM.victoryMessage.classList.add('text-red-400');
-            }
-            
-            DOM.resultScore.textContent = savedScore;
-            DOM.resultScoreLabel.textContent = state.gameMode === 'speed' ? 'TIME' : 'SCORE';
-                        
-            // Show buttons
-            DOM.archivesCtaBtn.style.display = 'block';
-            DOM.shareBtn.style.display = isToday ? 'block' : 'none';
-            DOM.tryAgainBtn.style.display = isToday ? 'none' : 'block';
-            
-            // Handle countdown for daily puzzles
-            if (isToday) {
-                DOM.countdownContainer.classList.remove('hidden');
-                DOM.playNextBtn.style.display = 'none';
-                startNextPuzzleCountdown();
-            } else {
-                DOM.countdownContainer.classList.add('hidden');
-                DOM.playNextBtn.style.display = puzzle.puzzleNumber < 4 ? 'block' : 'none';
-            }
-        }
-
-        // Helper function for fresh games
-        function setupFreshGame(puzzle, isToday) {
-            if (state.timerInterval) clearInterval(state.timerInterval);
-            state.finalTime = null;
-            if (DOM.resultTime) DOM.resultTime.textContent = "0:00";
-            
-            setupGame(puzzle);
-            state.isToday = isToday;
-
-            trackGameStart();
-            
-            render();
-            DOM.victoryFooter.classList.add('hidden');
-            Object.assign(DOM.keyboardContainer.style, {
-                opacity: '1',
-                display: 'block',
-                transform: 'translateY(0)'
-            });
-            DOM.gameContainer.classList.remove('all-keys-glow');
         }
 
         function handleShare() {
@@ -2351,7 +2520,6 @@
             return true;
         
             } catch (error) {
-                console.error('Import error:', error);
                 throw new Error('Invalid progress code format');
             }
         }
@@ -2418,10 +2586,20 @@
             }
         });
 
+        document.addEventListener('wheel', e => {
+            if (!e.target.closest('#modal-content, #menu-dropdown')) {
+                document.getElementById('game-container').scrollTop += e.deltaY;
+                e.preventDefault();
+            }
+        }, {passive: false});
+
         DOM.tryAgainBtn.addEventListener('click', () => {
             if (!state.isToday) {
-                // Complete reset
-                setupFreshGame(state.puzzle, false);
+                // Reset to fresh game
+                setupGame(state.puzzle, {
+                    isToday: false,
+                    gameState: 'fresh'
+                });
             }
         });
 
@@ -2548,7 +2726,12 @@
         
         DOM.cancelConfirmationBtn.addEventListener('click', () => closeModal(DOM.confirmationModal));
 
-        async function handleArchivesClick() {
+        window.handleArchivesClick = async function () {
+
+            showLoader();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            hideLoader();
+            
             try {
                 const response = await fetch('/api/archives');
                 const puzzles = await response.json();
@@ -2647,9 +2830,7 @@
                    mode: 'no-cors',
                    body: formData
                }).then(() => {
-                   console.log('Feedback submitted to Google Form');
                }).catch(err => {
-                   console.log('Form submission completed (CORS error is normal)');
                });
                
                // Also send to GA for backup
@@ -2798,17 +2979,19 @@
 
         ensurePlayerId();
         initGame(); // Load today's puzzle on start
-        if (!localStorage.getItem('keyhunt-scores-turns') && !localStorage.getItem('keyhunt-scores-speed')) {
-            setTimeout(async () => {
-                try {
-                    const response = await fetch('/api/instructions');
-                    const data = await response.json();
-                    const content = data.steps.map(step => `<p class="text-gray-300 mb-3">${step}</p>`).join('');
-                    openModal('How to Play', content);
-                } catch(e) {
-                    openModal('How to Play', '<p class="text-gray-300">Could not load instructions.</p>');
-                }
-            }, 1000);
+
+        if (!localStorage.getItem('khTut') && !localStorage.getItem('keyhunt-scores-turns')) {
+            setTimeout(() => {
+                openModal('Welcome to KeyHunter!', `
+                    <div class="text-center">
+                        <p class="text-gray-300 mb-4">New to KeyHunter? Try our interactive tutorial to learn how to play!</p>
+                        <div class="space-y-2">
+                            <button onclick="closeModal(); startTutorial()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Start Tutorial</button>
+                            <button onclick="closeModal()" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Skip for Now</button>
+                        </div>
+                    </div>
+                `);
+            }, 800);
         }
     </script>
     </div>
