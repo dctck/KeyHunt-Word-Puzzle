@@ -12,6 +12,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/miniKeyboardLayout', express.static(path.join(__dirname, 'miniKeyboardLayout')));
 app.use('/words2.json', express.static(path.join(__dirname, 'words2.json')));
 app.use('/favicon', express.static(path.join(__dirname, 'favicon')));
+app.get('/api/tutorial', (req, res) => {
+    res.sendFile(path.join(__dirname, 'tutorial.json'));
+});
 
 /**
  * Calculates the current date string in the "America/New_York" (EST/EDT) timezone.
@@ -30,11 +33,28 @@ function getCurrentEstDateString() {
     return `${year}-${month}-${day}`;
 }
 
+function obfuscateAnswer(answer, puzzleNumber, startWord) {
+    const key = `KeyHunter${puzzleNumber}${startWord}`;
+    let result = '';
+    
+    for (let i = 0; i < answer.length; i++) {
+        const char = answer.charCodeAt(i);
+        const keyChar = key.charCodeAt(i % key.length);
+        const scrambled = char ^ keyChar;
+        result += String.fromCharCode(scrambled);
+    }
+    
+    // DON'T include puzzle number - just encode the scrambled result
+    const encoded = Buffer.from(result, 'utf8').toString('base64');
+    
+    return encoded;
+}
+
+
 // API endpoint to get puzzle data.
 app.get('/api/puzzle', (req, res) => {
     fs.readFile(path.join(__dirname, 'puzzles.json'), 'utf8', (err, data) => {
         if (err) {
-            console.error("Error reading puzzles.json:", err);
             return res.status(500).json({ error: 'Could not load puzzle data.' });
         }
 
@@ -54,7 +74,11 @@ app.get('/api/puzzle', (req, res) => {
         }
 
         if (puzzle) {
-            res.json(puzzle);
+            const obfuscatedPuzzle = {
+                ...puzzle,
+                endWord: obfuscateAnswer(puzzle.endWord, puzzle.puzzleNumber, puzzle.startWord)
+            };
+            res.json(obfuscatedPuzzle);
         } else {
             res.status(404).json({ error: 'Puzzle for the selected date not found.' });
         }
@@ -65,7 +89,6 @@ app.get('/api/puzzle', (req, res) => {
 app.get('/api/archives', (req, res) => {
      fs.readFile(path.join(__dirname, 'puzzles.json'), 'utf8', (err, data) => {
         if (err) {
-            console.error("Error reading puzzles.json:", err);
             return res.status(500).json({ error: 'Could not load archive data.' });
         }
 
@@ -85,7 +108,6 @@ app.get('/api/archives', (req, res) => {
 app.get('/api/instructions', (req, res) => {
     fs.readFile(path.join(__dirname, 'instructions.json'), 'utf8', (err, data) => {
         if (err) {
-            console.error("Error reading instructions.json:", err);
             return res.status(500).json({ error: 'Could not load instructions.' });
         }
         res.json(JSON.parse(data));
