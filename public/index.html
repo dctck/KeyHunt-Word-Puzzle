@@ -296,6 +296,8 @@
                 transform: rotateX(180deg);
             }
 
+            
+
             .input-tile {
                 background-color: #1f2937;
                 border: 2px solid #4b5563;
@@ -304,6 +306,30 @@
             .input-tile.discovered {
                 background-color: #06b6d4;
                 border-color: #22d3ee;
+            }
+
+            .input-tile.all-keys-found {
+                border: 2px solid #06b6d4 !important;
+                box-shadow: 
+                    0 0 0 1px #06b6d4,
+                    0 0 8px rgba(6, 182, 212, 0.3),
+                    0 0 16px rgba(6, 182, 212, 0.1);
+                animation: glowPulse 2s ease-in-out infinite alternate;
+            }
+
+            @keyframes glowPulse {
+                from { 
+                    box-shadow: 
+                        0 0 0 1px #06b6d4,
+                        0 0 8px rgba(6, 182, 212, 0.3),
+                        0 0 16px rgba(6, 182, 212, 0.1);
+                }
+                to { 
+                    box-shadow: 
+                        0 0 0 1px #22d3ee,
+                        0 0 12px rgba(34, 211, 238, 0.5),
+                        0 0 24px rgba(34, 211, 238, 0.2);
+                }
             }
 
             /* Animations */
@@ -316,10 +342,6 @@
                 20%, 80% { transform: translate3d(2px, 0, 0); }
                 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 
                 40%, 60% { transform: translate3d(4px, 0, 0); }
-            }
-
-            .all-keys-glow { 
-                animation: glowing 2s ease-in-out infinite alternate; 
             }
 
             @keyframes glowing {
@@ -974,7 +996,6 @@
                     display: 'block',
                     transform: 'translateY(0)'
                 });
-                DOM.gameContainer.classList.remove('all-keys-glow');
         }
 
         let tutorial = { active: false, step: 0, steps: null };
@@ -1005,13 +1026,13 @@
 
             DOM.puzzleTitle.textContent = 'Tutorial';
             showTutorialStep();
+            DOM.menuDropdown.classList.add('hidden');
         }
-
         
         function showTutorialStep() {
             const step = tutorial.steps[tutorial.step];
             if (!step) return endTutorial();
-            
+
             if (step.action === 'continue') {
                     openModal(`${step.step}. ${step.title}`, `
                         <div class="text-center">
@@ -1019,14 +1040,14 @@
                             <button onclick="nextTutorialStep()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded">Continue (Enter)</button>
                         </div>
                     `);
-                    // Hide the X close button for continue steps
+                    
                     DOM.modalClose.style.display = 'none';
                 } else {
                     openModal(`${step.step}. ${step.title}`, `
                         <div class="text-center">
                             <p class="text-gray-300 mb-4 text-left leading-relaxed">${step.instruction}</p>
                             ${step.action === 'finish' ? 
-                                '<div class="space-y-2"><button onclick="endTutorial(); initGame()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Play Today\'s Puzzle</button><button onclick="endTutorial(); handleArchivesClick()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Browse Archives</button></div>' :
+                                '<div class="space-y-2"><button onclick="endTutorial();" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Play Today\'s Puzzle</button><button onclick="endTutorial(); handleArchivesClick()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Browse Archives</button></div>' :
                                 `<div class="text-center">
                                     <div class="text-sm text-gray-400 bg-gray-700 p-3 rounded mb-3">Type "<strong>${step.expectedWord}</strong>" and press Submit</div>
                                     <div class="text-xs text-gray-500">Press any letter key to start typing...</div>
@@ -1057,6 +1078,7 @@
             }
 
             closeModal();
+            initGame();
             DOM.modalClose.style.display = 'block';
         }
 
@@ -1338,7 +1360,8 @@ if (!state || !state.puzzle) {
                 
                 
                 if (isInput) {
-                    const tileClasses = isDiscovered ? 'input-tile discovered' : 'input-tile';
+                    const allKeysClass = state.allKeysFound ? ' all-keys-found' : '';
+                    const tileClasses = isDiscovered ? `input-tile discovered${allKeysClass}` : `input-tile${allKeysClass}`;
                     return `<div class="w-full aspect-square rounded-lg flex items-center justify-center text-4xl font-bold uppercase ${tileClasses}">${content}${icon}</div>`;
                 }
                 
@@ -1935,8 +1958,6 @@ if (!state || !state.puzzle) {
                     trackGameComplete(isWin);
                 }
 
-            DOM.gameContainer.classList.remove('all-keys-glow');
-
             const finalWordRow = DOM.boardContent.lastElementChild;
             if(finalWordRow && !isReplay && isWin) finalWordRow.classList.add('word-dance');
             
@@ -2218,9 +2239,11 @@ if (!state || !state.puzzle) {
 
                     if (!state.allKeysFound && state.discoveredKeys.size === new Set(state.puzzle.endWord.split('')).size) {
                         state.allKeysFound = true;
+                        updateInputRow();
                         showSnackbar("All keys found! Now form the final word.");
                         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#06b6d4', '#22d3ee', '#67e8f9'] });
-                        DOM.gameContainer.classList.add('all-keys-glow');
+
+
                     }
                     
                     if (state.gameMode === 'turns' && state.moves >= state.totalTurns) {
@@ -2288,7 +2311,10 @@ if (!state || !state.puzzle) {
                         const isDiscovered = isKey && state.discoveredKeys.has(content);
                         
                         tiles[i].textContent = content;
-                        tiles[i].className = `w-full aspect-square rounded-lg flex items-center justify-center text-4xl font-bold uppercase ${isDiscovered ? 'input-tile discovered' : 'input-tile'}`;
+                        const allKeysClass = state.allKeysFound ? ' all-keys-found' : '';
+                        const tileClasses = isDiscovered ? `input-tile discovered${allKeysClass}` : `input-tile${allKeysClass}`;
+
+                        tiles[i].className = `w-full aspect-square rounded-lg flex items-center justify-center text-4xl font-bold uppercase ${tileClasses}`;
                     }
                 });
             }
@@ -2638,7 +2664,16 @@ if (!state || !state.puzzle) {
         }
 
         DOM.menuBtn.addEventListener('click', () => {
-            if (state.moves > 0 && !state.gameOver) {
+            if (tutorial.active) {
+                showConfirmationModal(
+                    'Exit Tutorial?',
+                    'Your tutorial progress will be lost.',
+                    () => {
+                        endTutorial();
+                        initGame(); // Load today's puzzle
+                    }
+                );
+            } else if (state.moves > 0 && !state.gameOver) {
                 /*pause timer*/
                 confirmForfeit(() => {
                     // This only runs when called from menu button
@@ -2731,7 +2766,7 @@ if (!state || !state.puzzle) {
             showLoader();
             await new Promise(resolve => setTimeout(resolve, 500));
             hideLoader();
-            
+
             try {
                 const response = await fetch('/api/archives');
                 const puzzles = await response.json();
