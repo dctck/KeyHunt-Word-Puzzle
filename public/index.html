@@ -4236,22 +4236,150 @@ if (!state || !state.puzzle) {
             }
         });
 
-        ensurePlayerId();
-        initGame(); // Load today's puzzle on start
+        const CURRENT_GAME_VERSION = '2.0';
 
-        if (!localStorage.getItem('khTut') && !localStorage.getItem('keyhunt-scores-turns')) {
+        function checkGameVersion() {
+            const storedVersion = localStorage.getItem('keyhunt-game-version');
+            const hasAnyGameData = hasExistingGameData();
+            
+            if (!hasAnyGameData) {
+                // No game data exists - show tutorial for new players
+                showNewPlayerExperience();
+            } else if (!storedVersion || isVersionOlder(storedVersion, CURRENT_GAME_VERSION)) {
+                // Has game data but version is missing or older - show update notification
+                showUpdateNotification(storedVersion);
+            } else {
+                // Version is current - normal game start
+                console.log(`Game version ${CURRENT_GAME_VERSION} - up to date`);
+            }
+            
+            // Always update to current version after checking
+            localStorage.setItem('keyhunt-game-version', CURRENT_GAME_VERSION);
+        }
+
+        function hasExistingGameData() {
+            // Check if user has any game progress
+            const turnsScores = JSON.parse(localStorage.getItem('keyhunt-scores-turns') || '{}');
+            const speedScores = JSON.parse(localStorage.getItem('keyhunt-scores-speed') || '{}');
+            const playerId = localStorage.getItem('keyhunt-playerId');
+            const tutorialCompleted = localStorage.getItem('khTut');
+            
+            return Object.keys(turnsScores).length > 0 || 
+                   Object.keys(speedScores).length > 0 || 
+                   playerId || 
+                   tutorialCompleted;
+        }
+
+        function isVersionOlder(stored, current) {
+            // Simple version comparison (works for X.Y format)
+            const [storedMajor, storedMinor] = stored.split('.').map(Number);
+            const [currentMajor, currentMinor] = current.split('.').map(Number);
+            
+            if (storedMajor < currentMajor) return true;
+            if (storedMajor > currentMajor) return false;
+            return storedMinor < currentMinor;
+        }
+
+        function showNewPlayerExperience() {
+            // Show tutorial suggestion for completely new players
             setTimeout(() => {
                 openModal('Welcome to KeyHunter!', `
                     <div class="text-center">
                         <p class="text-gray-300 mb-4">New to KeyHunter? Try our interactive tutorial to learn how to play!</p>
                         <div class="space-y-2">
-                            <button onclick="closeModal(); startTutorial()" class="warcade-button arcade-button-cyan">Start Tutorial</button>
-                            <button onclick="closeModal()" class="arcade-button arcade-button-grey">Skip for Now</button>
+                            <button onclick="closeModal(); startTutorial()" class="arcade-button arcade-button-cyan w-full">Start Tutorial</button>
+                            <button onclick="closeModal()" class="arcade-button arcade-button-grey w-full">Skip for Now</button>
                         </div>
                     </div>
                 `);
             }, 800);
         }
+
+        function showUpdateNotification(previousVersion) {
+            const versionUpdates = {
+                '2.0': {
+                    title: 'KeyHunter 2.0 - Major Update!',
+                    features: [
+                        '🎮 Complete UI redesign with retro arcade styling',
+                        '🎯 Three distinct game modes: Turn, Timed, and Unlimited',
+                        '⚡ Improved timed mode with better score tracking',
+                        '🎨 Enhanced visual feedback and animations',
+                        '📊 Better progress tracking and statistics'
+                    ],
+                    highlight: 'Experience the new game modes in Settings!'
+                }
+                // Add future versions here
+            };
+            
+            const updateInfo = versionUpdates[CURRENT_GAME_VERSION];
+            
+            if (updateInfo) {
+                setTimeout(() => {
+                    openModal(updateInfo.title, `
+                        <div class="text-center">
+                            <p class="text-gray-300 mb-4">Welcome back! KeyHunter has been updated with exciting new features:</p>
+                            
+                            <div class="text-left mb-4 space-y-2">
+                                ${updateInfo.features.map(feature => 
+                                    `<div class="text-sm text-gray-300">${feature}</div>`
+                                ).join('')}
+                            </div>
+                            
+                            <div class="bg-cyan-900 border-2 border-cyan-500 p-3 mb-4">
+                                <p class="text-cyan-200 text-sm font-bold">${updateInfo.highlight}</p>
+                            </div>
+                            
+                            ${previousVersion ? 
+                                `<p class="text-xs text-gray-500 mb-4">Updated from v${previousVersion} to v${CURRENT_GAME_VERSION}</p>` : 
+                                `<p class="text-xs text-gray-500 mb-4">Welcome to v${CURRENT_GAME_VERSION}!</p>`
+                            }
+                            
+                            <div class="space-y-2">
+                                <button onclick="closeModal(); openSettings()" class="arcade-button arcade-button-cyan w-full">Check Out New Modes</button>
+                                <button onclick="closeModal()" class="arcade-button arcade-button-grey w-full">Continue Playing</button>
+                            </div>
+                        </div>
+                    `);
+                }, 500);
+            }
+        }
+
+        // Helper function to open settings from update notification
+        window.openSettings = function() {
+            // Trigger the settings button click
+            closeModal();
+                
+            // Wait a moment for modal to close, then trigger settings
+            setTimeout(() => {
+                // Trigger the settings button click event
+                DOM.settingsBtn.click();
+            }, 200);
+        }
+
+        // Version-specific migration functions
+        function runVersionMigrations(fromVersion) {
+            if (!fromVersion || isVersionOlder(fromVersion, '2.0')) {
+                // Migrate to 2.0 - ensure speed mode data is in new format
+                migrateSpeedModeData();
+                console.log('Migrated data for v2.0');
+            }
+            // Add future migration logic here for newer versions
+        }
+
+        // Call this during game initialization
+        function initializeGameVersion() {
+            const storedVersion = localStorage.getItem('keyhunt-game-version');
+            
+            // Run any necessary migrations
+            runVersionMigrations(storedVersion);
+            
+            // Check version and show appropriate UI
+            checkGameVersion();
+        }
+
+        ensurePlayerId();
+        initializeGameVersion(); // This handles both tutorial and update notifications
+        initGame(); // Load today's puzzle on start
     </script>
     </div>
 </body>
