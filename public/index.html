@@ -2317,6 +2317,12 @@ if (!state || !state.puzzle) {
             return minutes * 60 + seconds;
         } 
 
+        function secondsToTime(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
         function showConfirmationModal(title, message, onConfirm) {
             DOM.confirmationTitle.textContent = title;
             DOM.confirmationMessage.textContent = message;
@@ -2381,111 +2387,161 @@ if (!state || !state.puzzle) {
             const playerId = ensurePlayerId();
             
             openModal('Your Profile', `
-                <div class="stats-dashboard space-y-4">
-                    <div class="bg-gray-700 p-4">
-                        <h3 class="text-white mb-2">Player ID</h3>
-                        <div class="bg-gray-600 p-2 flex justify-between items-center">
-                            <code class="text-white text-sm player-id-font">${playerId}</code>
-                            <button id="copy-player-id" class="px-2 py-1 bg-cyan-600 text-white text-xs">Copy</button>
+                    <div class="stats-dashboard space-y-4">
+                        <div class="bg-gray-700 p-4">
+                            <h3 class="text-white mb-2">Player ID</h3>
+                            <div class="bg-gray-600 p-2 flex justify-between items-center">
+                                <code class="text-white text-sm player-id-font">${playerId}</code>
+                                <button id="copy-player-id" class="px-2 py-1 bg-cyan-600 text-white text-xs">Copy</button>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-blue-600 p-4 text-center text-white">
+                                <div class="text-2xl font-bold">${stats.totalPlayed}</div>
+                                <div class="text-xs">PLAYED</div>
+                            </div>
+                            <div class="bg-green-600 p-4 text-center text-white">
+                                <div class="text-2xl font-bold">${stats.totalStars}</div>
+                                <div class="text-xs">STARS</div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-700 p-4">
+                            <h3 class="text-white mb-2">Streaks</h3>
+                            <div class="grid grid-cols-2 gap-4 text-center">
+                                <div><div class="text-2xl font-bold text-orange-400">${stats.currentStreak}</div><div class="text-xs text-gray-400">CURRENT</div></div>
+                                <div><div class="text-2xl font-bold text-yellow-400">${stats.maxStreak}</div><div class="text-xs text-gray-400">BEST</div></div>
+                            </div>
+                        </div>
+                        
+                        ${stats.avgSolvingTime ? `
+                        <div class="bg-gray-700 p-4">
+                            <h3 class="text-white mb-2">Average Solving Time</h3>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-cyan-400">${stats.avgSolvingTime}</div>
+                                <div class="text-xs text-gray-400">Across all timed puzzles</div>
+                            </div>
+                        </div>` : ''}
+                        
+                        <div class="bg-gray-700 p-4">
+                            <h3 class="text-white mb-2">Score Distribution</h3>
+                            ${Object.entries({
+                                '★★★': stats.distribution['★★★'],
+                                '★★': stats.distribution['★★'], 
+                                '★': stats.distribution['★'],
+                                '⛳️': stats.distribution['⛳️'],
+                                '💤': stats.distribution['💤']
+                            }).map(([emoji, count]) => 
+                                `<div class="flex justify-between text-sm mb-1"><span>${emoji}</span><span>${count}</span></div>`
+                            ).join('')}
+                        </div>
+                        
+                        <div class="bg-gray-700 p-4">
+                            <h3 class="text-white mb-2">Last 7 Puzzles</h3>
+                            <div class="flex gap-1">
+                                ${stats.recentActivity.map(day => {
+                                    const color = day.status === 'completed' ? 'bg-green-500' : 
+                                                 day.status === 'failed' ? 'bg-red-500' : 'bg-gray-500';
+                                    return `<div class="w-8 h-8 ${color} flex items-center justify-center text-xs text-white" title="${day.date}">
+                                        ${day.status === 'completed' ? '✓' : day.status === 'failed' ? '✗' : '•'}
+                                    </div>`;
+                                }).join('')}
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-blue-600 p-4 text-center text-white">
-                            <div class="text-2xl font-bold">${stats.totalPlayed}</div>
-                            <div class="text-xs">PLAYED</div>
-                        </div>
-                        <div class="bg-green-600 p-4 text-center text-white">
-                            <div class="text-2xl font-bold">${stats.totalStars}</div>
-                            <div class="text-xs">STARS</div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gray-700 p-4">
-                        <h3 class="text-white mb-2">Streaks</h3>
-                        <div class="grid grid-cols-2 gap-4 text-center">
-                            <div><div class="text-2xl font-bold text-orange-400">${stats.currentStreak}</div><div class="text-xs text-gray-400">CURRENT</div></div>
-                            <div><div class="text-2xl font-bold text-yellow-400">${stats.maxStreak}</div><div class="text-xs text-gray-400">BEST</div></div>
-                        </div>
-                    </div>
-                    
-                    ${stats.gameMode === 'turns' ? `
-                    <div class="bg-gray-700 p-4">
-                        <h3 class="text-white mb-2">Scores</h3>
-                        ${Object.entries({
-                            '★★★': stats.distribution['★★★'],
-                            '★★': stats.distribution['★★'], 
-                            '★': stats.distribution['★'],
-                            '⛳️': stats.distribution['⛳️'],
-                            '💤': stats.distribution['💤']
-                        }).map(([emoji, count]) => 
-                            `<div class="flex justify-between text-sm mb-1"><span>${emoji}</span><span>${count}</span></div>`
-                        ).join('')}
-                    </div>` : ''}
-                    
-                    <div class="bg-gray-700 p-4">
-                        <h3 class="text-white mb-2">Last 7 Puzzles</h3>
-                        <div class="flex gap-1">
-                            ${stats.recentActivity.map(day => {
-                                const color = day.status === 'completed' ? 'bg-green-500' : 
-                                             day.status === 'failed' ? 'bg-red-500' : 'bg-gray-500';
-                                return `<div class="w-8 h-8 ${color} flex items-center justify-center text-xs text-white" title="${day.date}">
-                                    ${day.status === 'completed' ? '✓' : day.status === 'failed' ? '✗' : '•'}
-                                </div>`;
-                            }).join('')}
-                        </div>
-                    </div>
-                </div>
-            `);
-        }
+                `);
+            }
 
         async function calculatePlayerStats() {
-            const gameMode = localStorage.getItem('keyhunt-mode') || 'turns';
-            const scores = JSON.parse(localStorage.getItem(`keyhunt-scores-${gameMode}`) || '{}');
+            // Get all game data
+            const turnsScores = JSON.parse(localStorage.getItem('keyhunt-scores-turns') || '{}');
+            const speedScores = JSON.parse(localStorage.getItem('keyhunt-scores-speed') || '{}');
             
-            // Simple stats from localStorage  
-            let dailyStats = JSON.parse(localStorage.getItem(`keyhunt-daily-stats-${gameMode}`) || '{}');
-            if (!dailyStats.wins) dailyStats.wins = 0;
-            if (!dailyStats.losses) dailyStats.losses = 0;
-            if (!dailyStats.currentStreak) dailyStats.currentStreak = 0;
-            if (!dailyStats.bestStreak) dailyStats.bestStreak = 0;
+            // Get unique puzzle numbers (regardless of mode)
+            const solvedPuzzles = new Set();
             
-            const totalPlayed = Object.keys(scores).length; // All puzzles including archives
+            // Add puzzle numbers from turns scores
+            Object.keys(turnsScores).forEach(puzzleNum => {
+                solvedPuzzles.add(parseInt(puzzleNum));
+            });
             
+            // Add puzzle numbers from speed scores
+            Object.keys(speedScores).forEach(puzzleNum => {
+                solvedPuzzles.add(parseInt(puzzleNum));
+            });
+            
+            const totalPlayed = solvedPuzzles.size;
+            
+            // Calculate total stars from turns scores only (star system)
             const starValues = { 
-                    '★': 1, '★☆☆': 1,     // 1 star (both formats)
-                    '★★': 2, '★★☆': 2,    // 2 stars (both formats)
-                    '★★★': 3,             // 3 stars (same in both)
-                    '⛳️': 0, '💤': 0      // Special scores
-                };
-            const totalStars = Object.values(scores).reduce((total, score) => {
-                return total + (starValues[score] || 0);
+                '★': 1, '★☆☆': 1,     // 1 star (both formats)
+                '★★': 2, '★★☆': 2,    // 2 stars (both formats)
+                '★★★': 3,             // 3 stars (same in both)
+                '⛳️': 0, '💤': 0      // Special scores
+            };
+            const totalStars = Object.values(turnsScores).reduce((total, score) => {
+                const cleanScore = score.replace(/\d+$/, ''); // Remove trailing numbers (unlimited mode)
+                return total + (starValues[cleanScore] || 0);
             }, 0);
 
+            // Star distribution from turns scores
             const distribution = { '⛳️': 0, '★': 0, '★★': 0, '★★★': 0, '💤': 0 };
-                Object.values(scores).forEach(score => { 
-                    // Normalize old format to new format for display
-                    let normalizedScore = score;
-                    if (score === '★☆☆') normalizedScore = '★';
-                    if (score === '★★☆') normalizedScore = '★★';
-                    if (distribution[normalizedScore] !== undefined) {
-                        distribution[normalizedScore]++;
+            Object.values(turnsScores).forEach(score => { 
+                // Normalize old format to new format for display and remove numbers
+                let normalizedScore = score.replace(/\d+$/, ''); // Remove trailing numbers
+                if (normalizedScore === '★☆☆') normalizedScore = '★';
+                if (normalizedScore === '★★☆') normalizedScore = '★★';
+                if (distribution[normalizedScore] !== undefined) {
+                    distribution[normalizedScore]++;
+                }
+            });
+
+            // Calculate average solving time from all timed scores
+            let totalTimedSeconds = 0;
+            let timedPuzzleCount = 0;
+
+            Object.values(speedScores).forEach(puzzleData => {
+                if (typeof puzzleData === 'object') {
+                    // V3 format: { "t": "2:34", "u": "1:45" }
+                    if (puzzleData.t) {
+                        totalTimedSeconds += timeToSeconds(puzzleData.t);
+                        timedPuzzleCount++;
                     }
-                });
+                    if (puzzleData.u) {
+                        totalTimedSeconds += timeToSeconds(puzzleData.u);
+                        timedPuzzleCount++;
+                    }
+                } else if (typeof puzzleData === 'string' && puzzleData.includes(':')) {
+                    // V2 format: "2:34"
+                    totalTimedSeconds += timeToSeconds(puzzleData);
+                    timedPuzzleCount++;
+                }
+            });
+
+            const avgSolvingTime = timedPuzzleCount > 0 ? 
+                secondsToTime(Math.round(totalTimedSeconds / timedPuzzleCount)) : 
+                null;
             
-            // Last 7 days - check history and scores
+            // Get today's puzzle number for recent activity
             let todayPuzzleNumber = 0;
             try {
                 const response = await fetch('/api/puzzle');
                 const todayPuzzle = await response.json();
                 todayPuzzleNumber = todayPuzzle.puzzleNumber;
             } catch (error) {
-                // Fallback if API fails
-                todayPuzzleNumber = state.puzzle ? state.puzzle.puzzleNumber : 0;
+                todayPuzzleNumber = Math.max(...Array.from(solvedPuzzles), 0);
             }
 
+            // Daily stats from localStorage  
+            let dailyStats = JSON.parse(localStorage.getItem('keyhunt-daily-stats-turns') || '{}');
+            if (!dailyStats.wins) dailyStats.wins = 0;
+            if (!dailyStats.losses) dailyStats.losses = 0;
+            if (!dailyStats.currentStreak) dailyStats.currentStreak = 0;
+            if (!dailyStats.bestStreak) dailyStats.bestStreak = 0;
+
+            // Last 7 days activity
             let currentStreak = 0;
-            
             const recentActivity = Array.from({length: 7}, (_, i) => {
                 const date = new Date();
                 date.setDate(date.getDate() - 6 + i);
@@ -2495,20 +2551,30 @@ if (!state || !state.puzzle) {
                 
                 let status = 'missed';
                 
-                // Check if this puzzle was played
-                if (puzzleNumber > 0 && scores[puzzleNumber]) {
-                    status = scores[puzzleNumber] === '💤' ? 'failed' : 'completed';
+                // Check if this puzzle was played (in either mode)
+                if (puzzleNumber > 0) {
+                    const hasScore = turnsScores[puzzleNumber] || speedScores[puzzleNumber];
+                    if (hasScore) {
+                        // Check if it was a failure (💤 in turns or no valid score)
+                        const turnsScore = turnsScores[puzzleNumber];
+                        if (turnsScore === '💤') {
+                            status = 'failed';
+                        } else {
+                            status = 'completed';
+                        }
+                    }
                 }
 
+                // Update streak calculation if not already done
                 if (!dailyStats.Updated) {
                     if (status === 'missed' && i !== 6) {
-                        currentStreak = 0; // Reset streak on miss
+                        currentStreak = 0;
                     } else if (status === 'failed') {
-                        currentStreak = 0; // Reset streak on fail
-                        dailyStats.losses++; // Count the loss
+                        currentStreak = 0;
+                        dailyStats.losses++;
                     } else if (status === 'completed') {
-                        currentStreak++; // Continue/start streak
-                        dailyStats.wins++; // Count the win
+                        currentStreak++;
+                        dailyStats.wins++;
                         dailyStats.bestStreak = Math.max(dailyStats.bestStreak, currentStreak);
                     }
                 }
@@ -2523,7 +2589,7 @@ if (!state || !state.puzzle) {
             if (!dailyStats.Updated) {
                 dailyStats.currentStreak = currentStreak;
                 dailyStats.Updated = true;
-                localStorage.setItem(`keyhunt-daily-stats-${gameMode}`, JSON.stringify(dailyStats));
+                localStorage.setItem('keyhunt-daily-stats-turns', JSON.stringify(dailyStats));
             }
 
             return { 
@@ -2532,8 +2598,8 @@ if (!state || !state.puzzle) {
                 currentStreak: dailyStats.currentStreak, 
                 maxStreak: dailyStats.bestStreak, 
                 distribution, 
-                recentActivity, 
-                gameMode
+                recentActivity,
+                avgSolvingTime
             };
         }
 
@@ -2687,6 +2753,12 @@ if (!state || !state.puzzle) {
             setTimeout(() => {
                     state.showEndStateRunning = false;
                 }, 100);
+
+            setTimeout(() => {
+                mainWrapperBox.style.scrollBehavior = 'auto';
+                DOM.gameContainer.style.overflow = 'auto';
+                DOM.gameContainer.classList.remove('celebrating');
+            }, 2000);
         }
 
         function startTileDanceSequence() {
@@ -2861,11 +2933,16 @@ if (!state || !state.puzzle) {
                 // Set appropriate score label
                 if (state.isTimedMode) {
                     scoreLabel = 'TIME';
+                    DOM.resultScore.textContent = score; // "2:34"
                 } else if (state.gameMode === 'unlimited') {
-                    scoreLabel = score.includes('★') ? 'STARS' : 'FINISH';
+                    scoreLabel = 'TURNS';
+                    const turnsOnly = score.match(/\d+$/)?.[0] || score;
+                    DOM.resultScore.textContent = turnsOnly; // "17"
                 } else {
-                    // Limited turns mode
+                    // Limited turns mode - show stars/emoji only
                     scoreLabel = score.includes('★') ? 'STARS' : 'FINISH';
+                    const starsOnly = score.replace(/\d+$/, ''); // Remove any trailing numbers
+                    DOM.resultScore.textContent = starsOnly; // "★★★" or "⛳️"
                 }
 
                 if (!isReplay && !state.isTutorial) {
@@ -2878,13 +2955,14 @@ if (!state || !state.puzzle) {
                     `No more valid moves available.`;
                 DOM.victoryMessage.classList.add('text-red-400');
                 
+                DOM.resultScore.textContent = score;
+
                 if (!isReplay && !state.isTutorial) {
                     saveGameState(state.puzzle.puzzleNumber, score);
                 }
             }
 
             // Display the score and label
-            DOM.resultScore.textContent = score;
             DOM.resultScoreLabel.textContent = scoreLabel;
 
             // Rest of your existing button setup logic...
@@ -3972,44 +4050,117 @@ if (!state || !state.puzzle) {
 
         window.handleArchivesClick = async function () {
             DOM.menuDropdown.classList.add('hidden');
-            showLoader();
-            await new Promise(resolve => setTimeout(resolve, 500));
-            hideLoader();
+                showLoader();
+                await new Promise(resolve => setTimeout(resolve, 500));
+                hideLoader();
 
-            try {
-                const response = await fetch('/api/archives');
-                const puzzles = await response.json();
-                const savedScores = getSavedScores();
-                
-                // Get today's puzzle number to filter archives
-                const todayResponse = await fetch('/api/puzzle');
-                const todayPuzzle = await todayResponse.json();
-                const todayPuzzleNumber = todayPuzzle.puzzleNumber;
-                
-                // Filter to show only puzzles with numbers smaller than today's
-                const archivePuzzles = puzzles.filter(p => p.puzzleNumber < todayPuzzleNumber);
+                try {
+                    const response = await fetch('/api/archives');
+                    const puzzles = await response.json();
+                    
+                    // Get today's puzzle number to filter archives
+                    const todayResponse = await fetch('/api/puzzle');
+                    const todayPuzzle = await todayResponse.json();
+                    const todayPuzzleNumber = todayPuzzle.puzzleNumber;
+                    
+                    // Filter to show only puzzles with numbers smaller than today's
+                    const archivePuzzles = puzzles.filter(p => p.puzzleNumber < todayPuzzleNumber);
 
-                const content = `<div class="space-y-2 max-h-64 overflow-y-auto">
-                    ${archivePuzzles.map(p => {
-                            const score = savedScores[p.puzzleNumber] || 'New';
-                            // Convert YYYY-MM-DD to MM/DD/YY format
-                            const dateParts = p.date.split('-');
-                            const shortYear = dateParts[0].substring(2); // Get last 2 digits of year
-                            const shortDate = `${dateParts[1]}/${dateParts[2]}/${shortYear}`;
-                            return `
-                                <button data-date="${p.date}" class="archive-date-btn block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 flex justify-between items-center">
-                                    <span>#${p.puzzleNumber} - ${shortDate}</span>
-                                    <span class="font-bold">${score}</span>
-                                </button>
-                            `;
-                        }).join('')}
-                    </div>`;
+                    // Function to determine score type and format display
+                    function formatArchiveScore(puzzleNumber) {
+                        const turnsScores = JSON.parse(localStorage.getItem('keyhunt-scores-turns') || '{}');
+                        const speedScores = JSON.parse(localStorage.getItem('keyhunt-scores-speed') || '{}');
+                        
+                        const turnsScore = turnsScores[puzzleNumber];
+                        const speedScore = speedScores[puzzleNumber];
+                        
+                        // Determine which score to show (prioritize timed, then turns, then show 'New')
+                        if (speedScore) {
+                            // Timed mode - show both score and time
+                            if (typeof speedScore === 'object') {
+                                // V3 format: { "t": "2:34", "u": "1:45" }
+                                const timedScore = speedScore.t || speedScore.u;
+                                const baseScore = turnsScore ? turnsScore.replace(/\d+$/, '') : '⛳️';
+                                return {
+                                    type: 'timed',
+                                    topLine: baseScore,
+                                    bottomLine: `in ${timedScore}`
+                                };
+                            } else if (typeof speedScore === 'string' && speedScore.includes(':')) {
+                                // V2 format: "2:34"
+                                const baseScore = turnsScore ? turnsScore.replace(/\d+$/, '') : '⛳️';
+                                return {
+                                    type: 'timed',
+                                    topLine: baseScore,
+                                    bottomLine: `in ${speedScore}`
+                                };
+                            }
+                        }
+                        
+                        if (turnsScore) {
+                            // Check if unlimited mode (has number at end)
+                            const match = turnsScore.match(/^(★★★|★★☆|★☆☆|⛳️|💤)(\d+)$/);
+                            if (match) {
+                                const [, stars, turns] = match;
+                                return {
+                                    type: 'unlimited',
+                                    topLine: stars,
+                                    bottomLine: `in ${turns}`
+                                };
+                            } else {
+                                // Regular turn mode
+                                return {
+                                    type: 'turns',
+                                    topLine: turnsScore,
+                                    bottomLine: ''
+                                };
+                            }
+                        }
+                        
+                        // Not played
+                        return {
+                            type: 'new',
+                            topLine: 'New',
+                            bottomLine: ''
+                        };
+                    }
 
-                openModal('Past Puzzles', content);
-            } catch (error) {
-                openModal('Archives', '<p class="text-gray-300">Could not load archives.</p>');
+                    const content = `
+                        <div class="space-y-3 max-h-64 overflow-y-auto">
+                            ${archivePuzzles.map(p => {
+                                const scoreInfo = formatArchiveScore(p.puzzleNumber);
+                                
+                                // Convert YYYY-MM-DD to MM/DD/YY format
+                                const dateParts = p.date.split('-');
+                                const shortYear = dateParts[0].substring(2);
+                                const shortDate = `${dateParts[1]}/${dateParts[2]}/${shortYear}`;
+                                
+                                return `
+                                    <button data-date="${p.date}" class="archive-date-btn block w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-gray-700 transition-colors border-2 border-gray-600 mb-2 bg-gray-800" style="box-shadow: inset 0 0 0 2px #000;">
+                                        <div class="flex justify-between items-center" style="pointer-events: none;">
+                                            <!-- Left side: Puzzle info -->
+                                            <div class="flex flex-col" style="pointer-events: none;">
+                                                <div class="font-bold text-white" style="pointer-events: none;">#${p.puzzleNumber}</div>
+                                                <div class="text-xs text-gray-400" style="pointer-events: none;">${shortDate}</div>
+                                            </div>
+                                            
+                                            <!-- Right side: Score info -->
+                                            <div class="flex flex-col items-end text-right" style="pointer-events: none;">
+                                                <div class="font-bold ${scoreInfo.type === 'new' ? 'text-cyan-400' : 'text-white'}" style="pointer-events: none;">${scoreInfo.topLine}</div>
+                                                ${scoreInfo.bottomLine ? `<div class="text-xs text-gray-400" style="pointer-events: none;">${scoreInfo.bottomLine}</div>` : '<div class="text-xs" style="pointer-events: none;">&nbsp;</div>'}
+                                            </div>
+                                        </div>
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+
+                    openModal('Past Puzzles', content);
+                } catch (error) {
+                    openModal('Archives', '<p class="text-gray-300">Could not load archives.</p>');
+                }
             }
-        }
 
         DOM.archivesCtaBtn.addEventListener('click', handleArchivesClick);
         DOM.archivesBtn.addEventListener('click', handleArchivesClick);
