@@ -53,7 +53,7 @@
     },
     {
       "step": 9,
-      "title": "Hellow Key",
+      "title": "Hello Key",
       "instruction": "Perfect! <strong>M</strong> is a Key Letter.",
       "action": "continue"
     },
@@ -78,27 +78,15 @@
       "action": "submit"
     },
     {
-      "step": 13,
-      "title": "Puzzle Solved! 🎉",
-      "instruction": "Congratulations! You've mastered KeyHunter.",
-      "action": "continue"
-    },
-    {
       "step": 14,
-      "title": "Game Modes",
-      "instruction": "You're playing <strong>Turns Mode</strong> (limited moves). There's also <strong>Speed Mode</strong> (unlimited moves, timed).",
+      "title": "Puzzle Solved! 🎉",
+      "instruction": "You've mastered KeyHunter! Learn about 3 game modes in Settings.",
       "action": "continue"
     },
     {
       "step": 15,
-      "title": "Settings",
-      "instruction": "You can switch modes in Settings. Speed Mode is great for competitive players who want to race the clock!",
-      "action": "continue"
-    },
-    {
-      "step": 16,
       "title": "Ready to Play!",
-      "instruction": "You're all set! Try today's daily puzzle or explore past puzzles in Archives.",
+      "instruction": "You're all set! Try daily puzzle or explore past puzzles.",
       "action": "finish"
     }
   ]
