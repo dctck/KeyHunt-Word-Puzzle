@@ -117,28 +117,25 @@
             /* Base styles first */
             
             body::before {
-
                 content: "";
-                position: fixed; /* Use fixed to cover the whole screen */
+                position: fixed;
                 top: 0;
                 left: 0;
                 width: 100%;
                 height: 100%;
                 background: repeating-linear-gradient(
-                        0deg,
-                        transparent,
-                        transparent 1px,
-                        rgba(0, 10, 1, 0.5) 4px,
-                        rgba(0, 10, 1, 0.5) 4px
-                    );
-                background-size: 100% 4px; /* Adjust the '4px' to make lines thicker or thinner */
-                opacity: 0.3;
-                pointer-events: none; /* This makes sure you can still click things behind it */
-                z-index: 100; /* Ensure it's on top of everything */
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 20, 5, 0.3) 4px,
+                    rgba(0, 20, 5, 0.3) 4px
+                );
+                background-size: 100% 4px;  /* ← Match this to your gradient repeat */
+                pointer-events: none;
+                z-index: 100;
                 image-rendering: pixelated;
-                image-rendering: -moz-crisp-edges; /* Firefox */
+                image-rendering: -moz-crisp-edges;
                 image-rendering: -webkit-optimize-contrast;
-
             }
 
            
@@ -204,7 +201,6 @@
             #game-container,
             #keyboard-container,
             header {
-                /*min-width: 300px;8*/                
                 width: 100%;
                 box-sizing: border-box;
                 background-color: #0F110C;
@@ -321,7 +317,8 @@
 
             /* Typography */
             .font-title { 
-                font-family: 'Jersey 10', sans-serif; 
+                font-family: 'Jersey 10', sans-serif;
+                font-size: 40px !important;
             }
 
             /* Game tiles */
@@ -418,6 +415,14 @@
                 to { 
                     border: 4px dashed #06B6D4;
                 }
+            }
+
+            .tile-border {
+                border-width: 4px;
+            }
+
+            .tile-border.inset-shadow {
+                box-shadow: inset 0 0 0 4px;
             }
 
             #board-content {
@@ -519,7 +524,7 @@
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
                 font-size: 14px;
                 font-weight: 500;
-                max-width: 280px;
+                max-width: 400px;
                 text-align: center;
                 word-wrap: break-word;
 
@@ -727,11 +732,31 @@
                 height: 16px;
             }
 
+            .arcade-button.pixel-border, .tile.pixel-border {
+                border-width: 4px;
+            }
+
             @media (max-width: 380px) {
 
                 html {
-                        font-size: 14px; /* Smaller base font size on mobile */
+                        font-size: 12px; /* Smaller base font size on mobile */
                     }
+
+                .font-title {
+                    font-size: 30px !important; /* Fixed size for desktop */
+                }
+
+                .pixel-border {
+                    border-width: 3px !important;
+                }
+
+                .tile-border {
+                    border-width: 3px !important;
+                }
+                
+                .tile-border.inset-shadow {
+                    box-shadow: inset 0 0 0 3px;
+                }
 
                 .pips-container {
                     bottom: 4px;
@@ -743,13 +768,28 @@
                     height: 3px;
                 }
 
+                .snackbar {
+                    width:300px;
+                }
+
                 .max-w-sm {
-                        max-width: 100% !important;
-                    }
-                    
-                    #game-container {
-                        width: calc(100% - 1rem); /* Full width minus container padding */
-                    }
+                    max-width: 100% !important;
+                }
+                
+                #game-container {
+                    width: 100%; /* Full width minus container padding */
+                }
+
+                .arcade-button-icon {
+                    width: 40px !important;
+                    height: 40px !important;
+                    padding: 4px !important;
+
+                }
+
+                .arcade-button {
+                    font-size: 12px !important;
+                }
             }
 
             .archive-date-btn span {
@@ -962,10 +1002,14 @@
             }
 
             .logo-glow {
-                color: ##c0fffe; /* Brighter yellow */
+                color: #00daff;
                     text-shadow: 
-                        1px 1px 0 #000000,    /* Black outline for readability */
-                        0 0 20px #06b6d4;   /* Minimal glow */
+                        1px 1px 0 #006276,                                       
+                        0 0 5px #00a1c3,                      
+                  
+                        0 0 20px #006276;                     
+                  
+
                     image-rendering: pixelated;
                   
             }
@@ -1099,7 +1143,7 @@
             }
 
             .mode-name {
-                font-size: 12px;
+                font-size: 14px;
                 font-weight: bold;
                 margin-bottom: 4px;
                 color: #E5E7EB;
@@ -1116,7 +1160,7 @@
             }
 
             .mode-tagline {
-                font-size: 7px;
+                font-size: 8px;
                 color: #6B7280;
                 text-transform: uppercase;
             }
@@ -1146,16 +1190,18 @@
 
             /* Mobile responsiveness */
             @media (max-width: 480px) {
+
+
                 .mode-name {
-                    font-size: 10px;
+                    font-size: 12px;
                 }
                 
                 .mode-desc {
-                    font-size: 7px;
+                    font-size: 8px;
                 }
                 
                 .mode-tagline {
-                    font-size: 6px;
+                    font-size: 8px;
                 }
                 
                 .mode-portrait {
@@ -1168,21 +1214,30 @@
                 }
             }
 
+            .arcade-button-icon {
+                width: 48px;
+                height: 48px;
+                padding: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
     </style>
 </head>
 <body class="bg-gray-900 text-gray-200 flex flex-col">
     
     
         <!-- Header -->
-        <header class="flex-shrink-0 flex gap-justify items-center w-full max-w-2xl mx-auto p-2">
+            <header class="flex-shrink-0 flex gap-justify items-center w-full max-w-2xl mx-auto px-2 py-2">
             <div class="flex items-center gap-2">
                 
-                <button id="logo-btn" class="text-4xl sm:text-4xl font-bold font-title text-cyan-400 bg-transparent border-none cursor-pointer p-0 m-0">
+                <button id="logo-btn" class="font-title font-bold font-title text-cyan-400 bg-transparent border-none cursor-pointer p-0 m-0">
                     <span class="logo-glow">Key</span><span class="text-white">Hunter</span>
                 </button>
             </div>
             <div class="flex-grow" style="min-width: 16px;"></div>
-            <div class="flex items-center gap-2 sm:gap-4 mt-2 sm:mt-0">
+            <div class="flex items-center gap-4 sm:gap-4 mt-2 sm:mt-0">
                 <div id="turns-mode-header" class="flex items-center gap-2 sm:gap-4">
                     <div class="text-center">
                         <div id="turns-left-display" class="text-m font-bold">0</div>
@@ -1200,7 +1255,7 @@
                     </div>
                 </div>
                 <div class="relative">
-                        <button id="menu-btn" class="arcade-button arcade-button-grey w-12 stroke-2">
+                        <button id="menu-btn" class="arcade-button pixel-border arcade-button-grey arcade-button-icon">
                             <svg width="24" height="24" viewBox="0 0 24 24" style="image-rendering: pixelated;">
                                 <rect x="4" y="6" width="16" height="2" fill="currentColor"/>
                                 <rect x="4" y="11" width="16" height="2" fill="currentColor"/>
@@ -1313,7 +1368,7 @@
 
         <!-- Game Board -->
         <main id="game-container" class="flex-grow flex flex-col items-center w-full max-w-sm mx-auto pt-4">
-            <h2 id="puzzle-title" class="text-center text-gray-400 font-semibold mb-4"></h2>
+            <h2 id="puzzle-title" class="text-center text-gray-400 mb-4"></h2>
             <div id="board-content" class="w-full space-y-2">
                 <!-- JS will populate this -->
             </div>
@@ -1333,10 +1388,10 @@
                 </div>
                 <div id="result-buttons" class="flex flex-col gap-2 mt-4 mb-6">
                     <div class="flex gap-2">
-                        <button id="share-btn" class="arcade-button arcade-button-blue flex-1">Share</button> 
-                        <button id="try-again-btn" class="arcade-button arcade-button-purple flex-1">Try Again</button>
+                        <button id="share-btn" class="arcade-button pixel-border arcade-button-blue flex-1">Share</button> 
+                        <button id="try-again-btn" class="arcade-button pixel-border arcade-button-purple flex-1">Try Again</button>
                     </div>
-                    <button id="archives-cta-btn" class="arcade-button arcade-button-cyan w-full">Past Puzzles</button>
+                    <button id="archives-cta-btn" class="arcade-button pixel-border arcade-button-cyan w-full">Past Puzzles</button>
                 </div>
             </div>
 
@@ -1356,7 +1411,8 @@
 
     <!-- Modals -->
     <div id="modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
-        <div class="modal-background shadow-xl p-6 w-full max-w-md max-h-[90dvh] flex flex-col">
+        <div class="modal-background shadow-xl p-6 w-full max-w-md max-h-[90dvh] sm:max-h-[90dvh] max-h-[98dvh] flex flex-col">
+
             <div class="flex justify-between items-center mb-4 flex-shrink-0">
                 <h2 id="modal-title" class="text-2xl font-bold text-cyan-400"></h2>
                 <button id="modal-close" class="p-1 rounded-full hover:bg-gray-700 text-2xl leading-none">&times;</button>
@@ -1372,8 +1428,8 @@
             <h2 id="confirmation-title" class="text-2xl font-bold text-yellow-400 mb-4"></h2>
             <p id="confirmation-message" class="text-gray-300 mb-6"></p>
             <div class="flex gap-4">
-                <button id="cancel-confirmation-btn" class="arcade-button arcade-button-grey w-full">Cancel</button>
-                <button id="confirm-btn" class="arcade-button arcade-button-orange w-full">Confirm</button>
+                <button id="cancel-confirmation-btn" class="arcade-button pixel-border arcade-button-grey w-full">Cancel</button>
+                <button id="confirm-btn" class="arcade-button pixel-border arcade-button-orange w-full">Confirm</button>
             </div>
         </div>
     </div>
@@ -1579,7 +1635,7 @@
                     openModal(`${step.step}. ${step.title}`, `
                         <div class="text-center">
                             <p class="text-gray-300 mb-4 text-left leading-relaxed">${step.instruction}</p>
-                            <button onclick="nextTutorialStep()" class="arcade-button arcade-button-cyan">Continue (Enter)</button>
+                            <button onclick="nextTutorialStep()" class="arcade-button pixel-border arcade-button-cyan">Continue (Enter)</button>
                         </div>
                     `);
                     
@@ -1589,7 +1645,7 @@
                         <div class="text-center">
                             <p class="text-gray-300 mb-4 text-left leading-relaxed">${step.instruction}</p>
                             ${step.action === 'finish' ? 
-                                '<div class="space-y-2"><button onclick="endTutorial();" class="arcade-button arcade-button-green w-full">Play Today\'s Puzzle</button><button onclick="endTutorial(); handleArchivesClick()" class="arcade-button arcade-button-cyan w-full">Browse Puzzles</button></div>' :
+                                '<div class="space-y-2"><button onclick="endTutorial();" class="arcade-button pixel-border arcade-button-green w-full">Play Today\'s Puzzle</button><button onclick="endTutorial(); handleArchivesClick()" class="arcade-button pixel-border arcade-button-cyan w-full">Browse Puzzles</button></div>' :
                                 `<div class="text-center">
                                     <div class="text-sm text-gray-400 bg-gray-700 p-3 rounded mb-3">Type "<strong>${step.expectedWord}</strong>" and press Submit</div>
                                     <div class="text-xs text-gray-500">Press any letter key to start typing...</div>
@@ -1962,7 +2018,7 @@ if (!state || !state.puzzle) {
                         tileClasses += ' discovered';
                     }
                     
-                    return `<div class="w-full aspect-square flex items-center justify-center text-4xl font-bold uppercase ${tileClasses}">${content}${icon}</div>`;
+                    return `<div class="w-full aspect-square flex items-center justify-center text-4xl font-bold uppercase  ${tileClasses}">${content}${icon}</div>`;
                 }
                 
                 const isNewlyDiscovered = isDiscovered && state.newlyDiscoveredKeys && state.newlyDiscoveredKeys.has(content);
@@ -1977,8 +2033,8 @@ if (!state || !state.puzzle) {
                 return `
                     <div class="tile-container w-full aspect-square">
                         <div class="tile-inner ${flipClass}" data-is-key="${isKey}">
-                            <div class="${frontTileClass}">${content}${icon}</div>
-                            <div class="tile-face tile-back">${content}</div>
+                            <div class="tile-border ${frontTileClass}">${content}${icon}</div>
+                            <div class="tile-border tile-face tile-back">${content}</div>
                         </div>
                     </div>
                 `;
@@ -2348,7 +2404,7 @@ if (!state || !state.puzzle) {
             DOM.modalContent.innerHTML = content;
             
             // Don't pass any footer with onclick
-            DOM.modalFooter.innerHTML = `<button id="modal-close-btn" class="arcade-button arcade-button-grey">Close</button>`;
+            DOM.modalFooter.innerHTML = `<button id="modal-close-btn" class="arcade-button pixel-border arcade-button-grey">Close</button>`;
             
             // Remove any existing listeners and add new one
             const closeBtn = document.getElementById('modal-close-btn');
@@ -3282,7 +3338,7 @@ if (!state || !state.puzzle) {
                     </div>
                     
                     <div class="flex gap-2">
-                        <button id="send-feedback" class="arcade-button arcade-button-blue">Send</button>
+                        <button id="send-feedback" class="arcade-button pixel-border arcade-button-blue">Send</button>
                     </div>
                 </div>
             `);
@@ -3406,9 +3462,13 @@ if (!state || !state.puzzle) {
             if (!state.isWin) {
                 statusText = 'Game Over...';
             } else {
-                statusText = `Solved in ${state.moves} turns!`;
-                if (state.gameMode === 'speed') {
-                    statusText += ` (${state.finalTime})`;
+                if (state.isTimedMode) {
+                            statusText = `Solved in ${state.moves} turns (${state.finalTime})`;
+                        } else if (state.gameMode === 'unlimited') {
+                            statusText = `Solved in ${state.moves} turns`;
+                        } else {
+                            // Regular turn mode
+                            statusText = `Solved in ${state.moves} turns!`;
                 }
             }
             
@@ -3786,7 +3846,7 @@ if (!state || !state.puzzle) {
 
             const settingsContent = `
                 <div class="space-y-4 mb-6">
-                    <h3 class="text-cyan-400 font-bold text-center text-lg">SELECT MODE</h3>
+                    <h3 class="text-gray-300">Select Mode</h3>
                     
                     <div class="mode-selection-container space-y-3">
 
@@ -3809,7 +3869,7 @@ if (!state || !state.puzzle) {
                                 </div>
                                 <div class="mode-info">
                                     <div class="mode-name">TURN MODE</div>
-                                    <div class="mode-desc">LIMITED TURNS • NO TIMER</div>
+                                    <div class="mode-desc">LIMITED TURNS • TIMER OFF</div>
                                     <div class="mode-tagline">CLASSIC STRATEGY</div>
                                 </div>
                                 <div class="mode-selector-arrow">
@@ -3858,7 +3918,7 @@ if (!state || !state.puzzle) {
                                     </div>
                                 </div>
                                 <div class="mode-info">
-                                    <div class="mode-name">TIMED MODE</div>
+                                    <div class="mode-name">SPEED MODE</div>
                                     <div class="mode-desc">LIMITED TURNS • TIMER ON</div>
                                     <div class="mode-tagline">SPEED CHALLENGE</div>
                                 </div>
@@ -3927,23 +3987,23 @@ if (!state || !state.puzzle) {
                     <p class="text-xs text-gray-500 mb-3">Export your progress or import from another device</p>
 
                     <!-- Export Summary -->
-                    <div class="bg-gray-700 p-3 mb-3 text-xs">
-                        <div class="text-gray-300 font-semibold mb-1">Your Progress</div>
+                    <div class="bg-gray-700 p-3 mb-2 text-xs">
+                        <div class="text-gray-300 font-semibold">Your Progress</div>
                         <div class="text-gray-400 space-y-1">
-                            <div>Limited Turns: ${limitedTurnsCount} solved</div>
-                            <div>Unlimited Mode: ${unlimitedModeCount} solved</div>
-                            <div>Timed Mode: ${timedModeCount} solved</div>
+                            <div>Turn Mode: ${limitedTurnsCount} solved</div>
+                            <div>Speed Mode: ${timedModeCount} solved</div>
+                            <div>Unlimited: ${unlimitedModeCount} solved</div>
                         </div>
                     </div>
 
-                    <div class="space-y-2">
-                        <button id="export-code-btn" class="arcade-button arcade-button-blue">
+                    <div class="space-y-6">
+                        <button id="export-code-btn" class="arcade-button pixel-border arcade-button-blue">
                             Backup Data
                         </button>
                         <div class="flex flex-col gap-2">
                             <input id="import-code-input" style="height: 40px" type="text" placeholder="Enter progress code (v1 or v2 format)" 
                                    class="w-full bg-gray-700 text-white px-3 py-2 border border-gray-600 focus:border-blue-500 focus:outline-none text-xs">
-                            <button id="import-code-btn" class="arcade-button arcade-button-green">
+                            <button id="import-code-btn" class="arcade-button pixel-border arcade-button-green">
                                 Import Backup
                             </button>
                         </div>
@@ -3952,7 +4012,7 @@ if (!state || !state.puzzle) {
                 </div>
                 
                 <div class="border-t border-gray-700 mt-4 pt-4">
-                    <button id="clear-data-btn" class="arcade-button arcade-button-orange">Clear All Game Data</button>
+                    <button id="clear-data-btn" class="arcade-button pixel-border arcade-button-orange">Clear All Game Data</button>
                 </div>
             `;
             DOM.menuDropdown.classList.add('hidden');
@@ -4438,8 +4498,8 @@ if (!state || !state.puzzle) {
                     <div class="text-center">
                         <p class="text-gray-300 mb-4">New to KeyHunter? Try our interactive tutorial to learn how to play!</p>
                         <div class="space-y-2">
-                            <button onclick="closeModal(); startTutorial()" class="arcade-button arcade-button-cyan w-full">Start Tutorial</button>
-                            <button onclick="closeModal()" class="arcade-button arcade-button-grey w-full">Skip for Now</button>
+                            <button onclick="closeModal(); startTutorial()" class="arcade-button pixel-border arcade-button-cyan w-full">Start Tutorial</button>
+                            <button onclick="closeModal()" class="arcade-button pixel-border arcade-button-grey w-full">Skip for Now</button>
                         </div>
                     </div>
                 `);
@@ -4449,17 +4509,16 @@ if (!state || !state.puzzle) {
         function showUpdateNotification(previousVersion) {
             const versionUpdates = {
                 '2.0': {
-                    title: 'KeyHunter 2.0 - Major Update!',
+                    title: 'KeyHunter 2.0 Update!',
                     features: [
-                        '🎮 Complete UI redesign with retro arcade styling',
-                        '🎯 Three distinct game modes: Turn, Timed, and Unlimited',
-                        '⚡ Improved timed mode with better score tracking',
-                        '🎨 Enhanced visual feedback and animations',
-                        '📊 Better progress tracking and statistics'
+                        '🎮 Refreshed UI with retro arcade look',
+                        '🎯 Three game modes: Turn, Timed, and Unlimited',
+                        '🎨 Enhanced winning animations',
+                        '📊 Track your streaks in Profile & Stats'
                     ],
                     highlight: 'Experience the new game modes in Settings!'
                 }
-                // Add future versions here
+                // future versions
             };
             
             const updateInfo = versionUpdates[CURRENT_GAME_VERSION];
@@ -4468,7 +4527,6 @@ if (!state || !state.puzzle) {
                 setTimeout(() => {
                     openModal(updateInfo.title, `
                         <div class="text-center">
-                            <p class="text-gray-300 mb-4">Welcome back! KeyHunter has been updated with exciting new features:</p>
                             
                             <div class="text-left mb-4 space-y-2">
                                 ${updateInfo.features.map(feature => 
@@ -4477,7 +4535,7 @@ if (!state || !state.puzzle) {
                             </div>
                             
                             <div class="bg-cyan-900 border-2 border-cyan-500 p-3 mb-4">
-                                <p class="text-cyan-200 text-sm font-bold">${updateInfo.highlight}</p>
+                                <p class="text-cyan-200 text-sm">${updateInfo.highlight}</p>
                             </div>
                             
                             ${previousVersion ? 
@@ -4486,8 +4544,8 @@ if (!state || !state.puzzle) {
                             }
                             
                             <div class="space-y-2">
-                                <button onclick="closeModal(); openSettings()" class="arcade-button arcade-button-cyan w-full">Check Out New Modes</button>
-                                <button onclick="closeModal()" class="arcade-button arcade-button-grey w-full">Continue Playing</button>
+                                <button onclick="closeModal(); openSettings()" class="arcade-button pixel-border arcade-button-cyan w-full">View New Modes</button>
+                                <button onclick="closeModal()" class="arcade-button pixel-border arcade-button-grey w-full">Dismiss</button>
                             </div>
                         </div>
                     `);
