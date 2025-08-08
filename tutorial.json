@@ -2,91 +2,55 @@
   "steps": [
     {
       "step": 1,
-      "title": "One Letter Only",
-      "instruction": "You must change exactly <strong>one letter</strong> from the previous word. Try changing I to A: submit <strong>LAKE</strong>",
+      "title": "Change only 1 Letter",
+      "instruction": "From LIKE, lets try changing I to A. Type <strong>LAKE</strong>:",
       "expectedWord": "LAKE",
       "action": "submit"
     },
     {
       "step": 2,
-      "title": "Key Letters Found!",
-      "instruction": "Great! <strong>A</strong> and <strong>E</strong> turned blue - they're Key Letters in the final word.",
+      "title": "Blue = Key!",
+      "instruction": "<strong>A</strong> and <strong>E</strong> turned blue! Blue letters are keys.",
       "action": "continue"
     },
     {
       "step": 3,
-      "title": "Question Marks",
-      "instruction": "Notice: <strong>?</strong> means those letters haven't been verified yet. Let's test more letters.",
+      "title": "Blue Dots = Hints",
+      "instruction": "See a dot under K? That means a key letter is near K. L is not the one.",
       "action": "continue"
     },
     {
       "step": 4,
-      "title": "Testing More Letters",
-      "instruction": "Try <strong>LEAD</strong> to see if D is a key letter: (You’re free to rearrange, just change one letter.)",
-      "expectedWord": "LEAD",
-      "action": "submit"
-    },
-    {
-      "step": 5,
-      "title": "Used Keys",
-      "instruction": " No Keys discovered but if you look at used keys, there are <strong>blue dots</strong> below it.",
-      "action": "continue"
-    },
-    {
-      "step": 6,
-      "title": "Proximity Clues",
-      "instruction": "Blue dots: # of key letters directly next to that letter on the keyboard. There is 1 Key around K.",
-      "action": "continue"
-    },
-    {
-      "step": 7,
-      "title": "Using the Clues",
-      "instruction": "K is next to M, J, I, O, and L. But L isn’t a Key Letter, no blue dots.",
-      "action": "continue"
-    },
-    {
-      "step": 8,
-      "title": "Deduction Time",
-      "instruction": "So from M, J, I, and O, let's use M. Submit <strong>MEAL</strong>:",
+      "title": "Use the Hint",
+      "instruction": "Let's try changing K to M. Type <strong>MEAL</strong>:",
       "expectedWord": "MEAL",
       "action": "submit"
     },
     {
-      "step": 9,
-      "title": "Hello Key",
-      "instruction": "Perfect! <strong>M</strong> is a Key Letter.",
-      "action": "continue"
+      "step": 5,
+      "title": "Test More Letters",
+      "instruction": "M is Key letter! Now lets try changing K to D. Type <strong>DEAL</strong>:",
+      "expectedWord": "DEAL",
+      "action": "submit"
     },
     {
-      "step": 10,
-      "title": "Finding the Last Key",
-      "instruction": "Now we can see there are 2 Keys around D Lets try C. Submit <strong>LACE</strong>:",
+      "step": 6,
+      "title": "Use the Hint",
+      "instruction": "2 blue dots on D! Hmm, let's try changing D to C. Type <strong>LACE</strong>:",
       "expectedWord": "LACE",
       "action": "submit"
     },
     {
-      "step": 11,
-      "title": "All Keys Found!",
-      "instruction": "Excellent! All key letters found: <strong>A, C, E, and M</strong>. Now make a word using all of them.",
-      "action": "continue"
-    },
-    {
-      "step": 12,
-      "title": "The Final Word",
-      "instruction": "Keep in mind, you must change 1 letter at a time. Try <strong>MACE</strong>:",
+      "step": 7,
+      "title": "Make Final Word!",
+      "instruction": "All keys found: A, C, E, M. Use them all. Type <strong>MACE</strong>:",
       "expectedWord": "MACE",
       "action": "submit"
     },
     {
-      "step": 14,
-      "title": "Puzzle Solved! 🎉",
-      "instruction": "You've mastered KeyHunter! Learn about 3 game modes in Settings.",
-      "action": "continue"
-    },
-    {
-      "step": 15,
-      "title": "Ready to Play!",
-      "instruction": "You're all set! Try daily puzzle or explore past puzzles.",
+      "step": 8,
+      "title": "You Win! 🎉",
+      "instruction": "Perfect! Blue letters = keys. Find all keys, then make the final word!",
       "action": "finish"
     }
   ]
