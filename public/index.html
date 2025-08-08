@@ -348,7 +348,6 @@
                 align-items: center;
                 justify-content: center;
                 font-size: 2.25rem;
-                font-weight: 700;
                 text-transform: uppercase;
                 image-rendering: pixelated;
                 color: #E5E7EB;
@@ -692,7 +691,7 @@
                 color: #0F110C;
                 font-size: var(--key-font-size);
                 width: var(--key-width); /* Same width as regular keys */
-                font-weight: 700;
+                font-weight: 600;
             }
 
             /* Delete key  */
@@ -836,7 +835,7 @@
 
             @supports (-webkit-touch-callout: none) {
                 .submit-key, .delete-key {
-                    font-weight: 700; /* or even 800 */
+                    font-weight: 600; /* or even 800 */
                 }
             }
 
@@ -896,7 +895,6 @@
                 color: white;
                 padding: 8px 16px;
                 border-radius: 4px;
-                font-weight: bold;
                 transition: all 0.1s ease;
             }
 
@@ -916,7 +914,6 @@
                 align-items: center;
                 justify-content: center;
                 font-size: 14px;
-                font-weight: 700;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
                 border-radius: 0;
@@ -1144,7 +1141,7 @@
 
             .mode-name {
                 font-size: 14px;
-                font-weight: bold;
+            
                 margin-bottom: 4px;
                 color: #E5E7EB;
             }
@@ -1232,7 +1229,7 @@
             <header class="flex-shrink-0 flex gap-justify items-center w-full max-w-2xl mx-auto px-2 py-2">
             <div class="flex items-center gap-2">
                 
-                <button id="logo-btn" class="font-title font-bold font-title text-cyan-400 bg-transparent border-none cursor-pointer p-0 m-0">
+                <button id="logo-btn" class="font-title font-title text-cyan-400 bg-transparent border-none cursor-pointer p-0 m-0">
                     <span class="logo-glow">Key</span><span class="text-white">Hunter</span>
                 </button>
             </div>
@@ -1240,17 +1237,17 @@
             <div class="flex items-center gap-4 sm:gap-4 mt-2 sm:mt-0">
                 <div id="turns-mode-header" class="flex items-center gap-2 sm:gap-4">
                     <div class="text-center">
-                        <div id="turns-left-display" class="text-m font-bold">0</div>
+                        <div id="turns-left-display" class="text-m">0</div>
                         <div class="text-xs text-gray-400">TURNS</div>
                     </div>
                 </div>
                  <div id="speed-mode-header" class="hidden flex items-center gap-2 sm:gap-4">
                     <div class="text-center">
-                        <div id="resultTime" class="text-m font-bold">0:00</div>
+                        <div id="resultTime" class="text-m">0:00</div>
                         <div class="text-xs text-gray-400">TIME</div>
                     </div>
                     <div class="text-center">
-                        <div id="speed-moves-display" class="text-m font-bold">0</div>
+                        <div id="speed-moves-display" class="text-m">0</div>
                         <div class="text-xs text-gray-400">TURNS</div>
                     </div>
                 </div>
@@ -1374,17 +1371,17 @@
             </div>
 
             <div id="victory-footer" class="hidden text-center mt-4">
-                <h2 id="victory-title" class="text-2xl font-bold gold-text"></h2>
+                <h2 id="victory-title" class="text-2xl gold-text"></h2>
                 <p id="victory-message" class="text-sm mt-2"></p>
                 <div class="flex justify-center gap-8 my-4 text-gray-300">
                     <div class="text-center">
-                        <div id="result-score" class="text-2xl font-bold"></div>
+                        <div id="result-score" class="text-2xl"></div>
                         <div id="result-score-label" class="text-xs">SCORE</div>
                     </div>
                 </div>
                 <div id="countdown-container" class="hidden mt-2 text-center">
                     <p class="text-sm text-gray-400">Next puzzle in:</p>
-                    <div id="countdown-timer" class="text-xl font-bold text-cyan-400"></div>
+                    <div id="countdown-timer" class="text-xl text-cyan-400"></div>
                 </div>
                 <div id="result-buttons" class="flex flex-col gap-2 mt-4 mb-6">
                     <div class="flex gap-2">
@@ -1414,7 +1411,7 @@
         <div class="modal-background shadow-xl p-6 w-full max-w-md max-h-[90dvh] sm:max-h-[90dvh] max-h-[98dvh] flex flex-col">
 
             <div class="flex justify-between items-center mb-4 flex-shrink-0">
-                <h2 id="modal-title" class="text-2xl font-bold text-cyan-400"></h2>
+                <h2 id="modal-title" class="text-2xl text-cyan-400"></h2>
                 <button id="modal-close" class="p-1 rounded-full hover:bg-gray-700 text-2xl leading-none">&times;</button>
             </div>
             <div id="modal-content" class="flex-grow overflow-y-auto"></div>
@@ -1425,7 +1422,7 @@
     <!-- Generic Confirmation Modal Template -->
     <div id="confirmation-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-75 hidden">
         <div class="modal-background shadow-xl p-6 w-full max-w-md text-center">
-            <h2 id="confirmation-title" class="text-2xl font-bold text-yellow-400 mb-4"></h2>
+            <h2 id="confirmation-title" class="text-2xl text-yellow-400 mb-4"></h2>
             <p id="confirmation-message" class="text-gray-300 mb-6"></p>
             <div class="flex gap-4">
                 <button id="cancel-confirmation-btn" class="arcade-button pixel-border arcade-button-grey w-full">Cancel</button>
@@ -1629,8 +1626,13 @@
         
         function showTutorialStep() {
             const step = tutorial.steps[tutorial.step];
-            if (!step) return endTutorial();
-
+            if (step.action === 'finish') {
+                localStorage.setItem('khTut', 'true');
+            }
+            if (!step) {
+                return endTutorial();
+            }
+            
             if (step.action === 'continue') {
                     openModal(`${step.step}. ${step.title}`, `
                         <div class="text-center">
@@ -1648,7 +1650,6 @@
                                 '<div class="space-y-2"><button onclick="endTutorial();" class="arcade-button pixel-border arcade-button-green w-full">Play Today\'s Puzzle</button><button onclick="endTutorial(); handleArchivesClick()" class="arcade-button pixel-border arcade-button-cyan w-full">Browse Puzzles</button></div>' :
                                 `<div class="text-center">
                                     <div class="text-sm text-gray-400 bg-gray-700 p-3 rounded mb-3">Type "<strong>${step.expectedWord}</strong>" and press Submit</div>
-                                    <div class="text-xs text-gray-500">Press any letter key to start typing...</div>
                                 </div>`
                             }
                         </div>
@@ -1667,7 +1668,6 @@
         window.endTutorial = function () {
             tutorial.active = false;
             state.isTutorial = false;
-            localStorage.setItem('khTut', 'true');
 
             const savedMode = localStorage.getItem('keyhunt-mode-backup');
                 if (savedMode) {
@@ -2018,7 +2018,7 @@ if (!state || !state.puzzle) {
                         tileClasses += ' discovered';
                     }
                     
-                    return `<div class="w-full aspect-square flex items-center justify-center text-4xl font-bold uppercase  ${tileClasses}">${content}${icon}</div>`;
+                    return `<div class="w-full aspect-square flex items-center justify-center text-4xl uppercase  ${tileClasses}">${content}${icon}</div>`;
                 }
                 
                 const isNewlyDiscovered = isDiscovered && state.newlyDiscoveredKeys && state.newlyDiscoveredKeys.has(content);
@@ -2451,37 +2451,28 @@ if (!state || !state.puzzle) {
                                 <button id="copy-player-id" class="px-2 py-1 bg-cyan-600 text-white text-xs">Copy</button>
                             </div>
                         </div>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-blue-600 p-4 text-center text-white">
-                                <div class="text-2xl font-bold">${stats.totalPlayed}</div>
-                                <div class="text-xs">PLAYED</div>
-                            </div>
-                            <div class="bg-green-600 p-4 text-center text-white">
-                                <div class="text-2xl font-bold">${stats.totalStars}</div>
-                                <div class="text-xs">STARS</div>
-                            </div>
-                        </div>
-                        
+
                         <div class="bg-gray-700 p-4">
                             <h3 class="text-white mb-2">Streaks</h3>
                             <div class="grid grid-cols-2 gap-4 text-center">
-                                <div><div class="text-2xl font-bold text-orange-400">${stats.currentStreak}</div><div class="text-xs text-gray-400">CURRENT</div></div>
-                                <div><div class="text-2xl font-bold text-yellow-400">${stats.maxStreak}</div><div class="text-xs text-gray-400">BEST</div></div>
+                                <div><div class="text-2xl text-orange-400">${stats.currentStreak}</div><div class="text-xs text-gray-400">CURRENT</div></div>
+                                <div><div class="text-2xl text-yellow-400">${stats.maxStreak}</div><div class="text-xs text-gray-400">BEST</div></div>
                             </div>
                         </div>
                         
-                        ${stats.avgSolvingTime ? `
-                        <div class="bg-gray-700 p-4">
-                            <h3 class="text-white mb-2">Average Solving Time</h3>
-                            <div class="text-center">
-                                <div class="text-3xl font-bold text-cyan-400">${stats.avgSolvingTime}</div>
-                                <div class="text-xs text-gray-400">Across all timed puzzles</div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-blue-600 p-4 text-center text-white">
+                                <div class="text-2xl">${stats.totalPlayed}</div>
+                                <div class="text-xs">PLAYED</div>
                             </div>
-                        </div>` : ''}
-                        
+                            <div class="bg-green-600 p-4 text-center text-white">
+                                <div class="text-2xl">${stats.totalStars}</div>
+                                <div class="text-xs">STARS</div>
+                            </div>
+                        </div>
+
                         <div class="bg-gray-700 p-4">
-                            <h3 class="text-white mb-2">Score Distribution</h3>
+                            <h3 class="text-white mb-2">Star Distribution</h3>
                             ${Object.entries({
                                 '★★★': stats.distribution['★★★'],
                                 '★★': stats.distribution['★★'], 
@@ -2493,19 +2484,75 @@ if (!state || !state.puzzle) {
                             ).join('')}
                         </div>
                         
+                        ${stats.avgSolvingTime ? `
+                        <div class="bg-gray-700 p-4">
+                            <h3 class="text-white mb-2">Average Solving Time</h3>
+                            <div class="text-center">
+                                <div class="text-3xl text-cyan-400">${stats.avgSolvingTime}</div>
+                                <div class="text-xs text-gray-400">Across all timed puzzles</div>
+                            </div>
+                        </div>` : ''}
+                        
                         <div class="bg-gray-700 p-4">
                             <h3 class="text-white mb-2">Last 7 Puzzles</h3>
                             <div class="flex gap-1">
                                 ${stats.recentActivity.map(day => {
                                     const color = day.status === 'completed' ? 'bg-green-500' : 
                                                  day.status === 'failed' ? 'bg-red-500' : 'bg-gray-500';
-                                    return `<div class="w-8 h-8 ${color} flex items-center justify-center text-xs text-white" title="${day.date}">
-                                        ${day.status === 'completed' ? '✓' : day.status === 'failed' ? '✗' : '•'}
+                                    
+                                    let icon = '';
+                                    if (day.status === 'completed') {
+                                        // Checkmark icon
+                                        icon = `<svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering: pixelated;">
+                                          <rect x="13" y="2" width="1" height="5" fill="white"/>
+                                          <rect x="12" y="3" width="1" height="5" fill="white"/>
+                                          <rect x="14" y="3" width="1" height="3" fill="white"/>
+                                          <rect x="11" y="4" width="1" height="5" fill="white"/>
+                                          <rect x="15" y="4" width="1" height="1" fill="white"/>
+                                          <rect x="2" y="5" width="1" height="5" fill="white"/>
+                                          <rect x="10" y="5" width="1" height="5" fill="white"/>
+                                          <rect x="1" y="6" width="1" height="3" fill="white"/>
+                                          <rect x="3" y="6" width="1" height="5" fill="white"/>
+                                          <rect x="9" y="6" width="1" height="5" fill="white"/>
+                                          <rect x="0" y="7" width="1" height="1" fill="white"/>
+                                          <rect x="4" y="7" width="1" height="5" fill="white"/>
+                                          <rect x="8" y="7" width="1" height="5" fill="white"/>
+                                          <rect x="5" y="8" width="1" height="5" fill="white"/>
+                                          <rect x="7" y="8" width="1" height="5" fill="white"/>
+                                          <rect x="6" y="9" width="1" height="5" fill="white"/>
+                                        </svg>`;
+                                    } else if (day.status === 'failed') {
+                                        // X icon
+                                        icon = `<svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering: pixelated;">
+                                          <rect x="4" y="2" width="8" height="3" fill="white"/>
+                                          <rect x="3" y="3" width="1" height="7" fill="white"/>
+                                          <rect x="12" y="3" width="1" height="7" fill="white"/>
+                                          <rect x="2" y="4" width="1" height="5" fill="white"/>
+                                          <rect x="13" y="4" width="1" height="5" fill="white"/>
+                                          <rect x="4" y="5" width="1" height="9" fill="white"/>
+                                          <rect x="7" y="5" width="2" height="9" fill="white"/>
+                                          <rect x="11" y="5" width="1" height="9" fill="white"/>
+                                          <rect x="5" y="8" width="2" height="4" fill="white"/>
+                                          <rect x="9" y="8" width="2" height="4" fill="white"/>
+                                          <rect x="5" y="12" width="1" height="2" fill="white"/>
+                                          <rect x="10" y="12" width="1" height="2" fill="white"/>
+                                        </svg>`;
+                                    } else {
+                                        // Dot/circle icon for missed days
+                                        icon = `<svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering: pixelated;">
+                                            <rect x="6" y="4" width="4" height="2" fill="white"/>
+                                            <rect x="4" y="6" width="2" height="4" fill="white"/>
+                                            <rect x="10" y="6" width="2" height="4" fill="white"/>
+                                            <rect x="6" y="10" width="4" height="2" fill="white"/>
+                                        </svg>`;
+                                    }
+                                    
+                                    return `<div class="w-8 h-8 ${color} flex items-center justify-center text-xs text-white relative" title="${day.date} - ${day.status}">
+                                        ${icon}
                                     </div>`;
                                 }).join('')}
                             </div>
                         </div>
-                    </div>
                 `);
             }
 
@@ -2699,7 +2746,7 @@ if (!state || !state.puzzle) {
                         <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path  stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                         </svg>
-                        <h3 class="text-lg font-semibold text-white">Score Distribution</h3>
+                        <h3 class="text-lg text-white">Score Distribution</h3>
                     </div>
                     <div class="space-y-3">
                         ${distributionHTML}
@@ -3360,7 +3407,7 @@ if (!state || !state.puzzle) {
                         const allKeysClass = state.allKeysFound ? ' all-keys-found' : '';
                         const tileClasses = isDiscovered ? `input-tile discovered${allKeysClass}` : `input-tile${allKeysClass}`;
 
-                        tiles[i].className = `w-full aspect-square flex items-center justify-center text-4xl font-bold uppercase ${tileClasses}`;
+                        tiles[i].className = `w-full aspect-square flex items-center justify-center text-4xl uppercase ${tileClasses}`;
                     }
                 });
             }
@@ -3988,7 +4035,7 @@ if (!state || !state.puzzle) {
 
                     <!-- Export Summary -->
                     <div class="bg-gray-700 p-3 mb-2 text-xs">
-                        <div class="text-gray-300 font-semibold">Your Progress</div>
+                        <div class="text-gray-300 pb-2">Your Progress</div>
                         <div class="text-gray-400 space-y-1">
                             <div>Turn Mode: ${limitedTurnsCount} solved</div>
                             <div>Speed Mode: ${timedModeCount} solved</div>
@@ -4006,8 +4053,8 @@ if (!state || !state.puzzle) {
                             <button id="import-code-btn" class="arcade-button pixel-border arcade-button-green">
                                 Import Backup
                             </button>
+                            <p class="text-xs text-gray-500 pt-2 mb-2">⚠️ Importing will overwrite your current progress</p>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1">⚠️ Importing will overwrite your current progress</p>
                     </div>
                 </div>
                 
@@ -4200,13 +4247,13 @@ if (!state || !state.puzzle) {
                                         <div class="flex justify-between items-center" style="pointer-events: none;">
                                             <!-- Left side: Puzzle info -->
                                             <div class="flex flex-col" style="pointer-events: none;">
-                                                <div class="font-bold text-white" style="pointer-events: none;">#${p.puzzleNumber}</div>
+                                                <div class=" text-white" style="pointer-events: none;">#${p.puzzleNumber}</div>
                                                 <div class="text-xs text-gray-400" style="pointer-events: none;">${shortDate}</div>
                                             </div>
                                             
                                             <!-- Right side: Score info -->
                                             <div class="flex flex-col items-end text-right" style="pointer-events: none;">
-                                                <div class="font-bold ${scoreInfo.type === 'new' ? 'text-cyan-400' : 'text-white'}" style="pointer-events: none;">${scoreInfo.topLine}</div>
+                                                <div class="${scoreInfo.type === 'new' ? 'text-cyan-400' : 'text-white'}" style="pointer-events: none;">${scoreInfo.topLine}</div>
                                                 ${scoreInfo.bottomLine ? `<div class="text-xs text-gray-400" style="pointer-events: none;">${scoreInfo.bottomLine}</div>` : '<div class="text-xs" style="pointer-events: none;">&nbsp;</div>'}
                                             </div>
                                         </div>
@@ -4451,34 +4498,34 @@ if (!state || !state.puzzle) {
 
         function checkGameVersion() {
             const storedVersion = localStorage.getItem('keyhunt-game-version');
-            const hasAnyGameData = hasExistingGameData();
+            const hasGameProgress = hasGameProgressOrTutorialComplete();
             
-            if (!hasAnyGameData) {
-                // No game data exists - show tutorial for new players
+            if (!hasGameProgress) {
+                // No game progress or tutorial completion - show tutorial for new players
                 showNewPlayerExperience();
-            } else if (!storedVersion || isVersionOlder(storedVersion, CURRENT_GAME_VERSION)) {
-                // Has game data but version is missing or older - show update notification
+            } else if (storedVersion && isVersionOlder(storedVersion, CURRENT_GAME_VERSION)) {
+                // Has game progress AND has older version - show update notification
                 showUpdateNotification(storedVersion);
             } else {
-                // Version is current - normal game start
-                console.log(`Game version ${CURRENT_GAME_VERSION} - up to date`);
+                // Version is current or first time setting version for existing player - normal game start
+                console.log(`Game version ${CURRENT_GAME_VERSION} - ${storedVersion ? 'up to date' : 'first time version tracking'}`);
             }
             
             // Always update to current version after checking
             localStorage.setItem('keyhunt-game-version', CURRENT_GAME_VERSION);
         }
 
-        function hasExistingGameData() {
-            // Check if user has any game progress
+        function hasGameProgressOrTutorialComplete() {
+            // Check if user has any actual game progress OR has completed tutorial
             const turnsScores = JSON.parse(localStorage.getItem('keyhunt-scores-turns') || '{}');
             const speedScores = JSON.parse(localStorage.getItem('keyhunt-scores-speed') || '{}');
-            const playerId = localStorage.getItem('keyhunt-playerId');
             const tutorialCompleted = localStorage.getItem('khTut');
             
+            // Only count as having progress if they have scores OR completed tutorial
+            // playerId alone doesn't count since it's auto-generated
             return Object.keys(turnsScores).length > 0 || 
                    Object.keys(speedScores).length > 0 || 
-                   playerId || 
-                   tutorialCompleted;
+                   tutorialCompleted === 'true';
         }
 
         function isVersionOlder(stored, current) {
