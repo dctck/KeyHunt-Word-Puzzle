@@ -112,7 +112,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
 
-
     <style>
             /* Base styles first */
             
@@ -130,7 +129,7 @@
                     rgba(0, 20, 5, 0.3) 4px,
                     rgba(0, 20, 5, 0.3) 4px
                 );*/
-                /* background-size: 100% 4px;  ← Match this to your gradient repeat */
+                /*background-size: 100% 4px;  /* ← Match this to your gradient repeat */
                 pointer-events: none;
                 z-index: 100;
                 image-rendering: pixelated;
@@ -1220,7 +1219,10 @@
                 justify-content: center;
             }
 
+            
     </style>
+
+
 </head>
 <body class="bg-gray-900 text-gray-200 flex flex-col">
     
@@ -1748,6 +1750,7 @@
             
             if (state.gameMode === 'turns') {
                 state.totalTurns = puzzle.targetMoves + 4;
+                console.log('🎯 totalTurns set to:', state.totalTurns, '(targetMoves:', puzzle.targetMoves, '+ 4)');
             }
             
             // Restore history for completed daily puzzles
@@ -1927,6 +1930,12 @@ if (!state || !state.puzzle) {
             const currentMoves = state.moves || 0;
             const totalTurns = state.totalTurns || 0;
             
+            console.log('Header render - turns display:', {
+                currentMoves: state.moves || 0,
+                totalTurns: state.totalTurns || 0,
+                turnsRemaining: Math.max(0, (state.totalTurns || 0) - (state.moves || 0))
+            });
+
             if (state.isTimedMode) {
                 // Timed mode: Show timer + moves for both game modes
                 DOM.speedModeHeader.classList.remove('hidden');
@@ -3111,17 +3120,38 @@ if (!state || !state.puzzle) {
 
         async function hasValidMoves() {
             const usedWords = new Set([...state.history, state.currentWord]);
+            console.log('🔍 Checking valid moves from:', state.currentWord);
+            console.log('🔍 Used words:', Array.from(usedWords));
             
             // Check all possible one-letter changes
             for (let i = 0; i < state.currentWord.length; i++) {
                 for (let c = 65; c <= 90; c++) { // A-Z
-                    const newWord = state.currentWord.substring(0, i) + String.fromCharCode(c) + state.currentWord.substring(i + 1);
-                    if (!usedWords.has(newWord) && await isValidWord(newWord)) {
-                        return true; // Found one valid move
+                    const letters = state.currentWord.split('');
+                    letters[i] = String.fromCharCode(c);
+            
+                    const anagrams = getAnagrams(letters.join(''));
+                    for (const anagram of anagrams) {
+                        if (!usedWords.has(anagram) && await isValidWord(anagram)) {
+                            return true;
+                        }
                     }
                 }
             }
+            console.log('❌ No valid moves found');
             return false;
+        }
+
+        function getAnagrams(word) {
+            if (word.length <= 1) return [word];
+            const anagrams = [];
+            for (let i = 0; i < word.length; i++) {
+                const char = word[i];
+                const remaining = word.slice(0, i) + word.slice(i + 1);
+                for (const perm of getAnagrams(remaining)) {
+                    anagrams.push(char + perm);
+                }
+            }
+            return [...new Set(anagrams)]; // Remove duplicates
         }
 
         document.addEventListener('focusin', (e) => {
@@ -3292,7 +3322,8 @@ if (!state || !state.puzzle) {
 
 
                     }
-                    
+
+
                     if (state.gameMode === 'turns' && state.moves >= state.totalTurns) {
                         
                         state.gameOver = true;
@@ -4494,7 +4525,7 @@ if (!state || !state.puzzle) {
             }
         });
 
-        const CURRENT_GAME_VERSION = '2.0';
+        const CURRENT_GAME_VERSION = '2.1';
 
         function checkGameVersion() {
             const storedVersion = localStorage.getItem('keyhunt-game-version');
@@ -4564,6 +4595,14 @@ if (!state || !state.puzzle) {
                         '📊 Track your streaks in Profile & Stats'
                     ],
                     highlight: 'Experience the new game modes in Settings!'
+                },
+                '2.1': {
+                    title: 'KeyHunter 2.1 Bug Fix',
+                    features: [
+                        '🐛 Fixed possible move calculation',
+                        '🏆 You can now replay Puzzle #49',
+                    ],
+                    highlight: 'Keep on reporting bugs!'
                 }
                 // future versions
             };
@@ -4619,7 +4658,68 @@ if (!state || !state.puzzle) {
                 migrateSpeedModeData();
                 console.log('Migrated data for v2.0');
             }
+            
+            if (!fromVersion || isVersionOlder(fromVersion, '2.1')) {
+                // Migrate to 2.1 - fix puzzle 49 bug
+                const wasFixed = fixPuzzle49Bug();
+                if (wasFixed) {
+                    showSnackbar('Puzzle #49 bug fixed - you can now replay it!');
+                }
+                console.log('Applied v2.1 puzzle #49 bug fix');
+            }
+            
             // Add future migration logic here for newer versions
+        }
+
+        // Add this bug fix function
+        function fixPuzzle49Bug() {
+            const turnsScores = JSON.parse(localStorage.getItem('keyhunt-scores-turns') || '{}');
+            const speedScores = JSON.parse(localStorage.getItem('keyhunt-scores-speed') || '{}');
+            
+            // Check if user was affected by puzzle 49 bug (failed with 💤)
+            const puzzle49TurnsScore = turnsScores['49'];
+            const puzzle49SpeedScore = speedScores['49'];
+            
+            let wasAffected = false;
+            
+            // Remove failed turn score
+            if (puzzle49TurnsScore === '💤') {
+                delete turnsScores['49'];
+                localStorage.setItem('keyhunt-scores-turns', JSON.stringify(turnsScores));
+                wasAffected = true;
+            }
+            
+            // Remove any speed score for puzzle 49
+            if (puzzle49SpeedScore) {
+                delete speedScores['49'];
+                localStorage.setItem('keyhunt-scores-speed', JSON.stringify(speedScores));
+                wasAffected = true;
+            }
+            
+            // Remove any saved game history for puzzle 49
+            const turnsHistory = JSON.parse(localStorage.getItem('keyhunt-history-turns') || '{}');
+            const speedHistory = JSON.parse(localStorage.getItem('keyhunt-history-speed') || '{}');
+            
+            if (turnsHistory['49']) {
+                delete turnsHistory['49'];
+                localStorage.setItem('keyhunt-history-turns', JSON.stringify(turnsHistory));
+            }
+            
+            // Remove speed history (both t and u modes)
+            if (speedHistory['49_t']) {
+                delete speedHistory['49_t'];
+                localStorage.setItem('keyhunt-history-speed', JSON.stringify(speedHistory));
+            }
+            if (speedHistory['49_u']) {
+                delete speedHistory['49_u'];
+                localStorage.setItem('keyhunt-history-speed', JSON.stringify(speedHistory));
+            }
+            
+            if (wasAffected) {
+                console.log('Puzzle #49 bug fix applied - puzzle reset for replay');
+            }
+            
+            return wasAffected;
         }
 
         // Call this during game initialization
@@ -4634,8 +4734,8 @@ if (!state || !state.puzzle) {
         }
 
         ensurePlayerId();
-        initializeGameVersion(); // This handles both tutorial and update notifications
-        initGame(); // Load today's puzzle on start
+        initializeGameVersion(); 
+        initGame(); 
     </script>
     </div>
 </body>
