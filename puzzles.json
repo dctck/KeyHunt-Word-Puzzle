@@ -1895,6 +1895,707 @@
         "startWord": "LIRA",
         "endWord": "TACO",
         "targetMoves": 9
+    },
+    [
+    {
+        "puzzleNumber": 272,
+        "date": "2026-04-02",
+        "startWord": "DAST",
+        "endWord": "LIAR",
+        "targetMoves": 6
+    },
+    {
+        "puzzleNumber": 273,
+        "date": "2026-04-03",
+        "startWord": "WAGS",
+        "endWord": "JOGS",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 274,
+        "date": "2026-04-04",
+        "startWord": "PEPS",
+        "endWord": "REST",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 275,
+        "date": "2026-04-05",
+        "startWord": "KHAT",
+        "endWord": "TICS",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 276,
+        "date": "2026-04-06",
+        "startWord": "FURS",
+        "endWord": "BENT",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 277,
+        "date": "2026-04-07",
+        "startWord": "FYKE",
+        "endWord": "FARM",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 278,
+        "date": "2026-04-08",
+        "startWord": "JANE",
+        "endWord": "PLOD",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 279,
+        "date": "2026-04-09",
+        "startWord": "ROUT",
+        "endWord": "ARSE",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 280,
+        "date": "2026-04-10",
+        "startWord": "CATE",
+        "endWord": "THEY",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 281,
+        "date": "2026-04-11",
+        "startWord": "NOSH",
+        "endWord": "GORE",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 282,
+        "date": "2026-04-12",
+        "startWord": "CLEB",
+        "endWord": "WHOP",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 283,
+        "date": "2026-04-13",
+        "startWord": "PROA",
+        "endWord": "LOWS",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 284,
+        "date": "2026-04-14",
+        "startWord": "PLGD",
+        "endWord": "CRAB",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 285,
+        "date": "2026-04-15",
+        "startWord": "LOCH",
+        "endWord": "GLUE",
+        "targetMoves": 5
+    },
+    {
+        "puzzleNumber": 286,
+        "date": "2026-04-16",
+        "startWord": "PHOD",
+        "endWord": "SEXY",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 287,
+        "date": "2026-04-17",
+        "startWord": "PACS",
+        "endWord": "STEW",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 288,
+        "date": "2026-04-18",
+        "startWord": "RENY",
+        "endWord": "SHAG",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 289,
+        "date": "2026-04-19",
+        "startWord": "PROG",
+        "endWord": "MICA",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 290,
+        "date": "2026-04-20",
+        "startWord": "NOLO",
+        "endWord": "DOME",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 291,
+        "date": "2026-04-21",
+        "startWord": "BNIE",
+        "endWord": "ROOM",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 292,
+        "date": "2026-04-22",
+        "startWord": "VARS",
+        "endWord": "LONG",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 293,
+        "date": "2026-04-23",
+        "startWord": "ALFA",
+        "endWord": "WHID",
+        "targetMoves": 5
+    },
+    {
+        "puzzleNumber": 294,
+        "date": "2026-04-24",
+        "startWord": "CYMA",
+        "endWord": "LIDS",
+        "targetMoves": 6
+    },
+    {
+        "puzzleNumber": 295,
+        "date": "2026-04-25",
+        "startWord": "HING",
+        "endWord": "EASY",
+        "targetMoves": 6
+    },
+    {
+        "puzzleNumber": 296,
+        "date": "2026-04-26",
+        "startWord": "SHMO",
+        "endWord": "USER",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 297,
+        "date": "2026-04-27",
+        "startWord": "UMPS",
+        "endWord": "SHMO",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 298,
+        "date": "2026-04-28",
+        "startWord": "MZPS",
+        "endWord": "SAIN",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 299,
+        "date": "2026-04-29",
+        "startWord": "STFU",
+        "endWord": "DANG",
+        "targetMoves": 5
+    },
+    {
+        "puzzleNumber": 300,
+        "date": "2026-04-30",
+        "startWord": "VIOL",
+        "endWord": "CINE",
+        "targetMoves": 5
+    },
+    {
+        "puzzleNumber": 301,
+        "date": "2026-05-01",
+        "startWord": "MOBS",
+        "endWord": "BEAU",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 302,
+        "date": "2026-05-02",
+        "startWord": "NEOT",
+        "endWord": "CLIP",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 303,
+        "date": "2026-05-03",
+        "startWord": "UVEA",
+        "endWord": "ACHE",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 304,
+        "date": "2026-05-04",
+        "startWord": "ZUEN",
+        "endWord": "ILLS",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 305,
+        "date": "2026-05-05",
+        "startWord": "HUES",
+        "endWord": "TASK",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 306,
+        "date": "2026-05-06",
+        "startWord": "BWOC",
+        "endWord": "BEET",
+        "targetMoves": 6
+    },
+    {
+        "puzzleNumber": 307,
+        "date": "2026-05-07",
+        "startWord": "TWUP",
+        "endWord": "GYRO",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 308,
+        "date": "2026-05-08",
+        "startWord": "BREN",
+        "endWord": "HUES",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 309,
+        "date": "2026-05-09",
+        "startWord": "NAOI",
+        "endWord": "DAMN",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 310,
+        "date": "2026-05-10",
+        "startWord": "BOLN",
+        "endWord": "HEAL",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 311,
+        "date": "2026-05-11",
+        "startWord": "SIRS",
+        "endWord": "BEAT",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 312,
+        "date": "2026-05-12",
+        "startWord": "MUFF",
+        "endWord": "SCAD",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 313,
+        "date": "2026-05-13",
+        "startWord": "OYHN",
+        "endWord": "SWAB",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 314,
+        "date": "2026-05-14",
+        "startWord": "YAYS",
+        "endWord": "SNOB",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 315,
+        "date": "2026-05-15",
+        "startWord": "JIBS",
+        "endWord": "SKIS",
+        "targetMoves": 6
+    },
+    {
+        "puzzleNumber": 316,
+        "date": "2026-05-16",
+        "startWord": "PEED",
+        "endWord": "MISO",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 317,
+        "date": "2026-05-17",
+        "startWord": "ONES",
+        "endWord": "SANG",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 318,
+        "date": "2026-05-18",
+        "startWord": "REWN",
+        "endWord": "OWES",
+        "targetMoves": 6
+    },
+    {
+        "puzzleNumber": 319,
+        "date": "2026-05-19",
+        "startWord": "WIEL",
+        "endWord": "OWLY",
+        "targetMoves": 6
+    },
+    {
+        "puzzleNumber": 320,
+        "date": "2026-05-20",
+        "startWord": "NOIL",
+        "endWord": "CHIN",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 321,
+        "date": "2026-05-21",
+        "startWord": "COLS",
+        "endWord": "HIST",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 322,
+        "date": "2026-05-22",
+        "startWord": "VUEB",
+        "endWord": "MAIN",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 323,
+        "date": "2026-05-23",
+        "startWord": "RHIP",
+        "endWord": "ODDS",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 324,
+        "date": "2026-05-24",
+        "startWord": "MHOS",
+        "endWord": "ZOOS",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 325,
+        "date": "2026-05-25",
+        "startWord": "LOUR",
+        "endWord": "EAST",
+        "targetMoves": 6
+    },
+    {
+        "puzzleNumber": 326,
+        "date": "2026-05-26",
+        "startWord": "MIEN",
+        "endWord": "ALMA",
+        "targetMoves": 6
+    },
+    {
+        "puzzleNumber": 327,
+        "date": "2026-05-27",
+        "startWord": "NPEQ",
+        "endWord": "PLOW",
+        "targetMoves": 6
+    },
+    {
+        "puzzleNumber": 328,
+        "date": "2026-05-28",
+        "startWord": "TIU",
+        "endWord": "SIBS",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 329,
+        "date": "2026-05-29",
+        "startWord": "JEIN",
+        "endWord": "TEES",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 330,
+        "date": "2026-05-30",
+        "startWord": "FORA",
+        "endWord": "TRUE",
+        "targetMoves": 6
+    },
+    {
+        "puzzleNumber": 331,
+        "date": "2026-05-31",
+        "startWord": "DIEL",
+        "endWord": "PIKA",
+        "targetMoves": 6
+    },
+    {
+        "puzzleNumber": 332,
+        "date": "2026-06-01",
+        "startWord": "UMBO",
+        "endWord": "SIMS",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 333,
+        "date": "2026-06-02",
+        "startWord": "KOSS",
+        "endWord": "DRIB",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 334,
+        "date": "2026-06-03",
+        "startWord": "ROVE",
+        "endWord": "ACHY",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 335,
+        "date": "2026-06-04",
+        "startWord": "GYRE",
+        "endWord": "ANON",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 336,
+        "date": "2026-06-05",
+        "startWord": "OUPH",
+        "endWord": "LUNG",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 337,
+        "date": "2026-06-06",
+        "startWord": "DOPY",
+        "endWord": "BACH",
+        "targetMoves": 6
+    },
+    {
+        "puzzleNumber": 338,
+        "date": "2026-06-07",
+        "startWord": "OXIM",
+        "endWord": "NONA",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 339,
+        "date": "2026-06-08",
+        "startWord": "PIED",
+        "endWord": "HANK",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 340,
+        "date": "2026-06-09",
+        "startWord": "SGGS",
+        "endWord": "PIED",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 341,
+        "date": "2026-06-10",
+        "startWord": "AYIN",
+        "endWord": "PEAT",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 342,
+        "date": "2026-06-11",
+        "startWord": "DORR",
+        "endWord": "SINK",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 343,
+        "date": "2026-06-12",
+        "startWord": "LOBI",
+        "endWord": "NOWS",
+        "targetMoves": 5
+    },
+    {
+        "puzzleNumber": 344,
+        "date": "2026-06-13",
+        "startWord": "SUKS",
+        "endWord": "FREE",
+        "targetMoves": 6
+    },
+    {
+        "puzzleNumber": 345,
+        "date": "2026-06-14",
+        "startWord": "PIEB",
+        "endWord": "MAYO",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 346,
+        "date": "2026-06-15",
+        "startWord": "KUDU",
+        "endWord": "YIRD",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 347,
+        "date": "2026-06-16",
+        "startWord": "HAES",
+        "endWord": "BANG",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 348,
+        "date": "2026-06-17",
+        "startWord": "OBAS",
+        "endWord": "ANTE",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 349,
+        "date": "2026-06-18",
+        "startWord": "AITS",
+        "endWord": "ROBS",
+        "targetMoves": 5
+    },
+    {
+        "puzzleNumber": 350,
+        "date": "2026-06-19",
+        "startWord": "KJEN",
+        "endWord": "PLUM",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 351,
+        "date": "2026-06-20",
+        "startWord": "ANYE",
+        "endWord": "RELY",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 352,
+        "date": "2026-06-21",
+        "startWord": "RINL",
+        "endWord": "WHIZ",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 353,
+        "date": "2026-06-22",
+        "startWord": "MOCS",
+        "endWord": "CENT",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 354,
+        "date": "2026-06-23",
+        "startWord": "POOL",
+        "endWord": "YOKS",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 355,
+        "date": "2026-06-24",
+        "startWord": "ALKY",
+        "endWord": "RIFT",
+        "targetMoves": 6
+    },
+    {
+        "puzzleNumber": 356,
+        "date": "2026-06-25",
+        "startWord": "FAVA",
+        "endWord": "RIBS",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 357,
+        "date": "2026-06-26",
+        "startWord": "VOCI",
+        "endWord": "IDEA",
+        "targetMoves": 6
+    },
+    {
+        "puzzleNumber": 358,
+        "date": "2026-06-27",
+        "startWord": "GADI",
+        "endWord": "VOGS",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 359,
+        "date": "2026-06-28",
+        "startWord": "UKES",
+        "endWord": "TRAY",
+        "targetMoves": 5
+    },
+    {
+        "puzzleNumber": 360,
+        "date": "2026-06-29",
+        "startWord": "POUT",
+        "endWord": "QUEY",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 361,
+        "date": "2026-06-30",
+        "startWord": "LILT",
+        "endWord": "BUNK",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 362,
+        "date": "2026-07-01",
+        "startWord": "LYES",
+        "endWord": "MEAD",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 363,
+        "date": "2026-07-02",
+        "startWord": "GNAR",
+        "endWord": "FIRN",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 364,
+        "date": "2026-07-03",
+        "startWord": "POOP",
+        "endWord": "SKAG",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 365,
+        "date": "2026-07-04",
+        "startWord": "STEY",
+        "endWord": "TUSH",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 366,
+        "date": "2026-07-05",
+        "startWord": "LNEC",
+        "endWord": "PUMA",
+        "targetMoves": 8
+    },
+    {
+        "puzzleNumber": 367,
+        "date": "2026-07-06",
+        "startWord": "ASPS",
+        "endWord": "SWEY",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 368,
+        "date": "2026-07-07",
+        "startWord": "MENI",
+        "endWord": "DENY",
+        "targetMoves": 10
+    },
+    {
+        "puzzleNumber": 369,
+        "date": "2026-07-08",
+        "startWord": "SMEW",
+        "endWord": "CLOY",
+        "targetMoves": 7
+    },
+    {
+        "puzzleNumber": 370,
+        "date": "2026-07-09",
+        "startWord": "LOTR",
+        "endWord": "WHIT",
+        "targetMoves": 9
+    },
+    {
+        "puzzleNumber": 371,
+        "date": "2026-07-10",
+        "startWord": "UUEN",
+        "endWord": "KIND",
+        "targetMoves": 8
     }
     
 ]
