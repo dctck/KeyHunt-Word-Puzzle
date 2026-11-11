@@ -1,0 +1,37 @@
+[
+  {
+    "puzzleNumber": 1,
+    "date": "2025-07-05",
+    "startWord": "DAWN",
+    "endWord": "KITE",
+    "targetMoves": 7
+  },
+  {
+    "puzzleNumber": 2,
+    "date": "2025-07-06",
+    "startWord": "WORK",
+    "endWord": "MINT",
+    "targetMoves": 8
+  },
+  {
+    "puzzleNumber": 3,
+    "date": "2025-07-07",
+    "startWord": "HEAD",
+    "endWord": "JUMP",
+    "targetMoves": 8
+  },
+  {
+    "puzzleNumber": 4,
+    "date": "2025-07-08",
+    "startWord": "RICH",
+    "endWord": "FAWN",
+    "targetMoves": 9
+  },
+  {
+    "puzzleNumber": 5,
+    "date": "2025-07-09",
+    "startWord": "FIRE",
+    "endWord": "WOLF",
+    "targetMoves": 8
+  }
+]

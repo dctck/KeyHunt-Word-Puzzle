@@ -7,7 +7,7 @@
 
     <title>KeyHunter - Daily Word Puzzle Game | Find All Key Letters!</title>
     <meta name="title" content="KeyHunter - Daily Word Puzzle Game | Find Key Letters & Transform Words">
-    <meta name="description" content="Play KeyHunter, the addictive daily word puzzle game! Submit words by changing one letter at a time to discover key letters. Challenge your vocabulary with new puzzles every day. Free to play!">
+    <meta name="description" content="Play KeyHunter, the addictive daily word puzzle game! Submit words by changing one letter at a time to discover key letters. Challenge your vocabulary with five sample puzzles. Free to play!">
     <meta name="keywords" content="word puzzle game, daily word game, word ladder, vocabulary game, puzzle game, word finder, daily puzzle, letter game, brain training, word challenge, wordle alternative, free word games, online puzzle">
     <meta name="author" content="KeyHunter">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
@@ -21,7 +21,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://keyhunter.org/">
     <meta property="og:title" content="KeyHunter - Daily Word Puzzle Game | Find Key Letters & Transform Words">
-    <meta property="og:description" content="Play KeyHunter, the addictive daily word puzzle game! Submit words by changing one letter at a time to discover key letters. Challenge your vocabulary with new puzzles every day.">
+    <meta property="og:description" content="Play KeyHunter, the addictive daily word puzzle game! Submit words by changing one letter at a time to discover key letters. Challenge your vocabulary with five sample puzzles.">
     <!-- <meta property="og:image" content="https://keyhunter.org/images/keyhunter-og-image.jpg"> -->
     <!--<meta property="og:image:width" content="1200"> -->
     <!--<meta property="og:image:height" content="630"> -->
@@ -33,7 +33,7 @@
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://keyhunter.org/">
     <meta property="twitter:title" content="KeyHunter - Daily Word Puzzle Game">
-    <meta property="twitter:description" content="Submit words by changing one letter at a time to discover key letters. New puzzles daily!">
+    <meta property="twitter:description" content="Submit words by changing one letter at a time to discover key letters. Five puzzles to play anytime!">
 
     <!-- Additional Meta Tags -->
     <meta name="theme-color" content="#06b6d4">
@@ -45,10 +45,10 @@
     <meta name="mobile-web-app-capable" content="yes">
 
     <!-- Favicon and Icons -->
-    <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/x-icon" href="./favicon/favicon-48.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png">
 
 
     <!-- Preconnect for Performance -->
@@ -171,7 +171,7 @@
 
                 background-image: 
                         linear-gradient(rgba(15, 17, 12, 0.85), rgba(15, 17, 12, 0.85)),
-                        url('/pixelBg.png');
+                        url('./pixelBg.png');
                     background-repeat: repeat;
                     background-size: auto, 200px 200px;
                     background-attachment: fixed;
@@ -1296,7 +1296,7 @@
                               <rect x="13.5" y="3" width="3" height="6" fill="currentColor"/>
                               <rect x="9" y="12" width="6" height="3" fill="currentColor"/>
                             </svg>
-                            Today's Puzzle
+                            Daily Demo
                         </a>
                         <a href="#" id="archives-btn" class="flex items-center gap-3 px-4 py-3 text-xs text-gray-300 hover:bg-gray-700 transition">
                             <svg width="24" height="24" viewBox="0 0 24 24" style="image-rendering: pixelated;">
@@ -1308,7 +1308,7 @@
                               <rect x="6" y="15" width="12" height="3" fill="currentColor"/>
                               <rect x="6" y="18" width="12" height="3" fill="currentColor"/>
                             </svg>
-                            Past Puzzles
+                            Sample Puzzles
                         </a>
                         <a href="#" id="settings-btn" class="flex items-center gap-3 px-4 py-3 text-xs text-gray-300 hover:bg-gray-700 transition">
                             <svg width="24" height="24" viewBox="0 0 24 24" style="image-rendering: pixelated;">
@@ -1390,7 +1390,7 @@
                         <button id="share-btn" class="arcade-button pixel-border arcade-button-blue flex-1">Share</button> 
                         <button id="try-again-btn" class="arcade-button pixel-border arcade-button-purple flex-1">Try Again</button>
                     </div>
-                    <button id="archives-cta-btn" class="arcade-button pixel-border arcade-button-cyan w-full">Past Puzzles</button>
+                    <button id="archives-cta-btn" class="arcade-button pixel-border arcade-button-cyan w-full">Sample Puzzles</button>
                 </div>
             </div>
 
@@ -1435,6 +1435,7 @@
 
 
     <script type="module">
+        import { loadPuzzle, loadSamplePuzzles } from './puzzle-data.js';
         const DOM = {
             gameContainer: document.getElementById('game-container'),
             boardContent: document.getElementById('board-content'),
@@ -1602,7 +1603,7 @@
             showLoader();
             await new Promise(resolve => setTimeout(resolve, 500));
 
-            const data = await fetch('/api/tutorial').then(r => r.json()).catch(() => null);
+            const data = await fetch('./tutorial.json').then(r => r.json()).catch(() => null);
             if (!data) return showSnackbar("Tutorial unavailable");
             
             
@@ -1649,7 +1650,7 @@
                         <div class="text-center">
                             <p class="text-gray-300 mb-4 text-left leading-relaxed">${step.instruction}</p>
                             ${step.action === 'finish' ? 
-                                '<div class="space-y-2"><button onclick="endTutorial();" class="arcade-button pixel-border arcade-button-green w-full">Play Today\'s Puzzle</button><button onclick="endTutorial(); handleArchivesClick()" class="arcade-button pixel-border arcade-button-cyan w-full">Browse Puzzles</button></div>' :
+                                '<div class="space-y-2"><button onclick="endTutorial();" class="arcade-button pixel-border arcade-button-green w-full">Play Daily Demo</button><button onclick="endTutorial(); handleArchivesClick()" class="arcade-button pixel-border arcade-button-cyan w-full">Browse Puzzles</button></div>' :
                                 `<div class="text-center">
                                     <div class="text-sm text-gray-400 bg-gray-700 p-3 rounded mb-3">Type "<strong>${step.expectedWord}</strong>" and press Submit</div>
                                 </div>`
@@ -1881,7 +1882,7 @@ if (!state || !state.puzzle) {
                               <rect x="12" y="14" width="2" height="2" fill="currentColor"/>
                             </svg>
                         </button>
-                        <span>Archive #${state.puzzle.puzzleNumber}</span>
+                        <span>Puzzle #${state.puzzle.puzzleNumber}</span>
                         <button id="next-puzzle" class="p-2 rounded-full hover:bg-gray-700 transition ${state.puzzle.puzzleNumber >= maxArchive ? 'opacity-30 cursor-not-allowed' : ''}" data-disabled="${state.puzzle.puzzleNumber >= maxArchive}">
                             <svg width="20" height="20" viewBox="0 0 20 20" style="image-rendering: pixelated;">
                               <rect x="8" y="6" width="2" height="2" fill="currentColor"/>
@@ -1894,7 +1895,7 @@ if (!state || !state.puzzle) {
                     </div>
                 `;
             } else {
-                DOM.puzzleTitle.textContent = `Daily Puzzle #${state.puzzle.puzzleNumber}`;
+                DOM.puzzleTitle.textContent = `Daily Demo #${state.puzzle.puzzleNumber}`;
             }
         }
 
@@ -1906,22 +1907,8 @@ if (!state || !state.puzzle) {
         }
         
         async function getCurrentMaxArchivePuzzle() {
-            try {
-                const response = await fetch('/api/archives');
-                const puzzles = await response.json();
-                
-                // Get today's puzzle number
-                const todayResponse = await fetch('/api/puzzle');
-                const todayPuzzle = await todayResponse.json();
-                
-                // Filter archives (puzzles < today) and get the highest number
-                const archivePuzzles = puzzles.filter(p => p.puzzleNumber < todayPuzzle.puzzleNumber);
-                const maxArchivePuzzle = Math.max(...archivePuzzles.map(p => p.puzzleNumber));
-                
-                return maxArchivePuzzle;
-            } catch {
-                return 6; // Fallback
-            }
+            const puzzles = await loadSamplePuzzles();
+            return Math.max(...puzzles.map(p => p.puzzleNumber));
         }
 
         function renderHeader() {
@@ -2097,7 +2084,7 @@ if (!state || !state.puzzle) {
         
         async function loadWordList() {
             try {
-                const response = await fetch('/words2.json');
+                const response = await fetch('./words2.json');
                 if (!response.ok) throw new Error('Could not load word list');
                 const wordArray = await response.json();
                 
@@ -2174,37 +2161,6 @@ if (!state || !state.puzzle) {
                 hideLoader();
             }
         }
-
-        function deobfuscateAnswer(obfuscated, puzzleNumber, startWord) {
-
-            if (/^[A-Z]{4}$/.test(obfuscated)) {
-                return obfuscated;
-            }
-            
-            try {
-                // Decode base64 directly - no splitting on '|'
-                const scrambled = atob(obfuscated);
-                
-                // Generate the same key as server
-                const key = `KeyHunter${puzzleNumber}${startWord}`;
-                
-                let result = '';
-                for (let i = 0; i < scrambled.length; i++) {
-                    const scrambledChar = scrambled.charCodeAt(i);
-                    const keyChar = key.charCodeAt(i % key.length);
-                    const original = scrambledChar ^ keyChar;
-                    
-                    result += String.fromCharCode(original);
-                }
-                
-                return result;
-                
-            } catch (error) {
-                return obfuscated; // Fallback - might be unencrypted in dev
-            }
-        }
-
-        
 
         function saveTimedScore(puzzleNumber, time, gameMode) {
             const timedScores = JSON.parse(localStorage.getItem('keyhunt-scores-speed') || '{}');
@@ -2638,8 +2594,7 @@ if (!state || !state.puzzle) {
             // Get today's puzzle number for recent activity
             let todayPuzzleNumber = 0;
             try {
-                const response = await fetch('/api/puzzle');
-                const todayPuzzle = await response.json();
+                const todayPuzzle = await loadPuzzle();
                 todayPuzzleNumber = todayPuzzle.puzzleNumber;
             } catch (error) {
                 todayPuzzleNumber = Math.max(...Array.from(solvedPuzzles), 0);
@@ -2807,25 +2762,9 @@ if (!state || !state.puzzle) {
         }
         
         function startNextPuzzleCountdown() {
+            // Portfolio puzzles never rotate at midnight.
             if (state.countdownInterval) clearInterval(state.countdownInterval);
-
-            function updateCountdown() {
-                const now = new Date();
-                const tomorrow = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                tomorrow.setHours(0, 0, 0, 0);
-
-                const diff = tomorrow - new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
-
-                const h = Math.floor(diff / (1000 * 60 * 60));
-                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const s = Math.floor((diff % (1000 * 60)) / 1000);
-
-                DOM.countdownTimer.textContent = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-            }
-            
-            updateCountdown();
-            state.countdownInterval = setInterval(updateCountdown, 1000);
+            DOM.countdownContainer.classList.add('hidden');
         }
 
         function showEndState(isWin, message, isReplay = false) {
@@ -3494,23 +3433,10 @@ if (!state || !state.puzzle) {
         async function initGame(dateString, forceRestart = false, puzzleNumber = null) {
             
             try {
-                const url = dateString ? `/api/puzzle?date=${dateString}` : '/api/puzzle';
-                
-                const response = await fetch(url);
-                if (!response.ok) {
-                    const err = await response.json();
-                    throw new Error(err.error || 'Could not load puzzle.');
-                }
-                
-                const puzzle = await response.json();
-                
-                // Deobfuscate once, right after getting from API
-                if (!puzzle.endWord.match(/^[A-Z]{4}$/)) {
-                    puzzle.endWord = deobfuscateAnswer(puzzle.endWord, puzzle.puzzleNumber, puzzle.startWord);
-                }
-                
-                const todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'});
-                const isToday = puzzle.date === todayStr;
+                const puzzle = await loadPuzzle(dateString);
+                // The Daily slot is a fixed demo; dates are stable puzzle IDs only.
+                const dailyPuzzle = await loadPuzzle();
+                const isToday = puzzle.puzzleNumber === dailyPuzzle.puzzleNumber;
                 const savedScores = getSavedScores();
                 const isCompleted = savedScores[puzzle.puzzleNumber] !== undefined;
                 
@@ -3550,7 +3476,7 @@ if (!state || !state.puzzle) {
                 }
             }
             
-            const shareText = `KeyHunter ${state.puzzle.puzzleNumber}\n${statusText}\n\n${shareGrid}\n\nhttps://keyhunter.org/`;
+            const shareText = `KeyHunter ${state.puzzle.puzzleNumber}\n${statusText}\n\n${shareGrid}\n\n${location.origin}${location.pathname}`;
             
             // Copy to clipboard
             navigator.clipboard.writeText(shareText).then(() => {
@@ -3602,15 +3528,11 @@ if (!state || !state.puzzle) {
                 let todayHistory = {};
                 
                 try {
-                    const response = await fetch('/api/puzzle');
-                    if (!response.ok) {
-                        throw new Error(`API response not ok: ${response.status}`);
-                    }
-                    const todayPuzzle = await response.json();
+                    const todayPuzzle = await loadPuzzle();
+
                     
-                    const todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'});
                     
-                    if (todayPuzzle && todayPuzzle.date === todayStr) {
+                    if (todayPuzzle) {
                         const turnsHistory = JSON.parse(localStorage.getItem('keyhunt-history-turns') || '{}');
                         const speedHistory = JSON.parse(localStorage.getItem('keyhunt-history-speed') || '{}');
                         
@@ -3741,15 +3663,6 @@ if (!state || !state.puzzle) {
         }
 
 
-        function calculateDateForPuzzle(puzzleNumber) {
-            // This depends on your puzzle numbering system
-            // Example: if puzzle #1 was on 2025-01-01
-            const startDate = new Date('2025-01-01');
-            const targetDate = new Date(startDate);
-            targetDate.setDate(startDate.getDate() + (puzzleNumber - 1));
-            return targetDate.toLocaleDateString('en-CA');
-        }
-
         // Handle archive navigation chevrons
         DOM.puzzleTitle.addEventListener('click', async (e) => {
             if (state.isToday) return;
@@ -3772,7 +3685,7 @@ if (!state || !state.puzzle) {
 
             } else if (e.target.closest('#next-puzzle')) {
                 if (e.target.closest('#next-puzzle').dataset.disabled === 'true') {
-                    showSnackbar('This is the last archive puzzle!');
+                    showSnackbar('This is the last sample puzzle!');
                     return;
                 }
 
@@ -3787,8 +3700,7 @@ if (!state || !state.puzzle) {
             if (targetPuzzleNum) {
                 
                 try {
-                    const response = await fetch('/api/archives');
-                    const puzzles = await response.json();
+                    const puzzles = await loadSamplePuzzles();
                     const targetPuzzle = puzzles.find(p => p.puzzleNumber === targetPuzzleNum);
                     
                     if (targetPuzzle) {
@@ -3827,7 +3739,7 @@ if (!state || !state.puzzle) {
 
         DOM.helpBtn.addEventListener('click', async () => {
             try {
-                const response = await fetch('/api/instructions');
+                const response = await fetch('./instructions.json');
                 const data = await response.json();
                 const content = data.steps.map(step => `<p class="text-gray-300 mb-3">${step}</p>`).join('');
                 openModal('How to Play', content);
@@ -4193,16 +4105,9 @@ if (!state || !state.puzzle) {
                 hideLoader();
 
                 try {
-                    const response = await fetch('/api/archives');
-                    const puzzles = await response.json();
+                    const puzzles = await loadSamplePuzzles();
                     
-                    // Get today's puzzle number to filter archives
-                    const todayResponse = await fetch('/api/puzzle');
-                    const todayPuzzle = await todayResponse.json();
-                    const todayPuzzleNumber = todayPuzzle.puzzleNumber;
-                    
-                    // Filter to show only puzzles with numbers smaller than today's
-                    const archivePuzzles = puzzles.filter(p => p.puzzleNumber < todayPuzzleNumber);
+                    const archivePuzzles = puzzles;
 
                     // Function to determine score type and format display
                     function formatArchiveScore(puzzleNumber) {
@@ -4268,18 +4173,13 @@ if (!state || !state.puzzle) {
                             ${archivePuzzles.map(p => {
                                 const scoreInfo = formatArchiveScore(p.puzzleNumber);
                                 
-                                // Convert YYYY-MM-DD to MM/DD/YY format
-                                const dateParts = p.date.split('-');
-                                const shortYear = dateParts[0].substring(2);
-                                const shortDate = `${dateParts[1]}/${dateParts[2]}/${shortYear}`;
-                                
                                 return `
                                     <button data-date="${p.date}" class="archive-date-btn block w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-gray-700 transition-colors border-2 border-gray-600 mb-2 bg-gray-800" style="box-shadow: inset 0 0 0 2px #000;">
                                         <div class="flex justify-between items-center" style="pointer-events: none;">
                                             <!-- Left side: Puzzle info -->
                                             <div class="flex flex-col" style="pointer-events: none;">
                                                 <div class=" text-white" style="pointer-events: none;">#${p.puzzleNumber}</div>
-                                                <div class="text-xs text-gray-400" style="pointer-events: none;">${shortDate}</div>
+                                                <div class="text-xs text-gray-400" style="pointer-events: none;">Play anytime</div>
                                             </div>
                                             
                                             <!-- Right side: Score info -->
@@ -4294,9 +4194,9 @@ if (!state || !state.puzzle) {
                         </div>
                     `;
 
-                    openModal('Past Puzzles', content);
+                    openModal('Sample Puzzles', content);
                 } catch (error) {
-                    openModal('Archives', '<p class="text-gray-300">Could not load archives.</p>');
+                    openModal('Sample Puzzles', '<p class="text-gray-300">Could not load sample puzzles.</p>');
                 }
             }
 
